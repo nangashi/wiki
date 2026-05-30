@@ -124,7 +124,7 @@ description: wikiの健全性チェック（リンク切れ・孤立・重複・
 ### ステップ1: スクリプトで構造チェックを実行する
 
 ```bash
-bash .claude/skills/lint/lint-check.sh --collection insight:wiki/insight/pages --collection it:wiki/it/pages
+bash .Codex/skills/lint/lint-check.sh --collection insight:wiki/insight/pages --collection it:wiki/it/pages
 ```
 
 このスクリプトが CHECK-1・2・3・5・8 を処理する。出力をそのまま保持して次のステップに使う。
