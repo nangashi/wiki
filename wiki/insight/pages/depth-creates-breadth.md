@@ -46,7 +46,7 @@ updated: "2026-05-19"
 
 ## 関連
 
-- [[method-problem-visibility]] — 方法を深く持つことが、課題を見える化する先行条件となる
+- [[method-problem-visibility]] — 概念を深く学ぶことが、事象を構造として見抜くための先行条件となる
 - [[knowledge-compound-effect]] — 深い知識が蓄積されるにつれ、知識同士が結びつく複利効果
 - [[reading-roi]] — 深い読書からの価値回収の考え方
 - [[learning-palette]] — ラーニングパレットにおける「深化学習」の方向性と一致する；深さの追求が隣接領域へ自然に広がる

@@ -51,5 +51,5 @@ updated: "2026-05-21"
 ## 関連
 
 - [[shin-dokkai]] — 学習言語を正確に読み解く力がシン読解力
-- [[method-problem-visibility]] — 学習言語の習得なしには、何が読めていないかという課題自体が見えない
+- [[method-problem-visibility]] — 学習言語（専門領域の概念）の習得なしには、「何が読めていないか」という事象が構造として見えない
 - [[child-communication-principles]] — 小学生への語りかけには生活言語（具体・場面・感情）を使う実践への応用

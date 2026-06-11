@@ -50,3 +50,4 @@ updated: "2026-05-25"
 - [[fluency-illusion]] — 保留筋が不足すると「わかった気」に対抗できない
 - [[elaborative-interrogation]] — 「なぜ？」の自問が自己批判筋と抽象化筋を直接鍛える
 - [[four-thinking-modes]] — 自己批判筋は科学者モード（再考を厭わない姿勢）と同じ認知的態度
+- [[method-problem-visibility]] — 具体化筋が「大まかな疑問」を「精緻な疑問」に変換する力は、事象を概念によって因果構造として見抜くメカニズムと対応する

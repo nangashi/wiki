@@ -54,5 +54,4 @@ AIが評価フェーズ（比較・情報整理）を代替できるようにな
 - [[exit-criteria-first]] — 撤退判断の具体的実践と事前設定の重要性
 - [[analysis-as-avoidance]] — 評価フェーズが長期化し選択回避の手段になるパターン
 - [[problem-driven-selection]] — 評価軸を「何を解くか」に置く問題駆動アプローチ
-- [[method-problem-visibility]] — 前記事「方法を学ぶ」：方法を学ぶことが課題可視化の先行条件
 - [[hypothesis-as-stance]] — 仮説をスタンスとして立てることは「宣言」フェーズに対応し、評価を確定させる行為

@@ -50,7 +50,7 @@ updated: "2026-05-21"
 - [[hypothesis-as-stance]] — 良いイシューを確定させるには仮説（スタンス）の言語化が必要
 - [[pre-analysis-output-design]] — イシューと解の両方の質を高める実践手法としての絵コンテ分析
 - [[problem-driven-selection]] — 「何を解くか」を先頭に置く選択原則（技術選定への適用）
-- [[method-problem-visibility]] — 方法なしには課題の候補そのものが見えず、イシューを認識できない
+- [[method-problem-visibility]] — 概念なしには事象が構造として見えず、課題の候補もイシューも認識できない
 - [[quadrant-ii-principle]] — 「重要だが緊急でない」第2領域への投資が放置される構造はイシュー軽視の時間管理版
 - [[focus-on-controllable]] — 統制可能・変えられることに集中する原則と共鳴する
 - [[expectation-alignment]] — 「ヴァリューを出す」ために何が求められているかを特定する行為は期待値の把握と同義

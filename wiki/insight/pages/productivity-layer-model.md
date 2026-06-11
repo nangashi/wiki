@@ -70,4 +70,3 @@ L3〜L5を機能させるには以下の基盤が必要：
 
 - [[org-productivity-misdiagnosis]] — L3〜L5の問題を個人に誤帰属させる構造的誤診
 - [[proxy-metrics-knowledge-work]] — L2の「見える忙しさ」がL5〜L6の指標と乖離する問題
-- [[method-problem-visibility]] — L2の方法（実行力）が不足すると、L3〜L5の課題そのものが見えない
