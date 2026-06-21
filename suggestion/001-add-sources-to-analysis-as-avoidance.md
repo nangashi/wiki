@@ -1,3 +1,9 @@
+---
+status: open
+target: analysis-as-avoidance
+created: "2026-05-30"
+---
+
 # 提案: [[analysis-as-avoidance]] に sources を追加する
 
 ## 対象

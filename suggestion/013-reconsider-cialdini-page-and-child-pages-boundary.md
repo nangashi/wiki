@@ -1,3 +1,9 @@
+---
+status: open
+target: [cialdini-persuasion-triggers, reciprocity-principle, commitment-and-consistency, social-proof, liking-principle, authority-principle, scarcity-principle]
+created: "2026-05-30"
+---
+
 # 提案: [[cialdini-persuasion-triggers]] と個別原則ページの役割境界を明確にする
 
 ## 対象

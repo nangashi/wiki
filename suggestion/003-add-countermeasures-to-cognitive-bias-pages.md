@@ -1,3 +1,9 @@
+---
+status: open
+target: [availability-heuristic, framing-effect, planning-fallacy, peak-end-rule, prospect-theory]
+created: "2026-05-30"
+---
+
 # 提案: 認知バイアス系ページに「対処・補正」セクションを追加する
 
 ## 対象

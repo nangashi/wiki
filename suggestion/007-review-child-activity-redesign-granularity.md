@@ -1,3 +1,9 @@
+---
+status: open
+target: child-activity-redesign
+created: "2026-05-30"
+---
+
 # 提案: [[child-activity-redesign]] の粒度を見直す
 
 ## 対象

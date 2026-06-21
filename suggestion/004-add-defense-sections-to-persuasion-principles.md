@@ -1,3 +1,9 @@
+---
+status: open
+target: [reciprocity-principle, commitment-and-consistency, social-proof, liking-principle, authority-principle, scarcity-principle]
+created: "2026-05-30"
+---
+
 # 提案: チャルディーニ個別原則ページに防御・対処を追加する
 
 ## 対象

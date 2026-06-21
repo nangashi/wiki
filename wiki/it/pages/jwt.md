@@ -187,3 +187,4 @@ def refresh(refresh_token):
 ## 関連
 
 - [[saas-authorization-design]] — Auth Middleware内でJWTデコード後にPolicyContextを生成し、PBACで権限リストを構築する設計パターン
+- [[bff-auth-pattern]] — ブラウザ境界にはCookie、BFF↔外部API間にはJWTを置く層別配置パターン。本ページのXSS対策・即時失効問題への一つの解

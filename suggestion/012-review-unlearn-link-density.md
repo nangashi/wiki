@@ -1,3 +1,9 @@
+---
+status: open
+target: unlearn
+created: "2026-05-30"
+---
+
 # 提案: [[unlearn]] の関連リンク密度を下げる
 
 ## 対象

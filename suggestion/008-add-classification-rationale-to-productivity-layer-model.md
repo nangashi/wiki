@@ -1,3 +1,9 @@
+---
+status: open
+target: productivity-layer-model
+created: "2026-05-30"
+---
+
 # 提案: [[productivity-layer-model]] に分類軸の根拠を追加する
 
 ## 対象

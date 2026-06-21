@@ -97,4 +97,5 @@ SELECT * FROM orders WHERE tenant_id = ? AND shop_id = ?
 ## 関連
 
 - [[jwt]] — 認証トークン。Auth Middleware内でJWTデコード後にPolicyContextを生成する流れで連携
+- [[bff-auth-pattern]] — BFF↔API間のJWT認証処理は、本ページのAuth MiddlewareでのPolicyContext生成と連携する
 - [[ai-agent-design]] — エージェント設計にも「役割（何ができるか）」と「スコープ（誰のリソースか）」の分離という同構造が現れる

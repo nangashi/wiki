@@ -1,3 +1,9 @@
+---
+status: open
+target: [nonviolent-communication, needs-vs-strategies]
+created: "2026-05-30"
+---
+
 # 提案: [[nonviolent-communication]] を [[needs-vs-strategies]] に統合またはリダイレクト化する
 
 ## 対象

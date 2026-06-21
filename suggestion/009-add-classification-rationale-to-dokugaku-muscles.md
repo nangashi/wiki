@@ -1,3 +1,9 @@
+---
+status: open
+target: dokugaku-muscles
+created: "2026-05-30"
+---
+
 # 提案: [[dokugaku-muscles]] に「5筋」分類の根拠を追加する
 
 ## 対象

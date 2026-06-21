@@ -1,3 +1,9 @@
+---
+status: open
+target: problem-driven-selection
+created: "2026-05-30"
+---
+
 # 提案: [[problem-driven-selection]] の核心を「原理」に引き上げる
 
 ## 対象

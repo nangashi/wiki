@@ -1,3 +1,9 @@
+---
+status: open
+target: theory-of-constraints
+created: "2026-05-30"
+---
+
 # 提案: [[theory-of-constraints]] を分割または圧縮する
 
 ## 対象

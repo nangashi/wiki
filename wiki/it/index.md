@@ -21,3 +21,4 @@
 - [[llm-knowledge-system]] — LLM知識システムパターン（Karpathy）。三層アーキテクチャ・Ingest/Query/Lint操作・Human-LLM分業の設計洞察を含む実装リファレンス
 - [[middle-notation-pattern]] — 中間記法パターン（MNP）。GUIと同等のDSLをAIに操作させる分業設計でAI統合の実装速度・安定性・コスト（4〜8倍削減）を同時改善
 - [[saas-authorization-design]] — SaaS権限管理設計（PBAC+ReBAC二層モデル）。「何ができるか」と「誰のリソースか」を分離し、ポリシー集約・スコープ絞り込み・フロントエンド共有を一貫設計するリファレンス
+- [[bff-auth-pattern]] — BFFパターンによる認証トークン配置設計リファレンス。ブラウザ境界はCookie・BFF↔API間はJWTという層別設計、NextAuthのトークン露出アンチパターン、「Cookie復権」が退化でない理由を含む

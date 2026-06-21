@@ -1,3 +1,9 @@
+---
+status: open
+target: learning-palette
+created: "2026-05-30"
+---
+
 # 提案: [[learning-palette]] を採用基準に照らして再定義する
 
 ## 対象

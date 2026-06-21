@@ -66,9 +66,9 @@ description: wikiの健全性チェック（リンク切れ・孤立・重複・
 ### CHECK-5: 粒度ズレ（INFO）
 
 **広すぎる（分割候補）**:
-- 本文が著しく長い（目安: 詳細セクションが500字以上）
-- 複数の独立した概念を1ページで説明している
-- 「関連」セクションに10個以上のリンクがある
+- 判定の主軸は文字数ではなく「複数の独立した概念を1ページで説明しているか」（LLM判断）
+- 本文2500字以上は分割候補フラグの目安（コーパス実測: 中央値約1500字・最大約2900字）（スクリプトの `LARGE` フラグ）。ただしこれは候補抽出のための粗い目安に過ぎず、文字数だけで分割を決めない
+- 「関連」セクションに10個以上のリンクがある（スクリプトの `MANY_LINKS` フラグ）
 
 **狭すぎる（統合候補）**:
 - 本文が非常に短い（概要のみで詳細がない）
@@ -119,15 +119,28 @@ description: wikiの健全性チェック（リンク切れ・孤立・重複・
 
 ---
 
+### CHECK-9: 再審査待ち（INFO、insightコレクションのみ）
+
+`wiki/insight/references/essence-review-criteria.md` 冒頭の `version: N` と、各insightページの frontmatter `reviewed:` を比較する。
+
+**検出方法**:
+- スクリプトが `version: N` を読み取り、`reviewed` が欠落しているページ、または `reviewed` が現行バージョン未満のページを `STALE_REVIEW` として出力する
+
+**対応方針**:
+- lintはあくまで検出と件数報告のみを行う。再審査自体は別途バックフィル運用（複数ページをまとめて再審査する作業）で行う
+- ただし対話ステップ（ステップ4）でユーザーが希望すれば、その場で `essence-review-criteria.md` のC1〜C3に基づき該当ページの再審査を実行してよい。合格したページは `reviewed: <現行バージョン>` を frontmatter に追記する
+
+---
+
 ## 実行手順
 
 ### ステップ1: スクリプトで構造チェックを実行する
 
 ```bash
-bash .Codex/skills/lint/lint-check.sh --collection insight:wiki/insight/pages --collection it:wiki/it/pages
+bash .agents/skills/lint/lint-check.sh --collection insight:wiki/insight/pages --collection it:wiki/it/pages
 ```
 
-このスクリプトが CHECK-1・2・3・5・8 を処理する。出力をそのまま保持して次のステップに使う。
+このスクリプトが CHECK-1・2・3・5・8・9 を処理する。出力をそのまま保持して次のステップに使う。
 
 スクリプトの各出力行の意味:
 - `BROKEN src=X ref=Y` — ページ X が存在しない [[Y]] にリンクしている
@@ -135,6 +148,9 @@ bash .Codex/skills/lint/lint-check.sh --collection insight:wiki/insight/pages --
 - `MISSING_LINK src=X mentions='Y' suggest=[[Z]]` — ページ X 本文に Y という語があるが [[Z]] リンクがない（誤検知の可能性あり）
 - `METRICS slug=X ... flags=...` — ページ X の粒度メトリクスに異常フラグあり
 - `LOW_VALUE slug=X reason=Y` — ページ X が低価値候補（誤検知の可能性あり）
+- `STALE_REVIEW slug=X reviewed=none|<N>` — ページ X が現行の本質審査基準バージョンで再審査されていない（insightコレクションのみ）
+- `SAMPLE slug=X` — 本質サンプリング監査の対象として選ばれたページ（insightコレクションのみ、毎回ランダムに3件）
+- `OPEN_SUGGESTION file=X target=Y` — `suggestion/` 配下で未処理（status: open または不明）の提案
 
 ### ステップ2: 残りのチェックをLLMで実行する
 
@@ -153,6 +169,14 @@ bash .Codex/skills/lint/lint-check.sh --collection insight:wiki/insight/pages --
 - `LOW_VALUE` 候補のページ内容を読み、独自の説明・独自情報が含まれているか確認
 - 含まれている場合は誤検知として除外する
 
+**CHECK-9: 再審査待ち（件数集計）**
+- `STALE_REVIEW` の件数をそのまま集計する（個別の再審査はステップ4で希望があれば対応）
+
+**本質サンプリング監査**
+- スクリプトが出力した `SAMPLE slug=X` のページ（3件）を `Read` で読み込む
+- `wiki/insight/references/essence-review-criteria.md` を読み、各ページについて C1（核心の一文性）・C2（核心から現象が逆算できる）・C3（対処が本質への干渉として説明されている。対処・実践セクションがある場合のみ）を再判定する
+- いずれかが不合格の場合、結果サマリに「品質ドリフト検知」として報告する（具体的にどの基準に不合格かを明記する）
+
 ### ステップ3: 結果をサマリ形式で出力する
 
 ---
@@ -161,6 +185,8 @@ bash .Codex/skills/lint/lint-check.sh --collection insight:wiki/insight/pages --
 
 ```
 ## Lint 結果サマリ
+
+未処理 suggestion: N件
 
 | チェック | ERROR | WARNING | INFO |
 |---------|-------|---------|------|
@@ -171,6 +197,7 @@ bash .Codex/skills/lint/lint-check.sh --collection insight:wiki/insight/pages --
 | 粒度ズレ | - | - | N |
 | 矛盾 | - | N | - |
 | 低価値ページ候補 | - | - | N |
+| 再審査待ち | - | - | N |
 
 ---
 
@@ -212,6 +239,32 @@ bash .Codex/skills/lint/lint-check.sh --collection insight:wiki/insight/pages --
 - 理由: リダイレクト型（本文が `→ [[他ページスラグ]]` のみ）
 - **削除してよいですか？**
 
+---
+
+## [INFO] 再審査待ち
+
+### [[スラグ]] — タイトル
+- reviewed: none（または現行バージョン未満の値）/ 現行バージョン: N
+- 再審査はバックフィル運用で対応（希望があればこの場で実行可能）
+
+---
+
+## [INFO] 品質ドリフト検知（本質サンプリング監査）
+
+### [[スラグ]] — タイトル
+- 不合格基準: C2
+- 理由: 詳細セクションの項目が核心文と接続されていない（接続句が装飾的）
+
+（全件合格の場合は「本質サンプリング監査: 3件すべて合格」と記載する）
+
+---
+
+## [INFO] 未処理 suggestion
+
+### suggestion/XXX-yyy.md — 対象: [[スラグ]]
+- 提案内容の要約（1〜2行）
+- **適用しますか？（適用 / 却下）**
+
 ```
 
 サマリ出力後、ステップ4に進む。
@@ -220,7 +273,34 @@ bash .Codex/skills/lint/lint-check.sh --collection insight:wiki/insight/pages --
 
 ## ステップ4: 改善を1件ずつ対話処理する
 
-サマリ提示後、検出された改善点を **ERROR → WARNING → INFO の順** に1件ずつ処理する。
+サマリ提示後、検出された改善点を **未処理suggestion → ERROR → WARNING → INFO の順** に1件ずつ処理する。
+
+### 未処理 suggestion の処理
+
+`OPEN_SUGGESTION` で検出された各ファイルについて:
+
+1. **提案内容を提示する**
+   - `Read` で該当 suggestion ファイルを読み、内容を要約して提示する
+   - 対象ページ（`target:`）の現状も必要に応じて確認する
+
+2. **適用/却下を確認する**
+   - 「この提案を適用しますか？（適用 / 却下 / スキップ）」と聞く
+
+3. **結果に応じて処理する**
+   - **適用**: 提案内容に従って対象ページを編集し、suggestion ファイルの frontmatter `status:` を `applied` に書き換える
+   - **却下**: suggestion ファイルの frontmatter `status:` を `rejected` に書き換える（理由があれば追記してもよい）
+   - **スキップ**: 何も変更せず次の件へ進む
+
+4. **次の件へ進む**
+
+### 再審査待ち（CHECK-9）の処理
+
+`STALE_REVIEW` で検出された各ページについて:
+
+- 原則は「件数を報告するのみ」とし、個別処理は行わない（バックフィル運用で対応）
+- ただしユーザーが「このページを再審査して」のように希望した場合は、`essence-review-criteria.md` のC1〜C3に基づき該当ページを審査し、合格すれば frontmatter に `reviewed: <現行バージョン>` を追記する（不合格なら改善案を提示する）
+
+### 通常の改善点（ERROR / WARNING / INFO）の処理
 
 各件について以下を行う:
 
@@ -247,3 +327,4 @@ bash .Codex/skills/lint/lint-check.sh --collection insight:wiki/insight/pages --
 
 - CHECK-6（矛盾）はLLMによる判断のため、誤検知の可能性がある。修正前に内容を確認すること
 - wikiページが0件の場合は「ページがありません」と報告して終了する
+- CHECK-9（再審査待ち）の再審査自体は別途バックフィル運用で行う。lintは検出と件数報告が基本だが、ユーザーが希望すればその場で個別ページの再審査を実行してもよい

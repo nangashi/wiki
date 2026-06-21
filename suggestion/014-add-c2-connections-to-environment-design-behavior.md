@@ -1,3 +1,9 @@
+---
+status: open
+target: environment-design-behavior
+created: "2026-05-30"
+---
+
 # 提案: [[environment-design-behavior]] の実践項目を核心に接続する
 
 ## 対象

@@ -1,3 +1,9 @@
+---
+status: open
+target: motivational-questioning
+created: "2026-05-30"
+---
+
 # 提案: [[motivational-questioning]] のリンク切れを修正する
 
 ## 対象
