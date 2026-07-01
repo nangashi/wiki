@@ -5,7 +5,8 @@ sources:
   - "https://happeningday.hatenablog.com/entry/2026/01/23/140655"
   - "https://note.com/repkuririn7/n/n139cc922dba5"
 created: "2026-05-29"
-updated: "2026-05-29"
+updated: "2026-06-27"
+reviewed: 2
 ---
 
 # アンカリング効果
@@ -44,5 +45,5 @@ updated: "2026-05-29"
 
 - [[system1-system2]] — システム1が自動的にアンカーを活性化し、システム2の調整が不十分になる構造
 - [[wysiati]] — アンカーが「見えている情報」として取り込まれ、他の証拠が十分に参照されない
-- [[prospect-theory]] — 参照点の設定がアンカリングと同じ「最初の数値への固定」という認知基盤を持つ
+- [[prospect-theory]] — 参照点が評価の基準点として機能する点でアンカリングと類似した構造を持ち、フレーミングによる提示がその参照点を操作する
 - [[decision-structure]] — 意思決定前に評価基準を先に定義することがアンカリング耐性を高める
