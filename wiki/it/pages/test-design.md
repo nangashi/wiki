@@ -1,5 +1,6 @@
 ---
 title: "テスト設計：網羅性とサンプリング"
+type: "リファレンス型"
 sources:
   - "https://speakerdeck.com/orgachem/guidelines-for-requirements-definition-specification-writing-design-and-verification"
 created: "2026-05-23"

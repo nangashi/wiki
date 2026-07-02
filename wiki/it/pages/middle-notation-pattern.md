@@ -1,6 +1,6 @@
 ---
 title: "中間記法パターン（MNP）"
-type: "事例型"
+type: "リファレンス型"
 sources:
   - "https://note.com/art_reflection/n/nccfe6cc57073"
 created: "2026-05-28"

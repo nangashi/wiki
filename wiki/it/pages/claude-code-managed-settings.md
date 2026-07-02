@@ -1,9 +1,10 @@
 ---
 title: "Claude Code組織セキュリティ設定（managed-settings + MDM）"
+type: "リファレンス型"
 sources:
   - "https://note.com/kajinari/n/n6494b35a4826"
 created: "2026-05-23"
-updated: "2026-05-23"
+updated: "2026-07-02"
 ---
 
 # Claude Code組織セキュリティ設定（managed-settings + MDM）
@@ -55,4 +56,4 @@ Anthropic Console APIを通じて OpenTelemetry + BigQuery で利用量を可視
 理解度テストの定期リマインドと継続学習により、制限を増やすのではなく「安全に回り続ける状態」を維持する。
 
 ## 関連
-- [[it:indirect-prompt-injection]] — managed-settingsで防御するIPI攻撃の仕組み
+- [[indirect-prompt-injection]] — managed-settingsで防御するIPI攻撃の仕組み

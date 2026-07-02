@@ -1,5 +1,6 @@
 ---
 title: "AIコーディングのESLint制約設計（eslint-plugin-boundaries含む）"
+type: "リファレンス型"
 sources:
   - "https://zenn.dev/erukiti/articles/2512-full-ai-cofing"
 created: "2026-05-23"

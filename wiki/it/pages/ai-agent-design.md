@@ -1,6 +1,6 @@
 ---
 title: "AIエージェント設計：役割先行アプローチ"
-type: "事例型"
+type: "リファレンス型"
 sources:
   - "https://x.com/meiku_shiba/status/2048883352326086770"
 created: "2026-05-23"

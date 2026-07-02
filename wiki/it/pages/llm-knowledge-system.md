@@ -1,6 +1,6 @@
 ---
 title: "LLM知識システムパターン（Karpathy）"
-type: "パターン型"
+type: "リファレンス型"
 sources:
   - "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f"
 created: "2026-05-23"

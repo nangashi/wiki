@@ -1,6 +1,6 @@
 ---
 title: "AIへのコンテキスト設計"
-type: "事例型"
+type: "リファレンス型"
 sources:
   - "https://zenn.dev/erukiti/articles/2512-full-ai-cofing"
   - "https://x.com/meiku_shiba/status/2048883352326086770"

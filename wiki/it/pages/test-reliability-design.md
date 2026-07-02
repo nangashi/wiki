@@ -1,5 +1,6 @@
 ---
 title: "テスト信頼性設計"
+type: "リファレンス型"
 sources:
   - "https://levtech.jp/media/article/column/detail_496/"
 created: "2026-05-23"
@@ -93,5 +94,5 @@ assert result == expected, f"got {result!r}, want {expected!r}"
 ## 関連
 
 - [[test-design]] — テストケース設計の思想：禁止トレース・フェイルのサンプリングとして検証を捉え、計画主導テストと探索的テストで網羅する
-- [[db-integration-test-bottlenecks]] — ミディアムテスト（DB統合テスト）のコストをスモールに近づける Go+PostgreSQL 実装パターン
+- [[postgresql-template-database]] — ミディアムテスト（DB統合テスト）のコストをスモールに近づけるテンプレートDB複製パターン（Go実装事例を含む）
 - [[wide-events-implementation]] — 本番環境でのフレイキー問題の根因調査にWide Eventsの可観測性が補完的に機能する

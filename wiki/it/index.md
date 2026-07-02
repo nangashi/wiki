@@ -6,8 +6,7 @@
 
 ---
 
-- [[db-integration-test-bottlenecks]] — DB統合テストの3ボトルネック（マイグレーション時間・環境差異・プロセス再起動）とGo+PostgreSQLによる解消実装。初期化コストを8秒→250ms以下に削減
-- [[postgresql-template-database]] — PostgreSQLテンプレートDBリファレンス。マイグレーション1回+ファイルコピーで並列統合テストを高速化。アンチパターン・他のDB分離方式との比較を含む
+- [[postgresql-template-database]] — PostgreSQLテンプレートDBリファレンス。マイグレーション1回+ファイルコピーで並列統合テストを高速化。アンチパターン・他のDB分離方式との比較・Go実装事例（初期化コスト8秒→250ms以下、環境自動検出・プロセス共有含む）を収録
 - [[wide-events-implementation]] — Wide Eventsリファレンス。採用判断・3つの実装アンチパターン・ストレージ選定（ClickHouse/BigQuery）・テイルサンプリング戦略のトレードオフ
 - [[test-reliability-design]] — テスト信頼性設計の3層：テストの2種類の嘘（偽陽性/偽陰性）・テストサイズによる構造的防止・フレイキーCIパイプライン分離管理
 - [[test-design]] — テストケース設計：禁止トレース・フェイルのサンプリングとして検証を捉え、計画主導テストと探索的テストで網羅する
