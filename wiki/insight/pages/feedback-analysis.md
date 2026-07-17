@@ -7,6 +7,7 @@ sources:
   - "https://d-lab.management/?p=16102"
 created: "2026-05-24"
 updated: "2026-05-24"
+reviewed: 3
 ---
 
 # フィードバック分析

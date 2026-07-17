@@ -7,6 +7,7 @@ sources:
   - "https://type.jp/tensyoku-knowhow/skill-up/book-summary/vol1/"
 created: "2026-05-21"
 updated: "2026-05-21"
+reviewed: 3
 ---
 
 # 成熟の連続体（依存→自立→相互依存）

@@ -1,5 +1,5 @@
 ---
-status: open
+status: applied
 target: productivity-layer-model
 created: "2026-05-30"
 ---

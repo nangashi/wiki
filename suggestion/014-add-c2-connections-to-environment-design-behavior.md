@@ -1,5 +1,5 @@
 ---
-status: open
+status: applied
 target: environment-design-behavior
 created: "2026-05-30"
 ---

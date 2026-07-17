@@ -1,5 +1,5 @@
 ---
-status: open
+status: applied
 target: child-activity-redesign
 created: "2026-05-30"
 ---

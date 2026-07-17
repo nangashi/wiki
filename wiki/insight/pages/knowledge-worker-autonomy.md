@@ -7,6 +7,7 @@ sources:
   - "https://oukoraikon.com/peter-f-drucker-to-perform-to-contribute-and-to-achieve/"
 created: "2026-05-24"
 updated: "2026-05-24"
+reviewed: 3
 ---
 
 # 知識労働者の自律性

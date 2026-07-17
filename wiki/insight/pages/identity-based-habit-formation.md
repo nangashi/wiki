@@ -7,6 +7,7 @@ sources:
   - "https://bookworms.jp/post/atomic-habits-summary"
 created: "2026-05-25"
 updated: "2026-05-25"
+reviewed: 3
 ---
 
 # アイデンティティベースの習慣形成

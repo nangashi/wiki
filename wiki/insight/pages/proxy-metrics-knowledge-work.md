@@ -4,6 +4,7 @@ sources:
   - "https://cybozushiki.cybozu.co.jp/articles/m006314.html"
 created: "2026-05-19"
 updated: "2026-05-19"
+reviewed: 3
 ---
 
 # 代理指標（知識労働）

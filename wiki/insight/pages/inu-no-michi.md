@@ -6,6 +6,7 @@ sources:
   - "https://rrhshow.com/1046/"
 created: "2026-05-21"
 updated: "2026-05-21"
+reviewed: 3
 ---
 
 # 犬の道（努力先行型問題解決の罠）

@@ -6,6 +6,7 @@ sources:
   - "https://www.countand1.com/2018/05/issue-driven-for-valuable-output.html"
 created: "2026-05-21"
 updated: "2026-05-21"
+reviewed: 3
 ---
 
 # 仮説をスタンスとして立てる

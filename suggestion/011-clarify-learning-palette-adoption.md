@@ -1,5 +1,5 @@
 ---
-status: open
+status: applied
 target: learning-palette
 created: "2026-05-30"
 ---

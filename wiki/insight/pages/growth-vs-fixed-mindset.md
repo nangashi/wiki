@@ -10,6 +10,7 @@ sources:
   - "https://www.learningandthebrain.com/blog/the-mindset-controversy-carol-dweck-speaks/"
 created: "2026-05-24"
 updated: "2026-05-24"
+reviewed: 3
 ---
 
 # 成長マインドセットと固定マインドセット

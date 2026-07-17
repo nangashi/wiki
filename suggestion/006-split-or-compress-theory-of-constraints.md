@@ -1,5 +1,5 @@
 ---
-status: open
+status: applied
 target: theory-of-constraints
 created: "2026-05-30"
 ---

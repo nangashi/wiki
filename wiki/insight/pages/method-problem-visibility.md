@@ -4,6 +4,7 @@ sources:
   - "https://syu-m-5151.hatenablog.com/entry/2026/02/09/180240"
 created: "2026-05-19"
 updated: "2026-06-10"
+reviewed: 3
 ---
 
 # 概念がなければ事象は構造を持たない

@@ -4,6 +4,7 @@ sources:
   - "https://syu-m-5151.hatenablog.com/entry/2026/02/17/115306"
 created: "2026-05-20"
 updated: "2026-05-20"
+reviewed: 3
 ---
 
 # 選択の3要素構造
@@ -55,3 +56,4 @@ AIが評価フェーズ（比較・情報整理）を代替できるようにな
 - [[analysis-as-avoidance]] — 評価フェーズが長期化し選択回避の手段になるパターン
 - [[problem-driven-selection]] — 評価軸を「何を解くか」に置く問題駆動アプローチ
 - [[hypothesis-as-stance]] — 仮説をスタンスとして立てることは「宣言」フェーズに対応し、評価を確定させる行為
+- [[commitment-lock-in]] — 撤退判断は動ける状態が残っていて初めて成立する。ロックインはその前提を物理的に奪い、撤退判断を選択肢から消す

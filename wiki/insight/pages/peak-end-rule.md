@@ -7,6 +7,7 @@ sources:
   - "https://h9nfp.com/fast-slow/"
 created: "2026-05-29"
 updated: "2026-05-29"
+reviewed: 3
 ---
 
 # ピーク・エンドの法則と二つの自己

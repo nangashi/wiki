@@ -7,6 +7,7 @@ sources:
   - "https://www.chiringi.or.jp/colmun/7/7_5_1/7_5_1.html"
 created: "2026-05-21"
 updated: "2026-05-21"
+reviewed: 3
 ---
 
 # 刺激と反応の間の選択の自由

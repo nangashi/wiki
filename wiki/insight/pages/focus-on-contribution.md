@@ -7,6 +7,7 @@ sources:
   - "https://d-lab.management/?p=15942"
 created: "2026-05-24"
 updated: "2026-05-24"
+reviewed: 3
 ---
 
 # 貢献への集中

@@ -1,5 +1,5 @@
 ---
-status: open
+status: applied
 target: [nonviolent-communication, needs-vs-strategies]
 created: "2026-05-30"
 ---

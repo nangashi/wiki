@@ -8,7 +8,7 @@ sources:
   - "https://en.wikipedia.org/wiki/Survivorship_bias"
 created: "2026-06-22"
 updated: "2026-06-22"
-reviewed: 2
+reviewed: 3
 ---
 
 # サバイバーシップバイアス

@@ -4,6 +4,7 @@ sources:
   - "https://cybozushiki.cybozu.co.jp/articles/m006314.html"
 created: "2026-05-19"
 updated: "2026-05-19"
+reviewed: 3
 ---
 
 # 生産性低下の構造的誤診
@@ -47,8 +48,7 @@ AIがコード生成や資料作成をこなせるようになると、量的な
 ## 関連
 
 - [[proxy-metrics-knowledge-work]] — 知識労働で成果の代わりに測定される「見える忙しさ」の指標群
-- [[productivity-layer-model]] — 組織問題がどの層に存在するかを構造化する6層フレームワーク
-- [[productivity-layer-model]] のミラー・マルチプライヤー節 — AIがこの構造的問題をさらに増幅させるメカニズム
+- [[productivity-layer-model]] — 組織問題がどの層に存在するかを構造化する6層フレームワーク。ミラー・マルチプライヤー節はAIがこの構造的問題をさらに増幅させるメカニズムを扱う
 - [[local-optimization-trap]] — 局所（個人）への過剰フォーカスという類似の構造：部分最適が全体最適にならない数学的根拠
 - [[theory-of-constraints]] — 組織の制約を特定して改善することで生産性の構造問題に介入するフレームワーク
 - [[method-problem-visibility]] — 「違和感に名前をつける」処方箋は、組織レベルでの同型の構造化プロセス

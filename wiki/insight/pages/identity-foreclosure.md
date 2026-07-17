@@ -7,6 +7,7 @@ sources:
   - "https://www.bookclub.com/blog/toss-your-ten-year-plan"
 created: "2026-05-21"
 updated: "2026-05-21"
+reviewed: 3
 ---
 
 # アイデンティティ・フォークロージャー
@@ -49,3 +50,4 @@ updated: "2026-05-21"
 - [[knowledge-worker-autonomy]] — 特定組織・役割への早期固定が知識労働者の自律性（強みの定義・貢献の定義）を損なう構造
 - [[commitment-and-consistency]] — コミットメントと一貫性の原則が、アイデンティティと結びついたとき最も強力にフォークロージャーを加速させる
 - [[identity-based-habit-formation]] — 対比：アイデンティティを意図的に採用して習慣形成に使う戦略。フォークロージャーは固定によるリスク、こちらは選択による活用という逆の文脈
+- [[commitment-lock-in]] — アイデンティティを特殊投資と見なすと、フォークロージャーはロックインの心理版。撤退コストが自己像に固着したケース

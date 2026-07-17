@@ -7,6 +7,7 @@ sources:
   - "https://note.com/tomotomo_life27/n/n7b247d1c25ee"
 created: "2026-05-21"
 updated: "2026-05-21"
+reviewed: 3
 ---
 
 # 分析前アウトプット設計（絵コンテ手法）

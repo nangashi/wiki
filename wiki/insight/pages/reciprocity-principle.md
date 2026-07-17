@@ -7,6 +7,7 @@ sources:
   - "https://asu-yoku-laboratory.com/influence-the-psychology-of-persuasion"
 created: "2026-05-25"
 updated: "2026-05-25"
+reviewed: 3
 ---
 
 # 返報性の原則
@@ -45,5 +46,5 @@ updated: "2026-05-25"
 
 - [[cialdini-persuasion-triggers]] — 返報性を含む6+1の承諾誘導原則の全体像
 - [[commitment-and-consistency]] — コミットメントも同様に「断れない状況」を作るメカニズム
-- [[nonviolent-communication]] — ニーズに基づいた与え方は返報性を超えた自発的協力を生む
+- [[needs-vs-strategies]] — ニーズに基づいた与え方は返報性を超えた自発的協力を生む
 - [[focus-on-contribution]] — 貢献を先に置く姿勢は返報性を意図せず活用している

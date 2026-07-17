@@ -7,6 +7,7 @@ sources:
   - "https://designalpha.jp/knowledge/marketing/prospecttheory/"
 created: "2026-05-29"
 updated: "2026-05-29"
+reviewed: 3
 ---
 
 # プロスペクト理論（価値の非対称性）
@@ -66,3 +67,4 @@ updated: "2026-05-29"
 - [[scarcity-principle]] — 損失回避を利用した承諾誘導の原則
 - [[anchoring-effect]] — 参照点の設定がアンカリングと同じ認知的基盤を持つ
 - [[wysiati]] — 現在の参照点とその周辺情報だけで判断するWYSIATIと連動する
+- [[commitment-lock-in]] — サンクコストへの固執を生む損失回避が、ロックインの主観的締め付け（撤退困難）の理論的基盤になる

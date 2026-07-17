@@ -6,6 +6,7 @@ sources:
   - "https://qiita.com/snoo_py/items/5332ed9839063df6b19a"
 created: "2026-05-20"
 updated: "2026-05-20"
+reviewed: 3
 ---
 
 # インターリービング

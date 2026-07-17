@@ -1,5 +1,5 @@
 ---
-status: open
+status: applied
 target: [availability-heuristic, framing-effect, planning-fallacy, peak-end-rule, prospect-theory]
 created: "2026-05-30"
 ---

@@ -4,9 +4,10 @@ sources:
   - "https://rcgd.isr.umich.edu/wp-content/uploads/2018/07/motivated_numeracy_and_enlightened_selfgovernment.pdf"
   - "https://pubmed.ncbi.nlm.nih.gov/2270237/"
   - "https://doi.org/10.1037/0033-2909.129.1.139"
+  - "book:選択のパラドックス（バリー・シュワルツ）"
 created: "2026-05-20"
-updated: "2026-06-27"
-reviewed: 2
+updated: "2026-07-02"
+reviewed: 3
 ---
 
 # 分析による決定回避
@@ -19,7 +20,7 @@ reviewed: 2
 
 ### 動機づけ推論のメカニズム
 
-決定回避の引き金は後悔の予期（anticipated regret）・[[prospect-theory|損失回避]]・選好の不確実性であり（Anderson, 2003）、これらは情報量とは独立に存在する。にもかかわらず人は「情報が足りないから決められない」と認知する。この認知は次の連鎖の出力である：
+決定回避の引き金は後悔の予期（anticipated regret）・損失回避（[[prospect-theory]]）・選好の不確実性であり（Anderson, 2003）、これらは情報量とは独立に存在する。にもかかわらず人は「情報が足りないから決められない」と認知する。この認知は次の連鎖の出力である：
 
 > 「決断したくない（後悔の予期・損失回避）」→ 動機づけ推論 → 「情報がまだ足りない」という認知
 

@@ -8,6 +8,7 @@ sources:
   - "https://econ-edu.net/2025/05/01/8392/"
 created: "2026-05-21"
 updated: "2026-05-21"
+reviewed: 3
 ---
 
 # シン読解力（事実伝達文書の精確読解）

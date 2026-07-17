@@ -1,5 +1,5 @@
 ---
-status: open
+status: applied
 target: [reciprocity-principle, commitment-and-consistency, social-proof, liking-principle, authority-principle, scarcity-principle]
 created: "2026-05-30"
 ---

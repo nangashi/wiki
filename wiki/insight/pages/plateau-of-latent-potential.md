@@ -7,6 +7,7 @@ sources:
   - "https://gen-log.com/atomic-habits-compound-interest/"
 created: "2026-05-25"
 updated: "2026-05-25"
+reviewed: 3
 ---
 
 # 潜在的可能性の台地

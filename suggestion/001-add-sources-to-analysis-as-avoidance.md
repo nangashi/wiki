@@ -1,5 +1,5 @@
 ---
-status: open
+status: applied
 target: analysis-as-avoidance
 created: "2026-05-30"
 ---

@@ -8,6 +8,7 @@ sources:
   - "http://drucker-studies.com/words/2140.html"
 created: "2026-05-24"
 updated: "2026-05-24"
+reviewed: 3
 ---
 
 # 時間の三段階管理

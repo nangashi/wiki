@@ -7,6 +7,7 @@ sources:
   - "https://data.wingarc.com/sky-rain-umbrella-framework-9892"
 created: "2026-05-23"
 updated: "2026-05-23"
+reviewed: 3
 ---
 
 # 事実・解釈・行動の分離（雲雨傘）
@@ -54,4 +55,4 @@ updated: "2026-05-23"
 - [[conclusion-first-communication]] — 傘（行動）を結論として先置きし、雲・雨を根拠として積む構造と組み合わせられる
 - [[hypothesis-as-stance]] — 雨（解釈）は仮説（スタンス）に対応する。スタンスなき解釈は検証されない推測にとどまる
 - [[analysis-as-avoidance]] — 事実収集を際限なく続けることで行動を回避するパターンは、雲→雨への移行を意図的に遅らせる行為
-- [[nonviolent-communication]] — NVCの「観察と評価の分離」は同じ原則を共感の文脈に適用する。評価が防衛反応を呼び起こし共感を遮断するというメカニズムが加わる
+- [[needs-vs-strategies]] — NVCの「観察と評価の分離」は同じ原則を共感の文脈に適用する。評価が防衛反応を呼び起こし共感を遮断するというメカニズムが加わる

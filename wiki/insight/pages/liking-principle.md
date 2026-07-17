@@ -7,6 +7,7 @@ sources:
   - "https://www.tech-father.com/blog/influence-tool"
 created: "2026-05-25"
 updated: "2026-05-25"
+reviewed: 3
 ---
 
 # 好意の原則
@@ -53,4 +54,4 @@ updated: "2026-05-25"
 - [[cialdini-persuasion-triggers]] — 好意を含む6+1の承諾誘導原則の全体像
 - [[authority-principle]] — 権威のある人物への好意がさらに従順さを高める相乗効果
 - [[character-ethics-vs-personality-ethics]] — 個性主義（表面的な好感度スキル）はこの原則を意図的に活用している
-- [[nonviolent-communication]] — 好意でなくニーズへの共感を基盤にした影響力
+- [[needs-vs-strategies]] — 好意でなくニーズへの共感を基盤にした影響力

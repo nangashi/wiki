@@ -6,7 +6,7 @@ sources:
   - "https://qiita.com/ogatango/items/63db39c492f55f9b2972"
 created: "2026-05-20"
 updated: "2026-06-29"
-reviewed: 2
+reviewed: 3
 ---
 
 # 流暢性の錯覚

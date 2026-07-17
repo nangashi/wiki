@@ -7,6 +7,7 @@ sources:
   - "https://blog.taskchute.cloud/atomic-habits/"
 created: "2026-05-25"
 updated: "2026-05-25"
+reviewed: 3
 ---
 
 # 習慣ループ

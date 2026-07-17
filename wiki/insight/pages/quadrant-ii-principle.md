@@ -7,6 +7,7 @@ sources:
   - "https://life-table.com/7habits-habit3/"
 created: "2026-05-21"
 updated: "2026-05-21"
+reviewed: 3
 ---
 
 # 第2領域優先の原則（緊急でないが重要）

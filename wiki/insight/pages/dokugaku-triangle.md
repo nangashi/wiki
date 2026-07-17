@@ -9,6 +9,7 @@ sources:
   - "https://note.com/semicontimes/n/n86a1781361d3"
 created: "2026-05-25"
 updated: "2026-05-25"
+reviewed: 3
 ---
 
 # 独学のトライアングル

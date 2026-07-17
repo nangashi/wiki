@@ -6,8 +6,8 @@ sources:
   - "https://www.cognitigence.com/blog/cialdini-7-principles-of-persuasion"
   - "https://cxl.com/blog/cialdinis-principles-persuasion/"
 created: "2026-05-25"
-updated: "2026-06-27"
-reviewed: 2
+updated: "2026-07-02"
+reviewed: 3
 ---
 
 # 権威の原則
@@ -42,7 +42,7 @@ reviewed: 2
 
 権威が最も危険なのは、専門外の領域での発言だ。医師がある分野の権威であっても、投資の権威ではない。芸能人が美しくても、化粧品の品質の専門家ではない。核心の自動処理は「この記号はどの領域の専門性を示しているか」を精査しないため、領域外への転用が起きやすい。
 
-### 利害関係の確認
+### 対処：専門性と利害の確認
 
 権威者の意見を判断する際は2つを問う：「この人は本当にこの分野の専門家か？」「この意見から利益を得る立場にあるか？」
 

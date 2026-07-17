@@ -7,6 +7,7 @@ sources:
   - "https://www.tobysinclair.com/post/book-summary-think-again-by-adam-grant-the-power-of-knowing-what-you-dont-know"
 created: "2026-05-21"
 updated: "2026-05-21"
+reviewed: 3
 ---
 
 # 4思考モード（牧師・検察官・政治家・科学者）

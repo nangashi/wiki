@@ -7,6 +7,7 @@ sources:
   - "https://happeningday.hatenablog.com/entry/2026/01/23/140655"
 created: "2026-05-29"
 updated: "2026-05-29"
+reviewed: 3
 ---
 
 # システム1とシステム2（二重過程理論）

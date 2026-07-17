@@ -1,5 +1,5 @@
 ---
-status: open
+status: applied
 target: problem-driven-selection
 created: "2026-05-30"
 ---

@@ -5,6 +5,7 @@ sources:
   - "Rotter, J. B. (1966). Generalized expectancies for internal versus external control of reinforcement"
 created: "2026-05-29"
 updated: "2026-05-29"
+reviewed: 3
 ---
 
 # 統制可能なことへの集中

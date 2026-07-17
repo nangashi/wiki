@@ -7,6 +7,7 @@ sources:
   - "https://www.cognitigence.com/blog/cialdini-7-principles-of-persuasion"
 created: "2026-05-25"
 updated: "2026-05-25"
+reviewed: 3
 ---
 
 # 説得の自動トリガー

@@ -7,7 +7,7 @@ sources:
   - "https://type.jp/tensyoku-knowhow/skill-up/book-summary/vol1/"
 created: "2026-05-21"
 updated: "2026-06-27"
-reviewed: 2
+reviewed: 3
 ---
 
 # 人格主義と個性主義

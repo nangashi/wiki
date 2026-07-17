@@ -1,5 +1,5 @@
 ---
-status: open
+status: applied
 target: motivational-questioning
 created: "2026-05-30"
 ---

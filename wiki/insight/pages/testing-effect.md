@@ -9,6 +9,7 @@ sources:
   - "https://pmc.ncbi.nlm.nih.gov/articles/PMC4513285/"
 created: "2026-05-20"
 updated: "2026-05-29"
+reviewed: 3
 ---
 
 # テスト効果

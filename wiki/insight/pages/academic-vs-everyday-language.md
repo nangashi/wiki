@@ -7,6 +7,7 @@ sources:
   - "https://econ-edu.net/2025/05/01/8392/"
 created: "2026-05-21"
 updated: "2026-06-27"
+reviewed: 3
 ---
 
 # 学習言語と生活言語

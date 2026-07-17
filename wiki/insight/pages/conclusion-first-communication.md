@@ -6,6 +6,7 @@ sources:
   - "https://toyokeizai.net/articles/-/740389"
 created: "2026-05-23"
 updated: "2026-05-23"
+reviewed: 3
 ---
 
 # 結論から先に話す（ピラミッド・ストラクチャー）
