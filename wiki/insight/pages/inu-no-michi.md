@@ -46,7 +46,7 @@ reviewed: 3
 ## 関連
 
 - [[issue-value-matrix]] — イシュー度×解の質マトリクスの全体構造
-- [[analysis-as-avoidance]] — 分析・労力の増大が本来の目的（問いへの回答）の延期として機能するパターン
+- [[avoidance-generated-reasons]] — 分析・労力の増大が本来の目的（問いへの回答）の延期として機能するパターン
 - [[exit-criteria-first]] — 「いつやめるか」を先に定義することで、犬の道への逸脱を構造的に防ぐ
 - [[proxy-metrics-knowledge-work]] — 解の質の代理指標（アウトプット量・速度）がイシュー度を隠蔽するメカニズム
 - [[quadrant-ii-principle]] — 緊急タスク（第3領域）への対応が重要な問い（第2領域）への投資を奪う構造と同型

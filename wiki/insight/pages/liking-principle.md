@@ -53,5 +53,5 @@ reviewed: 3
 
 - [[cialdini-persuasion-triggers]] — 好意を含む6+1の承諾誘導原則の全体像
 - [[authority-principle]] — 権威のある人物への好意がさらに従順さを高める相乗効果
-- [[character-ethics-vs-personality-ethics]] — 個性主義（表面的な好感度スキル）はこの原則を意図的に活用している
+- [[character-ethics-vs-personality-ethics]] — 表面的な好感度スキル（見せ方の技術）はこの原則を意図的に活用している
 - [[needs-vs-strategies]] — 好意でなくニーズへの共感を基盤にした影響力

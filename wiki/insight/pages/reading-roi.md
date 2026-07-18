@@ -48,9 +48,9 @@ reviewed: 3
 
 ## 関連
 
-- [[knowledge-compound-effect]] — 読書ノートの蓄積が生む知識の複利効果
+- [[knowledge-externalization]] — 読書ノートの外部化・蓄積が生む知識の複利効果。回収の仕組みの具体的実装
 - [[method-problem-visibility]] — 概念を獲得することが、事象を構造として見抜くための先行条件
-- [[depth-creates-breadth]] — 広く浅く読むより1冊を深く読む方が周辺知識も広がるという三角形モデル
+- [[learning-depth-and-breadth-roles]] — 読書にも同じ分岐がある：能力目的なら1冊を想起レベルまで深く、地図目的なら広く再認レベルで読む
 - [[testing-effect]] — 読書回収率を高める最も効果的な実践原理；読んだ後に「思い出す」行為が定着を決める
 - [[fluency-illusion]] — 読んで「わかった気」になる錯覚が回収率を下げる根本原因
 - [[shin-dokkai]] — 読書の回収率の前提条件となる精確読解力。読書量より先に確保が必要

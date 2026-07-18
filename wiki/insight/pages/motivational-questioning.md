@@ -50,3 +50,4 @@ reviewed: 3
 - [[child-communication-principles]] — この原則を「子どもへの語りかけ」文脈に適用した実践統合
 - [[conclusion-first-communication]] — 結論先置きが相手の防衛反応を引き起こす文脈での例外ケース
 - [[process-praise]] — 問いかけの代わりに「称賛の対象を変える」ことでも相手のマインドセットを誘導できる。プロセスへの言及が内発的動機を支える点で共通
+- [[question-generation]] — 隣接領域。本ページは他者の再考を促す問い、あちらは自分の探究のための問いの生成を扱う

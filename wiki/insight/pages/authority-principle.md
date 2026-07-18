@@ -52,6 +52,5 @@ reviewed: 3
 
 - [[cialdini-persuasion-triggers]] — 権威を含む6+1の承諾誘導原則の全体像
 - [[liking-principle]] — 権威ある人物への好意がさらに従順さを高める相乗効果
-- [[confident-humility]] — 専門家の権威を尊重しながら批判的に検討できる姿勢
 - [[community-of-knowledge]] — 知識の分業（他者専門性への依存）は権威への従順と同じ認知基盤を持つ
 - [[system1-system2]] — 権威記号の自動処理はシステム1の動作そのもの。このバイアスが「速い思考」の構造的産物である理由

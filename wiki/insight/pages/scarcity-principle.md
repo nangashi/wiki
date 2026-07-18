@@ -58,7 +58,6 @@ reviewed: 3
 ## 関連
 
 - [[cialdini-persuasion-triggers]] — 希少性を含む6+1の承諾誘導原則の全体像
-- [[decision-structure]] — 撤退基準（exit criteria）を事前定義することで希少性プレッシャーへの耐性が上がる
 - [[exit-criteria-first]] — 「いつやめるか」を先に決めることが時間的希少性による衝動決定を防ぐ
-- [[analysis-as-avoidance]] — 逆に希少性による時間プレッシャーが過度な熟慮の回避を防ぐ側面もある
+- [[avoidance-generated-reasons]] — 逆に希少性による時間プレッシャーが過度な熟慮の回避を防ぐ側面もある
 - [[prospect-theory]] — 損失回避の理論的基盤。希少性が「損失フレーム」として機能する構造の根拠

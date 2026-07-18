@@ -4,7 +4,7 @@ sources:
   - "book:ザ・ゴール（エリヤフ・ゴールドラット）"
   - "https://www.tocinstitute.org/five-focusing-steps.html"
 created: "2026-07-02"
-updated: "2026-07-02"
+updated: "2026-07-18"
 reviewed: 3
 ---
 
@@ -34,6 +34,5 @@ reviewed: 3
 
 ## 関連
 
-- [[theory-of-constraints]] — このサイクルを導く上位原理（制約が全体スループットを決定する）
-- [[drum-buffer-rope]] — ステップ3「従属させる」の生産スケジューリングにおける実装
+- [[theory-of-constraints]] — このサイクルを導く上位原理。ステップ3「従属させる」の背景となる制約と非制約の非対称性、その生産スケジューリング実装（DBR）も同ページで扱う
 - [[local-optimization-trap]] — ステップ3が局所効率を意図的に犠牲にする理由

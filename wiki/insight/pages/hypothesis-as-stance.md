@@ -52,7 +52,8 @@ reviewed: 3
 
 - [[issue-value-matrix]] — 深い仮説があることは、イシュー度の高さの条件の一つ
 - [[pre-analysis-output-design]] — スタンスが確定した後、それを検証する分析出力を先に設計する手法
-- [[decision-structure]] — スタンスを取ることは「宣言」に対応し、評価を確定させる行為
-- [[analysis-as-avoidance]] — スタンスなき分析が際限なく続く構造と同型の問題
+- [[commitment-and-consistency]] — スタンスの言語化・公言が検討を確定させる心理機構（公言が自己イメージを拘束する）
+- [[avoidance-generated-reasons]] — スタンスなき分析が際限なく続く構造と同型の問題
 - [[conclusion-first-communication]] — スタンスの言語化と結論の先置きは同じ認識論的機能を持つ
 - [[fact-interpretation-action]] — 仮説（スタンス）は雲雨傘の「雨（解釈）」に対応する。解釈を明示することで検証が可能になる
+- [[question-generation]] — スタンスを取ることが検証の問いを定義する側面を、問い生成の操作の一つとして位置づける

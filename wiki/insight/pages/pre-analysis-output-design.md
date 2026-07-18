@@ -56,4 +56,4 @@ reviewed: 3
 
 - [[hypothesis-as-stance]] — 絵コンテは仮説（スタンス）が確定しているときのみ描ける
 - [[issue-value-matrix]] — 絵コンテはイシューと解の両方の質を高める実践的手段
-- [[analysis-as-avoidance]] — データ後からの分析は「まだ足りない」の連鎖と同型の問題を引き起こす
+- [[avoidance-generated-reasons]] — データ後からの分析は「まだ足りない」の連鎖と同型の問題を引き起こす

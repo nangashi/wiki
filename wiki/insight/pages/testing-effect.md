@@ -49,7 +49,6 @@ reviewed: 3
 
 - [[fluency-illusion]] — 再読が「学習できた」と錯覚させる理由；テスト効果はその対処原理
 - [[interleaving]] — 複数トピックを交互に学ぶことで想起を強制する変形パターン
-- [[elaborative-interrogation]] — 「なぜ？」を自問することで想起の質を高める
+- [[elaborative-interrogation]] — 相互補完の関係。検索練習が想起側から、精緻的質問が符号化（接続を作る）側から定着を強める
 - [[reading-roi]] — 読書の回収率を高める最も重要な実践原理
 - [[feedback-analysis]] — 学習外のドメインで同じ「期待と結果の照合」原理を月〜年スケールで適用するプロフェッショナル版
-- [[dokugaku-triangle]] — 独学のトライアングルにおける「差分」行為はテスト効果の実践形態
