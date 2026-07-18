@@ -6,7 +6,7 @@ sources:
   - "https://habitmentors.com/ja/books/atomic-habits/"
   - "https://blog.taskchute.cloud/atomic-habits/"
 created: "2026-05-25"
-updated: "2026-05-25"
+updated: "2026-07-18"
 reviewed: 3
 ---
 
@@ -50,5 +50,6 @@ reviewed: 3
 
 - [[identity-based-habit-formation]] — 習慣ループの外側にある動機源。「その人らしい行動」として位置づけることで各段階の摩擦が下がる
 - [[environment-design-behavior]] — きっかけを環境レベルで設計する実装方法
-- [[plateau-of-latent-potential]] — 習慣ループを繰り返しても成果が見えにくい台地期間の説明
+- [[plateau-of-latent-potential]] — 台地期間は報酬ステップに「成果の実感」が供給されない期間。ループが成果の出る前に途切れる理由の説明
 - [[growth-vs-fixed-mindset]] — 欲求・反応の質を下支えする信念システム
+- [[unlearn]] — 身体化された成功体験の解体。習慣として固着した方法は論理説得でなく前提の意識化によって手放す

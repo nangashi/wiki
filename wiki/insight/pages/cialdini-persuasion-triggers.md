@@ -57,4 +57,4 @@ reviewed: 3
 - [[authority-principle]] — 権威の詳細
 - [[scarcity-principle]] — 希少性の詳細
 - [[fluency-illusion]] — 自動処理が「わかった気」を生むように、トリガーは深い検討なしに反応させる
-- [[four-thinking-modes]] — 牧師・検察官・政治家モードは再考を妨げる自動パターンと類似する構造
+- [[motivated-reasoning]] — トリガーは検討なしの自動反応、動機づけられた推論は検討そのものの歪み。どちらも再考を構造的に妨げる

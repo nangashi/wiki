@@ -60,5 +60,5 @@ reviewed: 3
 - [[cialdini-persuasion-triggers]] — コミットメントを含む6+1の承諾誘導原則の全体像
 - [[identity-foreclosure]] — コミットメントがアイデンティティを固定し代替自己を閉ざすメカニズム
 - [[unlearn]] — 一貫性の原則がアンラーンを妨げる要因の一つ
-- [[four-thinking-modes]] — 政治家モード（自分の立場を守る）はコミットメントと一貫性の典型的な作動形態
+- [[motivated-reasoning]] — 公言した立場は一貫性動機を通じて方向目標となり、それを守る推論を駆動する
 - [[growth-vs-fixed-mindset]] — 固定マインドセットは自己イメージの一貫性維持から生まれる面がある

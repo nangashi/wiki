@@ -43,7 +43,7 @@ reviewed: 3
 
 - [[unlearn]] — アイデンティティ層の解体プロセスと対応。アンラーンの三層構造で最も深い「アイデンティティを捨てる」層がここに重なる
 - [[exit-criteria-first]] — 「いつやめるか」を先に定義することで、アイデンティティ防衛によるエスカレーションを予防する
-- [[four-thinking-modes]] — アイデンティティを守る動機が牧師・検察官モードを最も強く起動させる条件
+- [[motivated-reasoning]] — アイデンティティを守る動機は信念防衛（identity-protective cognition）を最も強く起動させる条件
 - [[growth-vs-fixed-mindset]] — 固定マインドセットは自己像の保護を優先するため、identity foreclosureを加速させる。成長マインドセットは自己像を「能力の証明」から「能力の発達過程」に再定義することで閉鎖を緩和する
 - [[knowledge-worker-autonomy]] — 特定組織・役割への早期固定が知識労働者の自律性（強みの定義・貢献の定義）を損なう構造
 - [[commitment-and-consistency]] — コミットメントと一貫性の原則が、アイデンティティと結びついたとき最も強力にフォークロージャーを加速させる
