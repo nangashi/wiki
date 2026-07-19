@@ -1,0 +1,33 @@
+{
+  "criteriaVersion": 2,
+  "pages": {
+    "anchoring-effect": {
+      "contentHash": "sha256:0d9915b7c18d924df1440abde85e8e6275125c7ce3dd65319dfe1d8c10237e52",
+      "sourceUpdated": "2026-06-27",
+      "generatedAt": "2026-07-19T18:36:34+09:00",
+      "cards": {
+        "anchoring-effect::explain::core": {"noteId": 1784453783738, "status": "active"},
+        "anchoring-effect::identify::negotiation": {"noteId": 1784453783748, "status": "active"},
+        "anchoring-effect::respond::precommit-baseline": {"noteId": 1784453783758, "status": "active"}
+      }
+    },
+    "fluency-illusion": {
+      "contentHash": "sha256:0f3852cad029871c6fd890bf04c0f35eca307b7232c9abffe975f03de5b9dd2c",
+      "sourceUpdated": "2026-07-18",
+      "generatedAt": "2026-07-19T18:48:38+09:00",
+      "cards": {
+        "fluency-illusion::explain::core": {"noteId": 1784454504444, "status": "active"},
+        "fluency-illusion::respond::test-recall": {"noteId": 1784454504503, "status": "active"}
+      }
+    },
+    "maturity-continuum": {
+      "contentHash": "sha256:20eb201119159307d4414846579d6917e89d02f108bc8514ef6159b121dc12bb",
+      "sourceUpdated": "2026-07-18",
+      "generatedAt": "2026-07-19T21:00:24+09:00",
+      "cards": {
+        "maturity-continuum::explain::choice-range": {"noteId": 1784453783768, "status": "active"},
+        "maturity-continuum::identify::refuses-help": {"noteId": 1784453783777, "status": "active"}
+      }
+    }
+  }
+}

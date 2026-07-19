@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ankiカード生成"
+  short_description: "insight wikiから理解・適用重視のAnkiカードを生成・更新"
+  default_prompt: "Use $anki to generate and sync Anki cards from insight wiki pages."
