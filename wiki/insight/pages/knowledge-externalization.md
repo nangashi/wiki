@@ -56,3 +56,5 @@ reviewed: 3
 - [[learning-deepening-operations]] — 抽象化・具体化の操作がパレットの構造化精度を高める
 - [[learning-roi]] — 学習回収率を高める「仕組み」の実体が外部化。学びっぱなしを構造で防ぐ
 - [[plateau-of-latent-potential]] — 同じ複利原理が習慣蓄積にも適用される。見えない蓄積期間を越えると成果が顕在化する
+- [[working-memory-capacity]] — 同時に保持できるチャンク数の制約という別の理由からも、外部化が有効である根拠が導ける
+- [[attention-residue]] — 未完了状態を脳内に保持せず書き出す ready-to-resume plan は、外部化が注意残余を緩和する具体例
