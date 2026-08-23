@@ -60,8 +60,20 @@ Codex なし（Claude Code 単体）で取り込む場合は `/ingest` を使用
 
 ## Phase 1: Codex（一次資料収集・骨格）
 
-`codex:rescue` スキルを使って以下のプロンプトでCodexを起動する。
-`{トピック名}` と `{ソース種別}` を実際の値に置換すること。
+以下のプロンプトでCodexを起動する。`{トピック名}` と `{ソース種別}` を実際の値に置換すること。
+
+**起動手順**（CLAUDE.md「リポジトリ構成の注意」の規定に従う。サブエージェント経由は不可）:
+
+1. 置換済みのプロンプトを `Write` ツールで `/tmp/codex-ingest-p1-prompt.md` に書き出す
+2. `Bash` を **`run_in_background: true`** で実行する:
+   ```bash
+   codex exec -C "$(git rev-parse --show-toplevel)" -s read-only \
+     -o /tmp/codex-ingest-p1-out.md \
+     "$(cat /tmp/codex-ingest-p1-prompt.md)" < /dev/null > /tmp/codex-ingest-p1.log 2>&1
+   ```
+3. 完了通知を受けたら `/tmp/codex-ingest-p1-out.md` を読む（Codexの最終レポートがここに入る）
+
+`< /dev/null` を省くとstdin待ちで無限ハングする。サブエージェント経由にすると120秒で強制終了される。どちらも実測済み。
 
 ```
 トピック「{トピック名}」（ソース種別: {ソース種別}）について以下を実行してください。
@@ -119,8 +131,18 @@ Phase 1のCodexレポートを入力として、以下を実行する。
 
 ## Phase 3: Codex（ファクトチェック）
 
-`codex:rescue` スキルを使って以下のプロンプトでCodexを起動する。
-`{草稿内容}` を実際のwikiページ内容に置換すること。
+以下のプロンプトでCodexを起動する。`{草稿内容}` を実際のwikiページ内容に置換すること。
+
+**起動手順**（Phase 1と同じ方式。ファイル名のみ差し替える）:
+
+1. 置換済みのプロンプトを `Write` ツールで `/tmp/codex-ingest-p3-prompt.md` に書き出す
+2. `Bash` を **`run_in_background: true`** で実行する:
+   ```bash
+   codex exec -C "$(git rev-parse --show-toplevel)" -s read-only \
+     -o /tmp/codex-ingest-p3-out.md \
+     "$(cat /tmp/codex-ingest-p3-prompt.md)" < /dev/null > /tmp/codex-ingest-p3.log 2>&1
+   ```
+3. 完了通知を受けたら `/tmp/codex-ingest-p3-out.md` を読む
 
 ```
 以下のwikiページ草稿をファクトチェックしてください。

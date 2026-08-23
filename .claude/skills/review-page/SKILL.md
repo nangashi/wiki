@@ -206,7 +206,20 @@ index.md の要約に影響する変更を行った場合は、対応する `wik
 
 ### Phase 1: Codex（トピック独立調査・外部検証）
 
-`codex:rescue` スキルを使って以下のプロンプトで Codex を起動する。`{タイトル}`・`{概要}` を実際の値に置換すること。
+以下のプロンプトで Codex を起動する。`{タイトル}`・`{概要}` を実際の値に置換すること。
+
+**起動手順**（CLAUDE.md「リポジトリ構成の注意」の規定に従う。サブエージェント経由は不可）:
+
+1. 置換済みのプロンプトを `Write` ツールで `/tmp/codex-review-prompt.md` に書き出す
+2. `Bash` を **`run_in_background: true`** で実行する:
+   ```bash
+   codex exec -C "$(git rev-parse --show-toplevel)" -s read-only \
+     -o /tmp/codex-review-out.md \
+     "$(cat /tmp/codex-review-prompt.md)" < /dev/null > /tmp/codex-review.log 2>&1
+   ```
+3. 完了通知を受けたら `/tmp/codex-review-out.md` を読む（Codexのレビュー結果がここに入る）
+
+`< /dev/null` を省くとstdin待ちで無限ハングする。サブエージェント経由にすると120秒で強制終了される。どちらも実測済み。
 
 ```
 以下のwikiページについて、独立した立場からレビューを行ってください。

@@ -57,19 +57,24 @@ wikiの情報をもとに回答を構成する。引用元のページを `[[ス
 
 ステップ3または4で生成した草稿を GPT-5.5 に渡し、批評・構造化を依頼する。
 
-Agent ツールで以下のサブエージェントを **バックグラウンドで** 起動する:
+**起動手順**（CLAUDE.md「リポジトリ構成の注意」の規定に従う。サブエージェント経由は不可）:
 
-```
-subagent_type: codex:codex-rescue
-run_in_background: true
-prompt: 以下のプロンプトテンプレートを使用（草稿・質問・wiki情報を埋め込む）
-```
+1. 下のテンプレートに草稿・質問・wiki情報を埋め込み、`Write` ツールで `/tmp/codex-critic-prompt.md` に書き出す
+2. `Bash` を **`run_in_background: true`** で実行する:
+   ```bash
+   codex exec -C "$(git rev-parse --show-toplevel)" -s read-only \
+     -o /tmp/codex-critic-out.md \
+     "$(cat /tmp/codex-critic-prompt.md)" < /dev/null > /tmp/codex-critic.log 2>&1
+   ```
+3. 完了通知を受けたら `/tmp/codex-critic-out.md` を読む（Criticの最終レポートがここに入る）
+
+`< /dev/null` を省くとstdin待ちで無限ハングする。サブエージェント経由にすると120秒で強制終了される。どちらも実測済み。
 
 **Critic プロンプトテンプレート**:
 
 ```
 あなたはwikiクエリのCriticエージェント（GPT-5.5）です。
-作業ディレクトリ: /home/toyama-ryosuke/ghq/github.com/nangashi/wiki
+作業ディレクトリ: カレントディレクトリ（wikiリポジトリのルート）。以降のパスはすべてリポジトリルートからの相対パス
 
 ## 元の質問
 {question}
@@ -79,7 +84,7 @@ prompt: 以下のプロンプトテンプレートを使用（草稿・質問・
 
 ## 指示
 1. wikiを調べる（bashコマンドで）:
-   - cat /home/toyama-ryosuke/ghq/github.com/nangashi/wiki/wiki/insight/index.md
+   - cat wiki/insight/index.md
    - 草稿が参照するwikiページを確認し、主張の根拠を検証する
    - 草稿が見落としているwikiページを探す
 

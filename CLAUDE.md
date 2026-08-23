@@ -14,4 +14,16 @@
 
 ## リポジトリ構成の注意
 
-- スキル定義の正本は `.claude/skills/` のみ。`.agents/skills/{ingest,lint,query}` と `AGENTS.md` はsymlink（実体を編集すれば両方に反映される）。**`.agents/` 側に実体ファイルを作らないこと**（過去に二重管理で乖離事故が起きた）
+- Codexは `codex exec` を **本体のBashツールから `run_in_background: true` で直接実行** する。`/codex:rescue`・`codex:codex-rescue` サブエージェント・`codex-companion.mjs` は使わない
+  ```bash
+  codex exec -C "$(git rev-parse --show-toplevel)" -s read-only \
+    -o <出力先.md> "$(cat <プロンプト.md>)" < /dev/null > <ログ.log> 2>&1
+  ```
+  - **サブエージェント経由は不可**（実測）: Bashが120秒でバックグラウンド送りにした直後にサブエージェントがターンを終え、Codexのプロセスツリーごと破棄される。`run_in_background: true` を付けても防げない
+  - **`< /dev/null` は必須**（実測）: 省くとCodexがstdin待ちで無限ハングする
+  - **プロンプトは `Write` ツールでファイルに書く**: シェルのクォート崩れを避ける（ヒアドキュメントも使わない）
+  - **結果は `-o` のファイルから読む**: stdoutを取り逃しても残る
+  - Codexに書き込みをさせる場合のみ `-s workspace-write`
+- スキル定義は `.claude/skills/` のみに置く（Claude Code専用）。**`.agents/` ディレクトリを作らないこと** — 二重管理で乖離し、Codexが古いスキル定義を自律的に読み込んで動く事故が起きた
+- Codexは「調査・レビュー担当」であり、このリポジトリのスキルを実行する主体ではない。Codexに渡すプロンプトは、必要な基準・文脈をすべて埋め込んだ自己完結型にすること（`.claude/skills/` を参照させない）
+- `AGENTS.md` は `CLAUDE.md` へのsymlink。Codexにもこの行動方針を継承させるためのもの
