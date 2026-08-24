@@ -1,6 +1,6 @@
-# Wiki スキーマ
+# Insight Wiki スキーマ
 
-このファイルはwikiの全ルールと共通手順を定義する。`/ingest`, `/query`, `/lint` スキルは必ずこのファイルを最初に読む。
+このファイルは insight コレクションのルールと共通書き込み手順を定義する。コレクション構成と振り分けは `wiki/collections.md`、insight への採用判定は `wiki/insight/references/reusability-criteria.md`、作成後の本質審査は `wiki/insight/references/essence-review-criteria.md` をそれぞれ正本とする。
 
 ---
 
@@ -81,7 +81,6 @@ updated: "YYYY-MM-DD"
 - **ファイル名**: 英語またはローマ字表記の kebab-case（例: `transformer-architecture.md`, `attention-kikou.md`）
 - **タイトル**: 日本語（frontmatter の `title` フィールドおよび本文 `# 見出し`）
 - **スラグ**: ファイル名から `.md` を除いたもの（例: `transformer-architecture`）
-- **タグ**: 日本語OK、分野・種別・用途で分類
 
 ---
 
