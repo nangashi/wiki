@@ -1,10 +1,5 @@
 ---
 title: "質問による再考誘導"
-sources:
-  - "book:Think Again（Adam Grant）"
-  - "https://adamgrant.net/book/think-again/"
-  - "https://www.tobysinclair.com/post/book-summary-think-again-by-adam-grant-the-power-of-knowing-what-you-dont-know"
-  - "https://shubhanshuinsights.com/think-again-by-adam-grant-summary/"
 created: "2026-05-21"
 updated: "2026-07-18"
 reviewed: 3
@@ -52,3 +47,10 @@ reviewed: 3
 - [[process-praise]] — 問いかけの代わりに「称賛の対象を変える」ことでも相手のマインドセットを誘導できる。プロセスへの言及が内発的動機を支える点で共通
 - [[question-generation]] — 隣接領域。本ページは他者の再考を促す問い、あちらは自分の探究のための問いの生成を扱う
 - [[unlearn]] — 他者の前提解体への適用先。身体化された前提は論理説得で解除できないため、問いかけ・ストーリーが有効になる
+
+## 外部ソース
+
+- S1（要確認）: book:Think Again（Adam Grant） — 対応する主張を未確認。
+- S2（要確認）: https://adamgrant.net/book/think-again/ — 対応する主張を未確認。
+- S3（要確認）: https://www.tobysinclair.com/post/book-summary-think-again-by-adam-grant-the-power-of-knowing-what-you-dont-know — 対応する主張を未確認。
+- S4（要確認）: https://shubhanshuinsights.com/think-again-by-adam-grant-summary/ — 対応する主張を未確認。

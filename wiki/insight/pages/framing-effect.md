@@ -1,9 +1,5 @@
 ---
 title: "フレーミング効果"
-sources:
-  - "book:ファスト＆スロー（ダニエル・カーネマン）"
-  - "https://www.verywellmind.com/what-is-the-framing-effect-7974548"
-  - "https://thedecisionlab.com/biases/framing-effect"
 created: "2026-05-29"
 updated: "2026-08-23"
 reviewed: 3
@@ -71,3 +67,9 @@ A=C、B=Dは記述が違うだけで同一の選択肢だが、フレームに�
 - [[anchoring-effect]] — フレームが参照点を設定する点でアンカリングと同じ認知的基盤を持つ
 - [[scarcity-principle]] — 「今なら間に合う」「残りわずか」は損失フレームを利用した承諾誘導の典型例
 - [[wysiati]] — 提示されたフレームの情報だけで判断する（フレーム外を想像しない）WYSIATI が効果を増幅させる
+
+## 外部ソース
+
+- S1（要確認）: book:ファスト＆スロー（ダニエル・カーネマン） — 対応する主張を未確認。
+- S2（要確認）: https://www.verywellmind.com/what-is-the-framing-effect-7974548 — 対応する主張を未確認。
+- S3（要確認）: https://thedecisionlab.com/biases/framing-effect — 対応する主張を未確認。

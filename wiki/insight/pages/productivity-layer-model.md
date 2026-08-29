@@ -1,7 +1,5 @@
 ---
 title: "6層の生産性レイヤーモデル"
-sources:
-  - "https://speakerdeck.com/sugino/nazeaihazu-zhi-wosu-kusinainoka-ling-he-nofu-fen-ke"
 created: "2026-05-19"
 updated: "2026-07-02"
 reviewed: 3
@@ -75,3 +73,7 @@ L3〜L5を機能させるには以下の基盤が必要：
 
 - [[org-productivity-misdiagnosis]] — L3〜L5の問題を個人に誤帰属させる構造的誤診
 - [[proxy-metrics-knowledge-work]] — L2の「見える忙しさ」がL5〜L6の指標と乖離する問題
+
+## 外部ソース
+
+- S1（要確認）: https://speakerdeck.com/sugino/nazeaihazu-zhi-wosu-kusinainoka-ling-he-nofu-fen-ke — 対応する主張を未確認。

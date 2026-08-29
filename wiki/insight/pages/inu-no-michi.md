@@ -1,9 +1,5 @@
 ---
 title: "犬の道（努力先行型問題解決の罠）"
-sources:
-  - "book:イシューからはじめよ（安宅和人）"
-  - "https://studytokyo3.com/issue-driven/"
-  - "https://rrhshow.com/1046/"
 created: "2026-05-21"
 updated: "2026-05-21"
 reviewed: 3
@@ -51,3 +47,9 @@ reviewed: 3
 - [[proxy-metrics-knowledge-work]] — 解の質の代理指標（アウトプット量・速度）がイシュー度を隠蔽するメカニズム
 - [[quadrant-ii-principle]] — 緊急タスク（第3領域）への対応が重要な問い（第2領域）への投資を奪う構造と同型
 - [[focus-on-contribution]] — 努力量を増やす前に「何に貢献するか」の方向を定めることで犬の道への迷い込みを防ぐ
+
+## 外部ソース
+
+- S1（要確認）: book:イシューからはじめよ（安宅和人） — 対応する主張を未確認。
+- S2（要確認）: https://studytokyo3.com/issue-driven/ — 対応する主張を未確認。
+- S3（要確認）: https://rrhshow.com/1046/ — 対応する主張を未確認。

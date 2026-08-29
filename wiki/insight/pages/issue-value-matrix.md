@@ -1,10 +1,5 @@
 ---
 title: "イシュー度×解の質マトリクス"
-sources:
-  - "book:イシューからはじめよ（安宅和人）"
-  - "https://ssaits.jp/promapedia/articles/issue.html"
-  - "https://naturalmindo.com/book_issue/"
-  - "https://tjblog.jp/2022/09/22/1573/3%E5%88%86%E3%81%A7%E8%AA%AD%E3%82%81%E3%82%8B%E3%80%8E%E3%82%A4%E3%82%B7%E3%83%A5%E3%83%BC%E3%81%8B%E3%82%89%E3%81%AF%E3%81%98%E3%82%81%E3%82%88%E3%80%8F%E3%81%BE/"
 created: "2026-05-21"
 updated: "2026-05-21"
 reviewed: 3
@@ -55,3 +50,10 @@ reviewed: 3
 - [[quadrant-ii-principle]] — 「重要だが緊急でない」第2領域への投資が放置される構造はイシュー軽視の時間管理版
 - [[focus-on-controllable]] — 統制可能・変えられることに集中する原則と共鳴する
 - [[expectation-alignment]] — 「ヴァリューを出す」ために何が求められているかを特定する行為は期待値の把握と同義
+
+## 外部ソース
+
+- S1（要確認）: book:イシューからはじめよ（安宅和人） — 対応する主張を未確認。
+- S2（要確認）: https://ssaits.jp/promapedia/articles/issue.html — 対応する主張を未確認。
+- S3（要確認）: https://naturalmindo.com/book_issue/ — 対応する主張を未確認。
+- S4（要確認）: https://tjblog.jp/2022/09/22/1573/3%E5%88%86%E3%81%A7%E8%AA%AD%E3%82%81%E3%82%8B%E3%80%8E%E3%82%A4%E3%82%B7%E3%83%A5%E3%83%BC%E3%81%8B%E3%82%89%E3%81%AF%E3%81%98%E3%82%81%E3%82%88%E3%80%8F%E3%81%BE/ — 対応する主張を未確認。

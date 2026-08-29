@@ -1,10 +1,5 @@
 ---
 title: "社会的証明"
-sources:
-  - "book:影響力の武器（ロバート・B・チャルディーニ）"
-  - "https://crexgroup.com/ja/marketing/career-learning/influence-psychology-summary/"
-  - "https://innova-magazine.jp/dokushokai3-5/"
-  - "https://www.tech-father.com/blog/influence-tool"
 created: "2026-05-25"
 updated: "2026-07-02"
 reviewed: 3
@@ -61,3 +56,10 @@ reviewed: 3
 - [[motivated-reasoning]] — 「他者も同じ見解」という情報は信念防衛の追加証拠として働く。正確性目標への切り替えが盲従から抜け出す一手段
 - [[fluency-illusion]] — 「みんなが知っている」が「自分が理解している」の錯覚を生む可能性
 - [[echo-chamber]] — クラスター内の同意投稿の数が社会的証明として働き、偏った信念の強化ループを駆動する
+
+## 外部ソース
+
+- S1（要確認）: book:影響力の武器（ロバート・B・チャルディーニ） — 対応する主張を未確認。
+- S2（要確認）: https://crexgroup.com/ja/marketing/career-learning/influence-psychology-summary/ — 対応する主張を未確認。
+- S3（要確認）: https://innova-magazine.jp/dokushokai3-5/ — 対応する主張を未確認。
+- S4（要確認）: https://www.tech-father.com/blog/influence-tool — 対応する主張を未確認。

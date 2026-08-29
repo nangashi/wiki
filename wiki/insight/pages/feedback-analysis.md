@@ -1,10 +1,5 @@
 ---
 title: "フィードバック分析"
-sources:
-  - "book:プロフェッショナルの条件（P.F. ドラッカー）"
-  - "http://drucker-studies.com/essence/2301.html"
-  - "http://drucker-studies.com/essence/2302.html"
-  - "https://d-lab.management/?p=16102"
 created: "2026-05-24"
 updated: "2026-05-24"
 reviewed: 3
@@ -48,3 +43,10 @@ reviewed: 3
 - [[testing-effect]] — 学習領域での期待と現実の照合機構。フィードバック分析は月〜年スケールの職業パフォーマンス版
 - [[knowledge-worker-autonomy]] — 知識労働者が自律的に管理すべき対象として強みの把握が前提となる
 - [[focus-on-contribution]] — 強みを把握した上で、それをどの貢献に向けるかが次の問い
+
+## 外部ソース
+
+- S1（要確認）: book:プロフェッショナルの条件（P.F. ドラッカー） — 対応する主張を未確認。
+- S2（要確認）: http://drucker-studies.com/essence/2301.html — 対応する主張を未確認。
+- S3（要確認）: http://drucker-studies.com/essence/2302.html — 対応する主張を未確認。
+- S4（要確認）: https://d-lab.management/?p=16102 — 対応する主張を未確認。

@@ -1,11 +1,5 @@
 ---
 title: "ピーク・エンドの法則と二つの自己"
-sources:
-  - "book:ファスト＆スロー（ダニエル・カーネマン）"
-  - "https://note.com/kawanjin01/n/nd45e02db4277"
-  - "https://ssaits.jp/promapedia/glossary/peak-end-law.html"
-  - "https://h9nfp.com/fast-slow/"
-  - "https://doi.org/10.1016/S0304-3959(03)00003-4"
 created: "2026-05-29"
 updated: "2026-07-18"
 reviewed: 3
@@ -61,3 +55,11 @@ reviewed: 3
 - [[wysiati]] — 記憶する自己はピークとエンドという限定された情報で全体を評価する
 - [[prospect-theory]] — ピーク時の感情強度（特に損失体験）が記憶評価を支配する構造とつながる
 - [[habit-loop]] — 習慣の「報酬」は経験する自己でなく記憶する自己の評価として蓄積される
+
+## 外部ソース
+
+- S1（要確認）: book:ファスト＆スロー（ダニエル・カーネマン） — 対応する主張を未確認。
+- S2（要確認）: https://note.com/kawanjin01/n/nd45e02db4277 — 対応する主張を未確認。
+- S3（要確認）: https://ssaits.jp/promapedia/glossary/peak-end-law.html — 対応する主張を未確認。
+- S4（要確認）: https://h9nfp.com/fast-slow/ — 対応する主張を未確認。
+- S5（要確認）: https://doi.org/10.1016/S0304-3959(03)00003-4 — 対応する主張を未確認。

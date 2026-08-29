@@ -1,9 +1,5 @@
 ---
 title: "アンラーン（前提の再構築）"
-sources:
-  - "https://syu-m-5151.hatenablog.com/entry/2026/03/02/110121"
-  - "Luchins (1942) Mechanization in Problem Solving: The Effect of Einstellung"
-  - "Bilalić, McLeod & Gobet (2008) Why Good Thoughts Block Better Ones"
 created: "2026-05-20"
 updated: "2026-07-18"
 reviewed: 3
@@ -83,3 +79,9 @@ AIが代替できるスキルは積極的に手放す判断が合理的だが、
 - [[motivated-reasoning]] — 同じく再考の失敗を扱うが機構が異なる。動機づけられた推論は反証を潰す能動的な信念防衛、本ページの無意識化は検証がそもそも起動しない受動的な省略。前者は推論ゴールの切り替え、後者は前提の解体でしか解除できない
 - [[growth-vs-fixed-mindset]] — 固定マインドセットからの転換はアンラーンの一形態。「能力は変わらない」という無意識化された前提を棄却して「能力は伸ばせる」という前提を作り直す
 - [[commitment-lock-in]] — 成功が検証回路を閉ざす「サクセストラップ」の認知版。ロックインのコンピテンシー・トラップと同じ構造をアンラーンは前提解体として扱う
+
+## 外部ソース
+
+- S1（要確認）: https://syu-m-5151.hatenablog.com/entry/2026/03/02/110121 — 対応する主張を未確認。
+- S2（要確認）: Luchins (1942) Mechanization in Problem Solving: The Effect of Einstellung — 対応する主張を未確認。
+- S3（要確認）: Bilalić, McLeod & Gobet (2008) Why Good Thoughts Block Better Ones — 対応する主張を未確認。

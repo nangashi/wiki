@@ -1,9 +1,5 @@
 ---
 title: "流暢性の錯覚"
-sources:
-  - "book:科学的根拠に基づく最高の勉強法（安川康介）"
-  - "https://president.jp/articles/-/80048?page=1"
-  - "https://qiita.com/ogatango/items/63db39c492f55f9b2972"
 created: "2026-05-20"
 updated: "2026-07-18"
 reviewed: 3
@@ -59,3 +55,9 @@ reviewed: 3
 - [[learning-depth-and-breadth-roles]] — 再認/想起の区別を学習戦略に展開：再認レベルの広さは「地図」として意図的に使えば錯覚でなく資産になる
 - [[question-generation]] — 「わかった気」は問いの発生も止める。産出テストによるギャップ露呈は問い生成の操作として同型
 - [[plateau-of-latent-potential]] — 対になる錯覚。こちらは進歩していないのに進歩したと感じる過大評価、台地は進歩しているのに成果が見えず進歩していないと感じる過小評価
+
+## 外部ソース
+
+- S1（要確認）: book:科学的根拠に基づく最高の勉強法（安川康介） — 対応する主張を未確認。
+- S2（要確認）: https://president.jp/articles/-/80048?page=1 — 対応する主張を未確認。
+- S3（要確認）: https://qiita.com/ogatango/items/63db39c492f55f9b2972 — 対応する主張を未確認。

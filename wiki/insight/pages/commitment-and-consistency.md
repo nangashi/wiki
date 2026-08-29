@@ -1,10 +1,5 @@
 ---
 title: "コミットメントと一貫性"
-sources:
-  - "book:影響力の武器（ロバート・B・チャルディーニ）"
-  - "https://crexgroup.com/ja/marketing/career-learning/influence-psychology-summary/"
-  - "https://hayasaki-ad.com/134-2/"
-  - "https://innova-magazine.jp/dokushokai3-5/"
 created: "2026-05-25"
 updated: "2026-07-02"
 reviewed: 3
@@ -62,3 +57,10 @@ reviewed: 3
 - [[unlearn]] — 一貫性の原則がアンラーンを妨げる要因の一つ
 - [[motivated-reasoning]] — 公言した立場は一貫性動機を通じて方向目標となり、それを守る推論を駆動する
 - [[growth-vs-fixed-mindset]] — 固定マインドセットは自己イメージの一貫性維持から生まれる面がある
+
+## 外部ソース
+
+- S1（要確認）: book:影響力の武器（ロバート・B・チャルディーニ） — 対応する主張を未確認。
+- S2（要確認）: https://crexgroup.com/ja/marketing/career-learning/influence-psychology-summary/ — 対応する主張を未確認。
+- S3（要確認）: https://hayasaki-ad.com/134-2/ — 対応する主張を未確認。
+- S4（要確認）: https://innova-magazine.jp/dokushokai3-5/ — 対応する主張を未確認。

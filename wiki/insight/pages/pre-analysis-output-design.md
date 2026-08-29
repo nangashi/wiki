@@ -1,10 +1,5 @@
 ---
 title: "分析前アウトプット設計（絵コンテ手法）"
-sources:
-  - "book:イシューからはじめよ（安宅和人）"
-  - "https://note.com/iamtorajiro/n/n83be70d9131f"
-  - "https://ingkiym926.hatenablog.com/entry/2024/11/03/070000"
-  - "https://note.com/tomotomo_life27/n/n7b247d1c25ee"
 created: "2026-05-21"
 updated: "2026-05-21"
 reviewed: 3
@@ -57,3 +52,10 @@ reviewed: 3
 - [[hypothesis-as-stance]] — 絵コンテは仮説（スタンス）が確定しているときのみ描ける
 - [[issue-value-matrix]] — 絵コンテはイシューと解の両方の質を高める実践的手段
 - [[avoidance-generated-reasons]] — データ後からの分析は「まだ足りない」の連鎖と同型の問題を引き起こす
+
+## 外部ソース
+
+- S1（要確認）: book:イシューからはじめよ（安宅和人） — 対応する主張を未確認。
+- S2（要確認）: https://note.com/iamtorajiro/n/n83be70d9131f — 対応する主張を未確認。
+- S3（要確認）: https://ingkiym926.hatenablog.com/entry/2024/11/03/070000 — 対応する主張を未確認。
+- S4（要確認）: https://note.com/tomotomo_life27/n/n7b247d1c25ee — 対応する主張を未確認。

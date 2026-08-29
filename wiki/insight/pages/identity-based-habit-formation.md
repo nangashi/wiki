@@ -1,10 +1,5 @@
 ---
 title: "アイデンティティベースの習慣形成"
-sources:
-  - "book:複利で伸びる1つの習慣（ジェームズ・クリアー）"
-  - "https://habitmentors.com/ja/books/atomic-habits/"
-  - "https://blog.taskchute.cloud/atomic-habits/"
-  - "https://bookworms.jp/post/atomic-habits-summary"
 created: "2026-05-25"
 updated: "2026-05-25"
 reviewed: 3
@@ -52,3 +47,10 @@ reviewed: 3
 - [[growth-vs-fixed-mindset]] — 「変われる自己像」を信じることがアイデンティティの更新を可能にする
 - [[unlearn]] — 既存のアイデンティティを棄却して再構築する行為。習慣形成では棄却より上書きによる更新が多い
 - [[character-ethics-vs-personality-ethics]] — コヴィーの「見せ方より中身」と共鳴する：行動変容は表面スキルより内側の自己（アイデンティティ）から来る
+
+## 外部ソース
+
+- S1（要確認）: book:複利で伸びる1つの習慣（ジェームズ・クリアー） — 対応する主張を未確認。
+- S2（要確認）: https://habitmentors.com/ja/books/atomic-habits/ — 対応する主張を未確認。
+- S3（要確認）: https://blog.taskchute.cloud/atomic-habits/ — 対応する主張を未確認。
+- S4（要確認）: https://bookworms.jp/post/atomic-habits-summary — 対応する主張を未確認。

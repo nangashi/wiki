@@ -1,7 +1,5 @@
 ---
 title: "概念がなければ事象は構造を持たない"
-sources:
-  - "https://syu-m-5151.hatenablog.com/entry/2026/02/09/180240"
 created: "2026-05-19"
 updated: "2026-06-10"
 reviewed: 3
@@ -39,3 +37,7 @@ reviewed: 3
 - [[learning-roi]] — 概念を獲得するための学習の価値と回収の考え方
 - [[problem-driven-selection]] — 事象の構造が見え課題が定まった後の次のステップ：「何を解くか」を軸に選択する
 - [[issue-value-matrix]] — 事象の構造が見え課題が定まった後のステップ：イシュー度を見極めてバリューの高い問いを選ぶ
+
+## 外部ソース
+
+- S1（要確認）: https://syu-m-5151.hatenablog.com/entry/2026/02/09/180240 — 対応する主張を未確認。

@@ -1,9 +1,5 @@
 ---
 title: "インターリービング"
-sources:
-  - "book:科学的根拠に基づく最高の勉強法（安川康介）"
-  - "https://ameblo.jp/kosoku-tairyokaiten-ho/entry-12844580409.html"
-  - "https://qiita.com/snoo_py/items/5332ed9839063df6b19a"
 created: "2026-05-20"
 updated: "2026-05-20"
 reviewed: 3
@@ -41,3 +37,9 @@ reviewed: 3
 - [[testing-effect]] — インターリービングは検索練習（テスト効果）を強制する変形パターンでもある
 - [[fluency-illusion]] — ブロック練習は「できる感」を高めるが流暢性の錯覚を誘発しやすい
 - [[elaborative-interrogation]] — どの手法を使うかを判断する際に「なぜ？」の問いが連動する
+
+## 外部ソース
+
+- S1（要確認）: book:科学的根拠に基づく最高の勉強法（安川康介） — 対応する主張を未確認。
+- S2（要確認）: https://ameblo.jp/kosoku-tairyokaiten-ho/entry-12844580409.html — 対応する主張を未確認。
+- S3（要確認）: https://qiita.com/snoo_py/items/5332ed9839063df6b19a — 対応する主張を未確認。

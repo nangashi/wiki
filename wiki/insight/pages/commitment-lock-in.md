@@ -1,13 +1,5 @@
 ---
 title: "コミットメントのロックイン"
-sources:
-  - "https://president.jp/articles/-/115341"
-  - "topic:資産特殊性・ロックイン・撤退不能"
-  - "https://www.nobelprize.org/uploads/2018/06/williamson_lecture.pdf"
-  - "https://hbswk.hbs.edu/archive/information-rules-avoiding-lock-in-in-the-information-economy"
-  - "https://press.princeton.edu/books/hardcover/9780691034102/investment-under-uncertainty"
-  - "https://sjbae.pbworks.com/f/levitt_march_1988.pdf"
-  - "Staw (1976) Knee-deep in the Big Muddy: A Study of Escalating Commitment"
 created: "2026-07-03"
 updated: "2026-07-17"
 reviewed: 3
@@ -73,3 +65,12 @@ reviewed: 3
 - [[prospect-theory]] — サンクコストへの固執を生む損失回避の理論的基盤。二重構造の「主観」側のメカニズム
 - [[parallel-path-trap]] — 逆向きの失敗。可逆性を求めて90:10に分散すると、どちらも習熟できず「選ばない」に陥る
 - [[unlearn]] — 成功が検証回路を閉ざす「サクセストラップ」の認知版。コンピテンシー・トラップと同じ構造
+
+## 外部ソース
+
+- S1（要確認）: https://president.jp/articles/-/115341 — 対応する主張を未確認。
+- S2（要確認）: https://www.nobelprize.org/uploads/2018/06/williamson_lecture.pdf — 対応する主張を未確認。
+- S3（要確認）: https://hbswk.hbs.edu/archive/information-rules-avoiding-lock-in-in-the-information-economy — 対応する主張を未確認。
+- S4（要確認）: https://press.princeton.edu/books/hardcover/9780691034102/investment-under-uncertainty — 対応する主張を未確認。
+- S5（要確認）: https://sjbae.pbworks.com/f/levitt_march_1988.pdf — 対応する主張を未確認。
+- S6（要確認）: Staw (1976) Knee-deep in the Big Muddy: A Study of Escalating Commitment — 対応する主張を未確認。

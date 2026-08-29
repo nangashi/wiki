@@ -1,9 +1,5 @@
 ---
 title: "環境設計と行動変容"
-sources:
-  - "book:複利で伸びる1つの習慣（ジェームズ・クリアー）"
-  - "https://habitmentors.com/ja/books/atomic-habits/"
-  - "https://blog.taskchute.cloud/atomic-habits/"
 created: "2026-05-25"
 updated: "2026-07-02"
 reviewed: 3
@@ -52,3 +48,9 @@ reviewed: 3
 - [[habit-loop]] — 環境設計はきっかけ（Cue）の段階を操作することで習慣ループ全体を制御する
 - [[stimulus-response-freedom]] — 対比：刺激と反応の間には選択の自由があるという原則。環境設計は逆に刺激そのものを設計して自動的な反応を誘導する
 - [[quadrant-ii-principle]] — 重要だが緊急でない活動（良い習慣）を実行するには環境設計でデフォルト行動を書き換えることが有効
+
+## 外部ソース
+
+- S1（要確認）: book:複利で伸びる1つの習慣（ジェームズ・クリアー） — 対応する主張を未確認。
+- S2（要確認）: https://habitmentors.com/ja/books/atomic-habits/ — 対応する主張を未確認。
+- S3（要確認）: https://blog.taskchute.cloud/atomic-habits/ — 対応する主張を未確認。

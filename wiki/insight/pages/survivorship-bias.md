@@ -1,11 +1,5 @@
 ---
 title: "サバイバーシップバイアス"
-sources:
-  - "topic:サバイバーシップバイアス"
-  - "https://ja.wikipedia.org/wiki/%E7%94%9F%E5%AD%98%E8%80%85%E3%83%90%E3%82%A4%E3%82%A2%E3%82%B9"
-  - "https://psychology-laws.com/%E7%94%9F%E5%AD%98%E8%80%85%E3%83%90%E3%82%A4%E3%82%A2%E3%82%B9%E3%81%A8%E3%81%AF%E4%BD%95%E3%81%8B/"
-  - "https://www.pfa.or.jp/yogoshu/sa/sa12.html"
-  - "https://en.wikipedia.org/wiki/Survivorship_bias"
 created: "2026-06-22"
 updated: "2026-06-22"
 reviewed: 3
@@ -57,3 +51,10 @@ reviewed: 3
 - [[planning-fallacy]] — 失敗した類似プロジェクトのデータが「サバイバーシップバイアス的に」計画段階では見えにくくなる
 - [[avoidance-generated-reasons]] — 成功事例だけを分析する「調査」は、脱落データの非対称性を気づかずに再生産する
 - [[echo-chamber]] — 見えるサンプルの選択という同型の構造を、SNSクラスターが社会構造として恒常化したもの
+
+## 外部ソース
+
+- S1（要確認）: https://ja.wikipedia.org/wiki/%E7%94%9F%E5%AD%98%E8%80%85%E3%83%90%E3%82%A4%E3%82%A2%E3%82%B9 — 対応する主張を未確認。
+- S2（要確認）: https://psychology-laws.com/%E7%94%9F%E5%AD%98%E8%80%85%E3%83%90%E3%82%A4%E3%82%A2%E3%82%B9%E3%81%A8%E3%81%AF%E4%BD%95%E3%81%8B/ — 対応する主張を未確認。
+- S3（要確認）: https://www.pfa.or.jp/yogoshu/sa/sa12.html — 対応する主張を未確認。
+- S4（要確認）: https://en.wikipedia.org/wiki/Survivorship_bias — 対応する主張を未確認。

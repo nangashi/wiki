@@ -1,13 +1,5 @@
 ---
 title: "文脈依存度と言語体系"
-sources:
-  - "book:シン読解力（新井紀子）"
-  - "https://rst-web.s4e.jp/shin-dokkai"
-  - "paper:Schleppegrell, M. J. (2001). Linguistic Features of the Language of Schooling. Linguistics and Education, 12(4)"
-  - "https://www.sciencedirect.com/science/article/abs/pii/S0898589801000730"
-  - "https://en.wikipedia.org/wiki/Cognitive_academic_language_proficiency"
-  - "https://education.nsw.gov.au/content/dam/main-education/teaching-and-learning/curriculum/multicultural-education/eald/urh/What_are_BICS_and_CALP.pdf"
-  - "https://en.wikipedia.org/wiki/Register_(sociolinguistics)"
 created: "2026-05-21"
 updated: "2026-07-18"
 ---
@@ -69,3 +61,13 @@ updated: "2026-07-18"
 - [[shin-dokkai]] — 低文脈体系の代表（学習言語）を精確に読み解く能力。明示的訓練の具体的方法はこちら
 - [[child-communication-principles]] — 高文脈側へ向かう実践：小学生には生活言語（具体・場面・感情）で届ける
 - [[method-problem-visibility]] — 同じ原理の読解領域での適用：領域の概念（学習言語）がなければ何が読めていないかが見えない
+
+## 外部ソース
+
+- S1（要確認）: book:シン読解力（新井紀子） — 対応する主張を未確認。
+- S2（要確認）: https://rst-web.s4e.jp/shin-dokkai — 対応する主張を未確認。
+- S3（要確認）: paper:Schleppegrell, M. J. (2001). Linguistic Features of the Language of Schooling. Linguistics and Education, 12(4) — 対応する主張を未確認。
+- S4（要確認）: https://www.sciencedirect.com/science/article/abs/pii/S0898589801000730 — 対応する主張を未確認。
+- S5（要確認）: https://en.wikipedia.org/wiki/Cognitive_academic_language_proficiency — 対応する主張を未確認。
+- S6（要確認）: https://education.nsw.gov.au/content/dam/main-education/teaching-and-learning/curriculum/multicultural-education/eald/urh/What_are_BICS_and_CALP.pdf — 対応する主張を未確認。
+- S7（要確認）: https://en.wikipedia.org/wiki/Register_(sociolinguistics) — 対応する主張を未確認。

@@ -1,10 +1,5 @@
 ---
 title: "アイデンティティ・フォークロージャー"
-sources:
-  - "book:Think Again（Adam Grant）"
-  - "https://calvinrosser.com/notes/think-again-adam-grant/"
-  - "https://9oelm.github.io/2022-12-30-full-summary-and-reflection-on-Think-again-by-adam-grant/"
-  - "https://www.bookclub.com/blog/toss-your-ten-year-plan"
 created: "2026-05-21"
 updated: "2026-05-21"
 reviewed: 3
@@ -49,3 +44,10 @@ reviewed: 3
 - [[commitment-and-consistency]] — コミットメントと一貫性の原則が、アイデンティティと結びついたとき最も強力にフォークロージャーを加速させる
 - [[identity-based-habit-formation]] — 対比：アイデンティティを意図的に採用して習慣形成に使う戦略。フォークロージャーは固定によるリスク、こちらは選択による活用という逆の文脈
 - [[commitment-lock-in]] — アイデンティティを特殊投資と見なすと、フォークロージャーはロックインの心理版。撤退コストが自己像に固着したケース
+
+## 外部ソース
+
+- S1（要確認）: book:Think Again（Adam Grant） — 対応する主張を未確認。
+- S2（要確認）: https://calvinrosser.com/notes/think-again-adam-grant/ — 対応する主張を未確認。
+- S3（要確認）: https://9oelm.github.io/2022-12-30-full-summary-and-reflection-on-Think-again-by-adam-grant/ — 対応する主張を未確認。
+- S4（要確認）: https://www.bookclub.com/blog/toss-your-ten-year-plan — 対応する主張を未確認。

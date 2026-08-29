@@ -1,10 +1,5 @@
 ---
 title: "知識労働者の自律性"
-sources:
-  - "book:プロフェッショナルの条件（P.F. ドラッカー）"
-  - "https://topmanagement.co.jp/column/2011/11/post-445.php"
-  - "https://globis.jp/article/7192/"
-  - "https://oukoraikon.com/peter-f-drucker-to-perform-to-contribute-and-to-achieve/"
 created: "2026-05-24"
 updated: "2026-05-24"
 reviewed: 3
@@ -52,3 +47,10 @@ reviewed: 3
 - [[time-record-organize-consolidate]] — 自律的な時間管理の実践的方法
 - [[identity-foreclosure]] — 特定役割への早期固定が知識労働者の自律性を損なう構造
 - [[character-ethics-vs-personality-ethics]] — 自律的成果を支える人格の基盤（コヴィー）との接続
+
+## 外部ソース
+
+- S1（要確認）: book:プロフェッショナルの条件（P.F. ドラッカー） — 対応する主張を未確認。
+- S2（要確認）: https://topmanagement.co.jp/column/2011/11/post-445.php — 対応する主張を未確認。
+- S3（要確認）: https://globis.jp/article/7192/ — 対応する主張を未確認。
+- S4（要確認）: https://oukoraikon.com/peter-f-drucker-to-perform-to-contribute-and-to-achieve/ — 対応する主張を未確認。

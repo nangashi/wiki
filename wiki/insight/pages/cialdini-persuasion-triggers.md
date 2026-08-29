@@ -1,10 +1,5 @@
 ---
 title: "説得の自動トリガー"
-sources:
-  - "book:影響力の武器（ロバート・B・チャルディーニ）"
-  - "https://crexgroup.com/ja/marketing/career-learning/influence-psychology-summary/"
-  - "https://www.seishinshobo.co.jp/special/30429/"
-  - "https://www.cognitigence.com/blog/cialdini-7-principles-of-persuasion"
 created: "2026-05-25"
 updated: "2026-05-25"
 reviewed: 3
@@ -58,3 +53,10 @@ reviewed: 3
 - [[scarcity-principle]] — 希少性の詳細
 - [[fluency-illusion]] — 自動処理が「わかった気」を生むように、トリガーは深い検討なしに反応させる
 - [[motivated-reasoning]] — トリガーは検討なしの自動反応、動機づけられた推論は検討そのものの歪み。どちらも再考を構造的に妨げる
+
+## 外部ソース
+
+- S1（要確認）: book:影響力の武器（ロバート・B・チャルディーニ） — 対応する主張を未確認。
+- S2（要確認）: https://crexgroup.com/ja/marketing/career-learning/influence-psychology-summary/ — 対応する主張を未確認。
+- S3（要確認）: https://www.seishinshobo.co.jp/special/30429/ — 対応する主張を未確認。
+- S4（要確認）: https://www.cognitigence.com/blog/cialdini-7-principles-of-persuasion — 対応する主張を未確認。

@@ -1,13 +1,5 @@
 ---
 title: "Attention Residue（注意残余）"
-sources:
-  - "topic:Attention Residue（注意残余）"
-  - "https://www.sciencedirect.com/science/article/abs/pii/S0749597809000399"
-  - "https://citeseerx.ist.psu.edu/document?doi=29661f8f20c854e55ce91ac8c247a95034bd68ee&repid=rep1&type=pdf"
-  - "https://www.sciencedirect.com/science/article/pii/S0749597816304630"
-  - "https://pubsonline.informs.org/doi/abs/10.1287/orsc.2017.1184"
-  - "https://journals.aom.org/doi/abs/10.5465/annals.2017.0146"
-  - "https://www.uwb.edu/news/2024/05/17/an-ongoing-study-on-the-success-of-staying-focused"
 created: "2026-08-01"
 updated: "2026-08-01"
 reviewed: 3
@@ -58,3 +50,12 @@ reviewed: 3
 - [[working-memory-capacity]] — 容量制限が「同時に保持できる量」の制約であるのに対し、注意残余は「切替後も一部が占有され続ける」時間的な制約
 - [[interruption-recovery-cost]] — 注意残余は中断・切替からの復帰コストを構成する要素の一つ。両者は同じ「中断」という事象を異なる角度（占有し続ける注意 / 元タスクへの復帰過程全体）から扱う
 - [[knowledge-externalization]] — ready-to-resume planは、未完了状態を脳内に保持せず外部に書き出すことで認知的終結を代替する実践であり、外部化の効用を裏づける一事例
+
+## 外部ソース
+
+- S1（要確認）: https://www.sciencedirect.com/science/article/abs/pii/S0749597809000399 — 対応する主張を未確認。
+- S2（要確認）: https://citeseerx.ist.psu.edu/document?doi=29661f8f20c854e55ce91ac8c247a95034bd68ee&repid=rep1&type=pdf — 対応する主張を未確認。
+- S3（要確認）: https://www.sciencedirect.com/science/article/pii/S0749597816304630 — 対応する主張を未確認。
+- S4（要確認）: https://pubsonline.informs.org/doi/abs/10.1287/orsc.2017.1184 — 対応する主張を未確認。
+- S5（要確認）: https://journals.aom.org/doi/abs/10.5465/annals.2017.0146 — 対応する主張を未確認。
+- S6（要確認）: https://www.uwb.edu/news/2024/05/17/an-ongoing-study-on-the-success-of-staying-focused — 対応する主張を未確認。

@@ -1,11 +1,5 @@
 ---
 title: "知識のコミュニティ"
-sources:
-  - "book:知ってるつもり 無知の科学（スティーブン・スローマン、フィリップ・ファーンバック）"
-  - "https://www.bps.org.uk/psychologist/knowledge-illusion"
-  - "https://neurosciencenews.com/collective-intelligence-19512/"
-  - "https://www.worklearning.com/2025/05/27/book-the-knowledge-illusion-by-steven-sloman-and-philip-fernbach/"
-  - "https://www.allencheng.com/the-knowledge-illusion-book-summary-steven-sloman-philip-fernbach/"
 created: "2026-05-21"
 updated: "2026-07-17"
 reviewed: 3
@@ -46,3 +40,11 @@ reviewed: 3
 - [[testing-effect]] — 外部知識に依存しない、本当の内部理解を確認する実践原理
 - [[knowledge-externalization]] — 外部化・構造化された知識の接続が複利的に価値を高めるメカニズム
 - [[maturity-continuum]] — 相互依存段階の認知論的基盤。知識がコミュニティに分散するなら、他者との協力は依存ではなく成熟の最上位
+
+## 外部ソース
+
+- S1（要確認）: book:知ってるつもり 無知の科学（スティーブン・スローマン、フィリップ・ファーンバック） — 対応する主張を未確認。
+- S2（要確認）: https://www.bps.org.uk/psychologist/knowledge-illusion — 対応する主張を未確認。
+- S3（要確認）: https://neurosciencenews.com/collective-intelligence-19512/ — 対応する主張を未確認。
+- S4（要確認）: https://www.worklearning.com/2025/05/27/book-the-knowledge-illusion-by-steven-sloman-and-philip-fernbach/ — 対応する主張を未確認。
+- S5（要確認）: https://www.allencheng.com/the-knowledge-illusion-book-summary-steven-sloman-philip-fernbach/ — 対応する主張を未確認。

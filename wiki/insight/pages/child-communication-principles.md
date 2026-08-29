@@ -1,7 +1,5 @@
 ---
 title: "子どもへの語りかけ原則"
-sources:
-  - "topic:子どもへの語りかけ方"
 created: "2026-05-23"
 updated: "2026-05-23"
 reviewed: 3
@@ -62,3 +60,7 @@ reviewed: 3
 - [[language-context-dependence]] — 小学生には生活言語（文脈・具体・場面）で届ける
 - [[character-ethics-vs-personality-ethics]] — 伝えたい「大事なこと」の実質は人格の核心（インサイド・アウト）
 - [[child-activity-redesign]] — ゲーム・テレビへの問いかけを通じてニーズを特定し代替活動を設計する実践への応用
+
+## 外部ソース
+
+外部ソース未確認。

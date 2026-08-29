@@ -1,13 +1,5 @@
 ---
 title: "制約理論（TOC）"
-sources:
-  - "book:ザ・ゴール（エリヤフ・ゴールドラット）"
-  - "https://ja.wikipedia.org/wiki/制約条件の理論"
-  - "https://www.tocinstitute.org/the-goal-summary.html"
-  - "https://www.goldratt.co.jp/about-toc"
-  - "https://www.tocinstitute.org/five-focusing-steps.html"
-  - "https://www.6sigma.us/six-sigma-in-focus/throughput-accounting/"
-  - "https://accounting-it.com/moukeru-toc"
 created: "2026-05-23"
 updated: "2026-07-18"
 reviewed: 3
@@ -92,3 +84,13 @@ TOCの原理はDevOps運動（"The Phoenix Project"）に直接継承された�
 - [[org-productivity-misdiagnosis]] — 組織問題を個人に帰属させる類似の認知エラー
 - [[proxy-metrics-knowledge-work]] — 知識労働での「局所効率系指標」の問題（TOCのスループット思考と対称の関係）
 - [[method-problem-visibility]] — TOCの「スループットは最も強い制約1箇所で決まる」という因果構造を当てはめることで、「コミュニケーション不足」という未分化な事象がボトルネックという具体的課題に変換される例
+
+## 外部ソース
+
+- S1（要確認）: book:ザ・ゴール（エリヤフ・ゴールドラット） — 対応する主張を未確認。
+- S2（要確認）: https://ja.wikipedia.org/wiki/制約条件の理論 — 対応する主張を未確認。
+- S3（要確認）: https://www.tocinstitute.org/the-goal-summary.html — 対応する主張を未確認。
+- S4（要確認）: https://www.goldratt.co.jp/about-toc — 対応する主張を未確認。
+- S5（要確認）: https://www.tocinstitute.org/five-focusing-steps.html — 対応する主張を未確認。
+- S6（要確認）: https://www.6sigma.us/six-sigma-in-focus/throughput-accounting/ — 対応する主張を未確認。
+- S7（要確認）: https://accounting-it.com/moukeru-toc — 対応する主張を未確認。

@@ -1,8 +1,5 @@
 ---
 title: "統制可能なことへの集中"
-sources:
-  - "Bandura, A. (1977). Self-efficacy: Toward a unifying theory of behavioral change"
-  - "Rotter, J. B. (1966). Generalized expectancies for internal versus external control of reinforcement"
 created: "2026-05-29"
 updated: "2026-05-29"
 reviewed: 3
@@ -49,3 +46,8 @@ reviewed: 3
 - [[stimulus-response-freedom]] — 選択の自由があるから統制可能な領域への集中が可能になる
 - [[issue-value-matrix]] — 統制可能・変えられることに集中する構造が共鳴する
 - [[character-ethics-vs-personality-ethics]] — 統制可能な領域への集中はインサイド・アウトの実践形態
+
+## 外部ソース
+
+- S1（要確認）: Bandura, A. (1977). Self-efficacy: Toward a unifying theory of behavioral change — 対応する主張を未確認。
+- S2（要確認）: Rotter, J. B. (1966). Generalized expectancies for internal versus external control of reinforcement — 対応する主張を未確認。

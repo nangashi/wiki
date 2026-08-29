@@ -1,16 +1,5 @@
 ---
 title: "テスト効果"
-sources:
-  - "book:科学的根拠に基づく最高の勉強法（安川康介）"
-  - "https://president.jp/articles/-/80048?page=1"
-  - "https://kosodate.mynavi.jp/articles/38935"
-  - "https://bunshun.jp/articles/-/72004"
-  - "https://en.wikipedia.org/wiki/Testing_effect"
-  - "https://www.sciencedirect.com/science/article/abs/pii/S0749596X12000149"
-  - "https://www.researchgate.net/publication/264988491_The_Effect_of_Testing_Versus_Restudy_on_Retention_A_Meta-Analytic_Review_of_the_Testing_Effect"
-  - "https://doi.org/10.1037/a0019902"
-  - "https://doi.org/10.1037/a0015729"
-  - "https://doi.org/10.1037/a0023956"
 created: "2026-05-20"
 updated: "2026-07-18"
 reviewed: 3
@@ -61,3 +50,16 @@ reviewed: 3
 - [[elaborative-interrogation]] — 相互補完の関係。検索練習が想起側から、精緻的質問が符号化（接続を作る）側から定着を強める。両者が別個の記憶効果であることは実験的に示されている（Karpicke & Smith 2012）
 - [[learning-roi]] — 学習の回収率を高める最も重要な実践原理
 - [[feedback-analysis]] — 学習外のドメインで同じ「期待と結果の照合」原理を月〜年スケールで適用するプロフェッショナル版
+
+## 外部ソース
+
+- S1（要確認）: book:科学的根拠に基づく最高の勉強法（安川康介） — 対応する主張を未確認。
+- S2（要確認）: https://president.jp/articles/-/80048?page=1 — 対応する主張を未確認。
+- S3（要確認）: https://kosodate.mynavi.jp/articles/38935 — 対応する主張を未確認。
+- S4（要確認）: https://bunshun.jp/articles/-/72004 — 対応する主張を未確認。
+- S5（要確認）: https://en.wikipedia.org/wiki/Testing_effect — 対応する主張を未確認。
+- S6（要確認）: https://www.sciencedirect.com/science/article/abs/pii/S0749596X12000149 — 対応する主張を未確認。
+- S7（要確認）: https://www.researchgate.net/publication/264988491_The_Effect_of_Testing_Versus_Restudy_on_Retention_A_Meta-Analytic_Review_of_the_Testing_Effect — 対応する主張を未確認。
+- S8（要確認）: https://doi.org/10.1037/a0019902 — 対応する主張を未確認。
+- S9（要確認）: https://doi.org/10.1037/a0015729 — 対応する主張を未確認。
+- S10（要確認）: https://doi.org/10.1037/a0023956 — 対応する主張を未確認。

@@ -1,8 +1,5 @@
 ---
 title: "撤退基準の事前設定"
-sources:
-  - "https://syu-m-5151.hatenablog.com/entry/2026/02/17/115306"
-  - "https://syu-m-5151.hatenablog.com/entry/2026/03/02/110121"
 created: "2026-05-20"
 updated: "2026-05-20"
 reviewed: 3
@@ -58,3 +55,8 @@ Architecture Decision Record（ADR）の「結果」セクションに想定さ�
 - [[planning-fallacy]] — 計画の誤謬への対処として事前撤退基準が機能する。楽観的シナリオの支配を防ぐ外部視点として
 - [[commitment-lock-in]] — ロックインの主観的側面（サンクコストによる撤退困難）を無効化する手段。撤退基準の事前設定はロックイン対処の一角
 - [[anchoring-effect]] — 歪みが生じる前に基準を固定するという同型の対処。アンカーを見る前の独立推定は、撤退基準の事前設定と同じ構造を持つ
+
+## 外部ソース
+
+- S1（要確認）: https://syu-m-5151.hatenablog.com/entry/2026/02/17/115306 — 対応する主張を未確認。
+- S2（要確認）: https://syu-m-5151.hatenablog.com/entry/2026/03/02/110121 — 対応する主張を未確認。

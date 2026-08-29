@@ -1,10 +1,5 @@
 ---
 title: "期待値の事前調整"
-sources:
-  - "book:コンサル一年目が学ぶこと（大石哲之）"
-  - "https://d21.co.jp/book/detail/978-4-7993-1532-3"
-  - "https://shuchi.php.co.jp/article/10991"
-  - "https://www.eezoublog.com/reading-impressions/1984/"
 created: "2026-05-23"
 updated: "2026-05-23"
 reviewed: 3
@@ -52,3 +47,10 @@ reviewed: 3
 - [[exit-criteria-first]] — 着手前に完了条件を定義する原則は期待値の事前調整と同根。個人内の決断版が exit-criteria-first、対他者版が本ページ
 - [[conclusion-first-communication]] — 期待値の確認そのものを「結論から」行うことが有効（「○○という理解でよいですか」と先に問う）
 - [[issue-value-matrix]] — 「ヴァリューを出す」ために何が求められているかを特定する行為は期待値の把握と同義
+
+## 外部ソース
+
+- S1（要確認）: book:コンサル一年目が学ぶこと（大石哲之） — 対応する主張を未確認。
+- S2（要確認）: https://d21.co.jp/book/detail/978-4-7993-1532-3 — 対応する主張を未確認。
+- S3（要確認）: https://shuchi.php.co.jp/article/10991 — 対応する主張を未確認。
+- S4（要確認）: https://www.eezoublog.com/reading-impressions/1984/ — 対応する主張を未確認。

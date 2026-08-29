@@ -1,7 +1,5 @@
 ---
 title: "代理指標（知識労働）"
-sources:
-  - "https://cybozushiki.cybozu.co.jp/articles/m006314.html"
 created: "2026-05-19"
 updated: "2026-05-19"
 reviewed: 3
@@ -85,3 +83,7 @@ AIが量的な仕事を引き受けた分、人間は何をやるべきか。こ
 
 - [[org-productivity-misdiagnosis]] — 代理指標が浸透した組織で起きる「個人犯人探し」という誤診と、構造的診断へのシフト
 - [[theory-of-constraints]] — 局所効率指標に替わる評価軸：スループットの流れで計測する（対称の関係）
+
+## 外部ソース
+
+- S1（要確認）: https://cybozushiki.cybozu.co.jp/articles/m006314.html — 対応する主張を未確認。

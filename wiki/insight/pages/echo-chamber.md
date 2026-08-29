@@ -1,13 +1,5 @@
 ---
 title: "エコーチェンバー"
-sources:
-  - "topic:エコーチェンバー"
-  - "https://philarchive.org/archive/NGUECA"
-  - "https://aeon.co/essays/why-its-as-hard-to-escape-an-echo-chamber-as-it-is-to-flee-a-cult"
-  - "https://chicagounbound.uchicago.edu/cgi/viewcontent.cgi?article=1541&context=law_and_economics"
-  - "https://reutersinstitute.politics.ox.ac.uk/echo-chambers-filter-bubbles-and-polarisation-literature-review"
-  - "https://snurb.info/files/2021/Echo%20Chambers,%20Filter%20Bubbles%20(preprint).pdf"
-  - "https://www.soumu.go.jp/johotsusintokei/whitepaper/ja/r05/html/nd123120.html"
 created: "2026-07-17"
 updated: "2026-07-17"
 reviewed: 3
@@ -69,3 +61,12 @@ Nguyen（2020, Episteme）は混同されがちな2つの構造を区別した�
 - [[social-proof]] — 同意投稿の数が「みんなが問題視している」という正しさの証拠として働き、汚染ループと並走して信念を強化する
 - [[wysiati]] — 見えている投稿だけで判断が完結し、投稿されない「何も起きなかった」の不在に気づかない
 - [[survivorship-bias]] — 見えるサンプルが選択されている点で同型。チェンバーはその選択を社会構造として恒常化したもの
+
+## 外部ソース
+
+- S1（要確認）: https://philarchive.org/archive/NGUECA — 対応する主張を未確認。
+- S2（要確認）: https://aeon.co/essays/why-its-as-hard-to-escape-an-echo-chamber-as-it-is-to-flee-a-cult — 対応する主張を未確認。
+- S3（要確認）: https://chicagounbound.uchicago.edu/cgi/viewcontent.cgi?article=1541&context=law_and_economics — 対応する主張を未確認。
+- S4（要確認）: https://reutersinstitute.politics.ox.ac.uk/echo-chambers-filter-bubbles-and-polarisation-literature-review — 対応する主張を未確認。
+- S5（要確認）: https://snurb.info/files/2021/Echo%20Chambers,%20Filter%20Bubbles%20(preprint).pdf — 対応する主張を未確認。
+- S6（要確認）: https://www.soumu.go.jp/johotsusintokei/whitepaper/ja/r05/html/nd123120.html — 対応する主張を未確認。

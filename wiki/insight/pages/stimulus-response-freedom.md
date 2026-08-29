@@ -1,10 +1,5 @@
 ---
 title: "刺激と反応の間の選択の自由"
-sources:
-  - "book:7つの習慣（スティーブン・R・コヴィー）"
-  - "https://note.com/tsubasatada/n/n53bd935d52e5"
-  - "https://z0n0.jp/archives/6840"
-  - "https://www.chiringi.or.jp/colmun/7/7_5_1/7_5_1.html"
 created: "2026-05-21"
 updated: "2026-05-21"
 reviewed: 3
@@ -59,3 +54,10 @@ reviewed: 3
 - [[child-communication-principles]] — この構造を語りかけの内容・スタイルとして子どもに伝える実践
 - [[needs-vs-strategies]] — 感情の原因は他者でなく自分のニーズの充足状態という視点と共鳴する（NVC）
 - [[environment-design-behavior]] — 対比：環境設計は刺激そのものを設計して自動的な反応を誘導する戦略。こちらは刺激と反応の間の選択の自由を拡張する戦略
+
+## 外部ソース
+
+- S1（要確認）: book:7つの習慣（スティーブン・R・コヴィー） — 対応する主張を未確認。
+- S2（要確認）: https://note.com/tsubasatada/n/n53bd935d52e5 — 対応する主張を未確認。
+- S3（要確認）: https://z0n0.jp/archives/6840 — 対応する主張を未確認。
+- S4（要確認）: https://www.chiringi.or.jp/colmun/7/7_5_1/7_5_1.html — 対応する主張を未確認。

@@ -1,9 +1,5 @@
 ---
 title: "精緻的質問"
-sources:
-  - "book:科学的根拠に基づく最高の勉強法（安川康介）"
-  - "https://www.bizsyoka.com/entry/maximizing_learning"
-  - "https://qiita.com/snoo_py/items/5332ed9839063df6b19a"
 created: "2026-05-20"
 updated: "2026-07-18"
 reviewed: 3
@@ -39,3 +35,9 @@ reviewed: 3
 - [[illusion-of-explanatory-depth]] — 「なぜ？」の問いかけが因果的理解の過大評価（説明深度の錯覚）を崩す介入として機能する
 - [[question-generation]] — 問いを生成する操作群。精緻的質問は生成された問いを深める側で、利用価値介入は「自分の未来」方向の問いと同型
 - [[learning-deepening-operations]] — Why/Howの自問による接続は、深いアプローチの「既有知識への関連付け」に対応する実践手法
+
+## 外部ソース
+
+- S1（要確認）: book:科学的根拠に基づく最高の勉強法（安川康介） — 対応する主張を未確認。
+- S2（要確認）: https://www.bizsyoka.com/entry/maximizing_learning — 対応する主張を未確認。
+- S3（要確認）: https://qiita.com/snoo_py/items/5332ed9839063df6b19a — 対応する主張を未確認。

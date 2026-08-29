@@ -1,10 +1,5 @@
 ---
 title: "利用可能性ヒューリスティック"
-sources:
-  - "book:ファスト＆スロー（ダニエル・カーネマン）"
-  - "https://uxdaystokyo.com/articles/glossary/availability-heuristic/"
-  - "https://laoffice.jp/5965/"
-  - "https://happeningday.hatenablog.com/entry/2026/01/23/140655"
 created: "2026-05-29"
 updated: "2026-07-17"
 reviewed: 3
@@ -56,3 +51,10 @@ reviewed: 3
 - [[planning-fallacy]] — 過去の失敗が想起されにくいとき計画の誤謬が悪化する
 - [[survivorship-bias]] — 成功事例だけが想起しやすい状態がサバイバーシップバイアスと連動する
 - [[echo-chamber]] — クラスター内の偏った実例供給が利用可能性ヒューリスティック経由で頻度の過大評価に変換される。利用可能性カスケードの自己組織化版
+
+## 外部ソース
+
+- S1（要確認）: book:ファスト＆スロー（ダニエル・カーネマン） — 対応する主張を未確認。
+- S2（要確認）: https://uxdaystokyo.com/articles/glossary/availability-heuristic/ — 対応する主張を未確認。
+- S3（要確認）: https://laoffice.jp/5965/ — 対応する主張を未確認。
+- S4（要確認）: https://happeningday.hatenablog.com/entry/2026/01/23/140655 — 対応する主張を未確認。

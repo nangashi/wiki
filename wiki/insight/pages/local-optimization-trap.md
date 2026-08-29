@@ -1,10 +1,5 @@
 ---
 title: "局所最適の罠"
-sources:
-  - "book:ザ・ゴール（エリヤフ・ゴールドラット）"
-  - "https://www.tocinstitute.org/the-goal-summary.html"
-  - "https://note.com/byard/n/n5d35f96a573b"
-  - "https://note.com/repkuririn7/n/na579d75b9566"
 created: "2026-05-23"
 updated: "2026-05-23"
 reviewed: 3
@@ -60,3 +55,10 @@ reviewed: 3
 
 - [[theory-of-constraints]] — 局所最適の罠を解くフレームワーク：制約を特定し、スループット評価軸へ転換して集中改善する
 - [[org-productivity-misdiagnosis]] — 組織問題を個人（局所）に帰属させる類似の認知エラー
+
+## 外部ソース
+
+- S1（要確認）: book:ザ・ゴール（エリヤフ・ゴールドラット） — 対応する主張を未確認。
+- S2（要確認）: https://www.tocinstitute.org/the-goal-summary.html — 対応する主張を未確認。
+- S3（要確認）: https://note.com/byard/n/n5d35f96a573b — 対応する主張を未確認。
+- S4（要確認）: https://note.com/repkuririn7/n/na579d75b9566 — 対応する主張を未確認。

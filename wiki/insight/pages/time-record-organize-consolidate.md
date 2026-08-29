@@ -1,11 +1,5 @@
 ---
 title: "時間の三段階管理"
-sources:
-  - "book:プロフェッショナルの条件（P.F. ドラッカー）"
-  - "https://mag.sweeep.ai/topic/77179/"
-  - "https://diamond.jp/articles/-/337770"
-  - "https://uruoistyle.com/2016/11/04/book-the-effective-executive-drucker/"
-  - "http://drucker-studies.com/words/2140.html"
 created: "2026-05-24"
 updated: "2026-05-24"
 reviewed: 3
@@ -61,3 +55,11 @@ reviewed: 3
 - [[fluency-illusion]] — 感覚ベースの時間認識が錯覚を生む構造と同じ
 - [[knowledge-worker-autonomy]] — 知識労働者が自律的に時間を管理しなければならない前提
 - [[focus-on-contribution]] — 何に集中するかの判断基準として「貢献への問い」が機能する
+
+## 外部ソース
+
+- S1（要確認）: book:プロフェッショナルの条件（P.F. ドラッカー） — 対応する主張を未確認。
+- S2（要確認）: https://mag.sweeep.ai/topic/77179/ — 対応する主張を未確認。
+- S3（要確認）: https://diamond.jp/articles/-/337770 — 対応する主張を未確認。
+- S4（要確認）: https://uruoistyle.com/2016/11/04/book-the-effective-executive-drucker/ — 対応する主張を未確認。
+- S5（要確認）: http://drucker-studies.com/words/2140.html — 対応する主張を未確認。

@@ -1,11 +1,5 @@
 ---
 title: "潜在的可能性の台地"
-sources:
-  - "book:複利で伸びる1つの習慣（ジェームズ・クリアー）"
-  - "paper:Ericsson, Krampe & Tesch-Römer (1993) The Role of Deliberate Practice in the Acquisition of Expert Performance, Psychological Review"
-  - "https://www.edds.com.pk/2025/09/20/blog/personal-organizational-development-blog/atomic-habits-chapter-1-summary-part-2-plateau-of-latent-potential/"
-  - "https://habitmentors.com/ja/books/atomic-habits/"
-  - "https://gen-log.com/atomic-habits-compound-interest/"
 created: "2026-05-25"
 updated: "2026-07-18"
 reviewed: 3
@@ -59,3 +53,11 @@ reviewed: 3
 - [[knowledge-externalization]] — 知識の複利: 同じ非線形蓄積の構造が知識にも適用される
 - [[fluency-illusion]] — 対になる錯覚。流暢性の錯覚は進歩していないのに進歩したと感じる過大評価、台地は進歩しているのに進歩していないと感じる過小評価
 - [[avoidance-generated-reasons]] — 台地の焦りが生む「もっとよい方法探し」は回避でありうるが、フィードバックなき反復なら方法変更は正当（適用限界を参照）
+
+## 外部ソース
+
+- S1（要確認）: book:複利で伸びる1つの習慣（ジェームズ・クリアー） — 対応する主張を未確認。
+- S2（要確認）: paper:Ericsson, Krampe & Tesch-Römer (1993) The Role of Deliberate Practice in the Acquisition of Expert Performance, Psychological Review — 対応する主張を未確認。
+- S3（要確認）: https://www.edds.com.pk/2025/09/20/blog/personal-organizational-development-blog/atomic-habits-chapter-1-summary-part-2-plateau-of-latent-potential/ — 対応する主張を未確認。
+- S4（要確認）: https://habitmentors.com/ja/books/atomic-habits/ — 対応する主張を未確認。
+- S5（要確認）: https://gen-log.com/atomic-habits-compound-interest/ — 対応する主張を未確認。

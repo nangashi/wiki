@@ -1,9 +1,5 @@
 ---
 title: "学習の深さは能力を作り、広さは地図を作る"
-sources:
-  - "topic:学習における深さと広さの役割分担"
-  - "book:RANGE（デイビッド・エプスタイン）"
-  - "https://syu-m-5151.hatenablog.com/entry/2026/02/09/180240"
 created: "2026-05-19"
 updated: "2026-07-17"
 reviewed: 0
@@ -49,3 +45,8 @@ reviewed: 0
 - [[method-problem-visibility]] — 深く学んだ概念（能力側）だけが事象を構造として見せる
 - [[learning-roi]] — 学習の回収にも同じ分岐が適用できる：能力目的なら1冊を想起レベルまで、地図目的なら広く再認レベルで
 - [[identity-foreclosure]] — 探索なしの早期コミットが代替選択肢を閉ざす同型の構造
+
+## 外部ソース
+
+- S1（要確認）: book:RANGE（デイビッド・エプスタイン） — 対応する主張を未確認。
+- S2（要確認）: https://syu-m-5151.hatenablog.com/entry/2026/02/09/180240 — 対応する主張を未確認。

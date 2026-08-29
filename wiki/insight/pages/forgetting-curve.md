@@ -1,8 +1,5 @@
 ---
 title: "エビングハウスの忘却曲線"
-sources:
-  - "https://theories.co.jp/terms-forgetting-curve/"
-  - "https://pre-edu-japan.com/education/036/"
 created: "2026-07-18"
 updated: "2026-07-18"
 reviewed: 3
@@ -36,3 +33,8 @@ reviewed: 3
 
 - [[testing-effect]] — 分散学習との組み合わせがテスト効果を最大化する。忘れかけた頃の想起が検索困難度を上げ、検索努力仮説の効果を強める
 - [[working-memory-capacity]] — 忘却曲線が長期的な保持の制約であるのに対し、こちらは短期的・同時保持の制約を扱う。人間の記憶が持つ別種の限界として対をなす
+
+## 外部ソース
+
+- S1（要確認）: https://theories.co.jp/terms-forgetting-curve/ — 対応する主張を未確認。
+- S2（要確認）: https://pre-edu-japan.com/education/036/ — 対応する主張を未確認。

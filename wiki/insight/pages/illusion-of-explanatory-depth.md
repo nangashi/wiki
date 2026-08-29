@@ -1,12 +1,5 @@
 ---
 title: "説明深度の錯覚"
-sources:
-  - "book:知ってるつもり 無知の科学（スティーブン・スローマン、フィリップ・ファーンバック）"
-  - "https://en.wikipedia.org/wiki/Illusion_of_explanatory_depth"
-  - "https://pmc.ncbi.nlm.nih.gov/articles/PMC3062901/"
-  - "https://journals.sagepub.com/doi/abs/10.1177/0956797612464058"
-  - "https://thedecisionlab.com/biases/the-illusion-of-explanatory-depth"
-  - "https://www.allencheng.com/the-knowledge-illusion-book-summary-steven-sloman-philip-fernbach/"
 created: "2026-05-21"
 updated: "2026-05-21"
 reviewed: 3
@@ -58,3 +51,12 @@ Fernbach et al.（2013）の実験では、特定の政策について極端な�
 - [[motivated-reasoning]] — 知能が高いほど信念防衛の反論生成が巧妙になるパラドックス。説明深度の錯覚が「自分は十分検討した」という確信を供給し防衛を支える
 - [[wysiati]] — 類似した認知バイアス。WYSIATIは「欠けている情報に気づかない」、IoEDは「深く理解していないことに気づかない」という相補的な構造
 - [[question-generation]] — 説明産出がギャップを露呈させる現象を、問いを生成する操作として一般化
+
+## 外部ソース
+
+- S1（要確認）: book:知ってるつもり 無知の科学（スティーブン・スローマン、フィリップ・ファーンバック） — 対応する主張を未確認。
+- S2（要確認）: https://en.wikipedia.org/wiki/Illusion_of_explanatory_depth — 対応する主張を未確認。
+- S3（要確認）: https://pmc.ncbi.nlm.nih.gov/articles/PMC3062901/ — 対応する主張を未確認。
+- S4（要確認）: https://journals.sagepub.com/doi/abs/10.1177/0956797612464058 — 対応する主張を未確認。
+- S5（要確認）: https://thedecisionlab.com/biases/the-illusion-of-explanatory-depth — 対応する主張を未確認。
+- S6（要確認）: https://www.allencheng.com/the-knowledge-illusion-book-summary-steven-sloman-philip-fernbach/ — 対応する主張を未確認。

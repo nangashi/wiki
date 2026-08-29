@@ -1,16 +1,5 @@
 ---
 title: "アンカリング効果"
-sources:
-  - "book:ファスト＆スロー（ダニエル・カーネマン）"
-  - "https://www2.psych.ubc.ca/~schaller/Psyc590Readings/TverskyKahneman1974.pdf"
-  - "https://www.researchgate.net/publication/253136010_Hypothesis-Consistent_Testing_and_Semantic_Priming_in_the_Anchoring_Paradigm_A_Selective_Accessibility_Model"
-  - "https://bear.warrington.ufl.edu/brenner/mar7588/Papers/epley-gilovich-psysci2001.pdf"
-  - "https://www.sciencedirect.com/science/article/pii/074959788790046X"
-  - "https://pubmed.ncbi.nlm.nih.gov/11642352/"
-  - "https://journals.sagepub.com/doi/10.1177/01461672002611010"
-  - "https://pubsonline.informs.org/doi/pdf/10.1287/mnsc.2023.03238"
-  - "https://happeningday.hatenablog.com/entry/2026/01/23/140655"
-  - "https://note.com/repkuririn7/n/n139cc922dba5"
 created: "2026-05-29"
 updated: "2026-08-23"
 ---
@@ -86,3 +75,16 @@ Galinsky と Mussweiler は、第一提示額が最終合意額を予測し、�
 - [[framing-effect]] — 同じ事実の提示形式が判断を変える点で同型。フレーミングは選択肢の記述を、アンカリングは数値を操作する
 - [[prospect-theory]] — 参照点が評価の基準になる点で類似構造を持つ
 - [[exit-criteria-first]] — 歪みが生じる前に判断基準を定義しておくという同型の対処（アンカー曝露前の独立推定／サンクコスト発生前の撤退基準）
+
+## 外部ソース
+
+- S1（要確認）: book:ファスト＆スロー（ダニエル・カーネマン） — 対応する主張を未確認。
+- S2（要確認）: https://www2.psych.ubc.ca/~schaller/Psyc590Readings/TverskyKahneman1974.pdf — 対応する主張を未確認。
+- S3（要確認）: https://www.researchgate.net/publication/253136010_Hypothesis-Consistent_Testing_and_Semantic_Priming_in_the_Anchoring_Paradigm_A_Selective_Accessibility_Model — 対応する主張を未確認。
+- S4（要確認）: https://bear.warrington.ufl.edu/brenner/mar7588/Papers/epley-gilovich-psysci2001.pdf — 対応する主張を未確認。
+- S5（要確認）: https://www.sciencedirect.com/science/article/pii/074959788790046X — 対応する主張を未確認。
+- S6（要確認）: https://pubmed.ncbi.nlm.nih.gov/11642352/ — 対応する主張を未確認。
+- S7（要確認）: https://journals.sagepub.com/doi/10.1177/01461672002611010 — 対応する主張を未確認。
+- S8（要確認）: https://pubsonline.informs.org/doi/pdf/10.1287/mnsc.2023.03238 — 対応する主張を未確認。
+- S9（要確認）: https://happeningday.hatenablog.com/entry/2026/01/23/140655 — 対応する主張を未確認。
+- S10（要確認）: https://note.com/repkuririn7/n/n139cc922dba5 — 対応する主張を未確認。

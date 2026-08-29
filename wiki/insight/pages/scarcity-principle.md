@@ -1,10 +1,5 @@
 ---
 title: "希少性の原則"
-sources:
-  - "book:影響力の武器（ロバート・B・チャルディーニ）"
-  - "https://crexgroup.com/ja/marketing/career-learning/influence-psychology-summary/"
-  - "https://www.tech-father.com/blog/influence-tool"
-  - "https://www.cognitigence.com/blog/cialdini-7-principles-of-persuasion"
 created: "2026-05-25"
 updated: "2026-08-23"
 reviewed: 3
@@ -61,3 +56,10 @@ reviewed: 3
 - [[exit-criteria-first]] — 「いつやめるか」を先に決めることが時間的希少性による衝動決定を防ぐ
 - [[avoidance-generated-reasons]] — 逆に希少性による時間プレッシャーが過度な熟慮の回避を防ぐ側面もある
 - [[prospect-theory]] — 損失回避の理論的基盤。希少性が「損失フレーム」として機能する構造の根拠
+
+## 外部ソース
+
+- S1（要確認）: book:影響力の武器（ロバート・B・チャルディーニ） — 対応する主張を未確認。
+- S2（要確認）: https://crexgroup.com/ja/marketing/career-learning/influence-psychology-summary/ — 対応する主張を未確認。
+- S3（要確認）: https://www.tech-father.com/blog/influence-tool — 対応する主張を未確認。
+- S4（要確認）: https://www.cognitigence.com/blog/cialdini-7-principles-of-persuasion — 対応する主張を未確認。

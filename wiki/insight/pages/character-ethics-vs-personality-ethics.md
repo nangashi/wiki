@@ -1,10 +1,5 @@
 ---
 title: "持続的な信頼は見せ方より中身で決まる"
-sources:
-  - "book:7つの習慣（スティーブン・R・コヴィー）"
-  - "https://www.franklincovey.co.jp/blog/archives/3766"
-  - "https://www.hr-doctor.com/news/management/engagement/management_7habit_principle-2"
-  - "https://type.jp/tensyoku-knowhow/skill-up/book-summary/vol1/"
 created: "2026-05-21"
 updated: "2026-07-17"
 reviewed: 3
@@ -49,3 +44,10 @@ reviewed: 3
 - [[maturity-continuum]] — 中身の変化が到達する段階として「相互依存」がある
 - [[unlearn]] — 見せ方の技術で解決しようとする前提そのものを手放すことが、インサイド・アウトへの移行の前提
 - [[liking-principle]] — 見せ方の技術が依拠する対人影響力テクニックの代表原理。中身を伴わずに好意を操作することが、乖離の典型的な発現形態
+
+## 外部ソース
+
+- S1（要確認）: book:7つの習慣（スティーブン・R・コヴィー） — 対応する主張を未確認。
+- S2（要確認）: https://www.franklincovey.co.jp/blog/archives/3766 — 対応する主張を未確認。
+- S3（要確認）: https://www.hr-doctor.com/news/management/engagement/management_7habit_principle-2 — 対応する主張を未確認。
+- S4（要確認）: https://type.jp/tensyoku-knowhow/skill-up/book-summary/vol1/ — 対応する主張を未確認。

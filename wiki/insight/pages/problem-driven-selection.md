@@ -1,7 +1,5 @@
 ---
 title: "問題駆動の選択"
-sources:
-  - "https://syu-m-5151.hatenablog.com/entry/2026/02/17/115306"
 created: "2026-05-20"
 updated: "2026-07-02"
 reviewed: 3
@@ -50,3 +48,7 @@ ADR（Architecture Decision Record）の「コンテキスト」セクション�
 
 - [[issue-value-matrix]] — 「何を解くか」の質（イシュー度）が知的生産バリューを支配するという上位原則
 - [[it:adr]] — 問題軸選定を制度化するArchitecture Decision Recordの構造と活用
+
+## 外部ソース
+
+- S1（要確認）: https://syu-m-5151.hatenablog.com/entry/2026/02/17/115306 — 対応する主張を未確認。

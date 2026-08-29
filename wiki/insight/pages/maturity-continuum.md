@@ -1,11 +1,5 @@
 ---
 title: "成熟の連続体（依存→自立→相互依存）"
-sources:
-  - "book:7つの習慣（スティーブン・R・コヴィー）"
-  - "https://www.franklincovey.co.jp/the-7-habits/"
-  - "https://en.wikipedia.org/wiki/Constructive_developmental_framework"
-  - "https://pubmed.ncbi.nlm.nih.gov/17279849/"
-  - "https://selfdeterminationtheory.org/wp-content/uploads/2023/01/2022_RyanDeci_SDT_Encyclopedia.pdf"
 created: "2026-05-21"
 updated: "2026-07-18"
 reviewed: 3
@@ -50,3 +44,11 @@ Keganの成人発達理論の主体—客体（subject-object）概念で説明�
 - [[character-ethics-vs-personality-ethics]] — 中身の変化の到達点が相互依存の段階。見せ方の技術だけでは相互依存に到達できない
 - [[stimulus-response-freedom]] — 刺激と反応の間の選択の自由が、関係における選択可能性（頼る/頼らないを選べる）の基盤になる
 - [[community-of-knowledge]] — 知識は個人の脳でなくコミュニティ全体に分散するという認識は相互依存モデルの認知論的側面と共鳴する
+
+## 外部ソース
+
+- S1（要確認）: book:7つの習慣（スティーブン・R・コヴィー） — 対応する主張を未確認。
+- S2（要確認）: https://www.franklincovey.co.jp/the-7-habits/ — 対応する主張を未確認。
+- S3（要確認）: https://en.wikipedia.org/wiki/Constructive_developmental_framework — 対応する主張を未確認。
+- S4（要確認）: https://pubmed.ncbi.nlm.nih.gov/17279849/ — 対応する主張を未確認。
+- S5（要確認）: https://selfdeterminationtheory.org/wp-content/uploads/2023/01/2022_RyanDeci_SDT_Encyclopedia.pdf — 対応する主張を未確認。

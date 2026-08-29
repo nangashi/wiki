@@ -1,10 +1,5 @@
 ---
 title: "権威の原則"
-sources:
-  - "book:影響力の武器（ロバート・B・チャルディーニ）"
-  - "https://crexgroup.com/ja/marketing/career-learning/influence-psychology-summary/"
-  - "https://www.cognitigence.com/blog/cialdini-7-principles-of-persuasion"
-  - "https://cxl.com/blog/cialdinis-principles-persuasion/"
 created: "2026-05-25"
 updated: "2026-07-02"
 reviewed: 3
@@ -54,3 +49,10 @@ reviewed: 3
 - [[liking-principle]] — 権威ある人物への好意がさらに従順さを高める相乗効果
 - [[community-of-knowledge]] — 知識の分業（他者専門性への依存）は権威への従順と同じ認知基盤を持つ
 - [[system1-system2]] — 権威記号の自動処理はシステム1の動作そのもの。このバイアスが「速い思考」の構造的産物である理由
+
+## 外部ソース
+
+- S1（要確認）: book:影響力の武器（ロバート・B・チャルディーニ） — 対応する主張を未確認。
+- S2（要確認）: https://crexgroup.com/ja/marketing/career-learning/influence-psychology-summary/ — 対応する主張を未確認。
+- S3（要確認）: https://www.cognitigence.com/blog/cialdini-7-principles-of-persuasion — 対応する主張を未確認。
+- S4（要確認）: https://cxl.com/blog/cialdinis-principles-persuasion/ — 対応する主張を未確認。

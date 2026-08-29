@@ -1,10 +1,5 @@
 ---
 title: "貢献への集中"
-sources:
-  - "book:プロフェッショナルの条件（P.F. ドラッカー）"
-  - "https://oukoraikon.com/peter-f-drucker-to-perform-to-contribute-and-to-achieve/"
-  - "https://note.com/brainmarks/n/n45675e231248"
-  - "https://d-lab.management/?p=15942"
 created: "2026-05-24"
 updated: "2026-05-24"
 reviewed: 3
@@ -50,3 +45,10 @@ reviewed: 3
 - [[issue-value-matrix]] — イシューを先に定義する思想と同じ「問いを先に置く」構造。貢献への集中は個人の仕事姿勢、イシューバリューは分析の質に適用
 - [[inu-no-michi]] — 努力量で価値へ到達しようとする経路の失敗構造。貢献への問いはその前段の方向定義
 - [[quadrant-ii-principle]] — 「重要だが緊急でない」時間を守るための判断基準として「これは何に貢献するか」が使える
+
+## 外部ソース
+
+- S1（要確認）: book:プロフェッショナルの条件（P.F. ドラッカー） — 対応する主張を未確認。
+- S2（要確認）: https://oukoraikon.com/peter-f-drucker-to-perform-to-contribute-and-to-achieve/ — 対応する主張を未確認。
+- S3（要確認）: https://note.com/brainmarks/n/n45675e231248 — 対応する主張を未確認。
+- S4（要確認）: https://d-lab.management/?p=15942 — 対応する主張を未確認。

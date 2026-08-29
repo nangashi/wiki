@@ -1,13 +1,5 @@
 ---
 title: "成長マインドセットと固定マインドセット"
-sources:
-  - "book:マインドセット（キャロル・S・ドゥエック）"
-  - "https://www.soshisha.com/book_search/detail/1_2178.html"
-  - "https://note.com/sazawe/n/n06fd65aac4e6"
-  - "https://owis.org/jp/blog/growth-mindset/"
-  - "https://www.a-output.com/mindset"
-  - "https://gigazine.net/gsc_news/en/20161226-growth-mindset-carol-dweck/"
-  - "https://www.learningandthebrain.com/blog/the-mindset-controversy-carol-dweck-speaks/"
 created: "2026-05-24"
 updated: "2026-05-24"
 reviewed: 3
@@ -58,3 +50,13 @@ reviewed: 3
 - [[motivated-reasoning]] — 正確性目標への切り替えは成長マインドセットの思考的対応物。どちらも「現在の信念は暫定的」という立場をとる
 - [[habit-loop]] — 欲求・反応の質を決める信念システム。成長マインドセットは欲求を「学習機会」として解釈することで習慣ループの摩擦を下げる
 - [[identity-based-habit-formation]] — 「変われる自己像」を信じることがアイデンティティの意図的な更新を可能にする。成長マインドセットは習慣形成の土台となる
+
+## 外部ソース
+
+- S1（要確認）: book:マインドセット（キャロル・S・ドゥエック） — 対応する主張を未確認。
+- S2（要確認）: https://www.soshisha.com/book_search/detail/1_2178.html — 対応する主張を未確認。
+- S3（要確認）: https://note.com/sazawe/n/n06fd65aac4e6 — 対応する主張を未確認。
+- S4（要確認）: https://owis.org/jp/blog/growth-mindset/ — 対応する主張を未確認。
+- S5（要確認）: https://www.a-output.com/mindset — 対応する主張を未確認。
+- S6（要確認）: https://gigazine.net/gsc_news/en/20161226-growth-mindset-carol-dweck/ — 対応する主張を未確認。
+- S7（要確認）: https://www.learningandthebrain.com/blog/the-mindset-controversy-carol-dweck-speaks/ — 対応する主張を未確認。

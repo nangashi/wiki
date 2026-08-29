@@ -1,10 +1,5 @@
 ---
 title: "第2領域優先の原則（緊急でないが重要）"
-sources:
-  - "book:7つの習慣（スティーブン・R・コヴィー）"
-  - "https://critical-rare-marketing.com/priority-matrix/"
-  - "https://www.hr-doctor.com/news/management/engagement/manager_training_time_management_matrix-11"
-  - "https://life-table.com/7habits-habit3/"
 created: "2026-05-21"
 updated: "2026-05-21"
 reviewed: 3
@@ -58,3 +53,10 @@ reviewed: 3
 - [[focus-on-controllable]] — 第2領域への集中は統制可能な領域への集中と一致する
 - [[exit-criteria-first]] — 撤退基準の事前設定は第2領域の活動（緊急でないが重要な意思決定設計）の典型例
 - [[time-record-organize-consolidate]] — ドラッカーの三段階時間管理。実態把握から始め、確保したまとまった時間を第2領域に当てる統合が可能
+
+## 外部ソース
+
+- S1（要確認）: book:7つの習慣（スティーブン・R・コヴィー） — 対応する主張を未確認。
+- S2（要確認）: https://critical-rare-marketing.com/priority-matrix/ — 対応する主張を未確認。
+- S3（要確認）: https://www.hr-doctor.com/news/management/engagement/manager_training_time_management_matrix-11 — 対応する主張を未確認。
+- S4（要確認）: https://life-table.com/7habits-habit3/ — 対応する主張を未確認。

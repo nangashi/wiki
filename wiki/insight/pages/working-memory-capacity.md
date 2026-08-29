@@ -1,15 +1,5 @@
 ---
 title: "ワーキングメモリの容量制限"
-sources:
-  - "topic:ワーキングメモリの容量制限"
-  - "https://www.cambridge.org/core/services/aop-cambridge-core/content/view/44023F1147D4A1D44BDC0AD226838496/S0140525X01003922a.pdf/the-magical-number-4-in-short-term-memory-a-reconsideration-of-mental-storage-capacity.pdf"
-  - "https://www.musanim.com/miller1956/"
-  - "https://www.nature.com/articles/36846"
-  - "https://pubmed.ncbi.nlm.nih.gov/15327636/"
-  - "https://scholar.harvard.edu/files/alvarez/files/alvarez-cavanagh-2004-psychsci.pdf"
-  - "https://awhvogellab.com/files/pdfs/vogel_2004_neural-activty-indv-differences.pdf"
-  - "https://pcn.psychology.msstate.edu/Publications/Rouder_etal_PNAS_2008.pdf"
-  - "https://journalofcognition.org/articles/10.5334/joc.387"
 created: "2026-08-01"
 updated: "2026-08-01"
 reviewed: 3
@@ -60,3 +50,14 @@ reviewed: 3
 - [[knowledge-externalization]] — 脳内の知識想起が文脈依存であることに由来する制約と、容量制限に由来する制約は別の理由から同じ結論（外部化が有効）を導く
 - [[attention-residue]] — 容量制限が「同時に保持できる量」の制約であるのに対し、こちらは「切替後も一部が占有され続ける」時間的な制約
 - [[forgetting-curve]] — 容量制限が短期的・同時保持の制約であるのに対し、忘却曲線は長期的な保持の制約を扱う。人間の記憶が持つ別種の限界として対をなす
+
+## 外部ソース
+
+- S1（要確認）: https://www.cambridge.org/core/services/aop-cambridge-core/content/view/44023F1147D4A1D44BDC0AD226838496/S0140525X01003922a.pdf/the-magical-number-4-in-short-term-memory-a-reconsideration-of-mental-storage-capacity.pdf — 対応する主張を未確認。
+- S2（要確認）: https://www.musanim.com/miller1956/ — 対応する主張を未確認。
+- S3（要確認）: https://www.nature.com/articles/36846 — 対応する主張を未確認。
+- S4（要確認）: https://pubmed.ncbi.nlm.nih.gov/15327636/ — 対応する主張を未確認。
+- S5（要確認）: https://scholar.harvard.edu/files/alvarez/files/alvarez-cavanagh-2004-psychsci.pdf — 対応する主張を未確認。
+- S6（要確認）: https://awhvogellab.com/files/pdfs/vogel_2004_neural-activty-indv-differences.pdf — 対応する主張を未確認。
+- S7（要確認）: https://pcn.psychology.msstate.edu/Publications/Rouder_etal_PNAS_2008.pdf — 対応する主張を未確認。
+- S8（要確認）: https://journalofcognition.org/articles/10.5334/joc.387 — 対応する主張を未確認。

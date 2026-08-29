@@ -1,8 +1,5 @@
 ---
 title: "決められない理由は回避欲求が生成する"
-sources:
-  - "https://pubmed.ncbi.nlm.nih.gov/2270237/"
-  - "https://doi.org/10.1037/0033-2909.129.1.139"
 created: "2026-05-20"
 updated: "2026-07-17"
 reviewed: 4
@@ -54,3 +51,8 @@ reviewed: 4
 - [[parallel-path-trap]] — 生成される正当化の一形態（「並行で試す」）
 - [[hypothesis-as-stance]] — 十分性の基準が内部にしかない問題への構造的対策（証拠の定義を先に外部化する）
 - [[motivated-reasoning]] — 上位概念。回避欲求という方向目標が「決められない理由」を生成する、動機づけられた推論の一事例
+
+## 外部ソース
+
+- S1（要確認）: https://pubmed.ncbi.nlm.nih.gov/2270237/ — 対応する主張を未確認。
+- S2（要確認）: https://doi.org/10.1037/0033-2909.129.1.139 — 対応する主張を未確認。

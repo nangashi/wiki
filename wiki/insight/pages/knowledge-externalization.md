@@ -1,12 +1,5 @@
 ---
 title: "知識の外部化"
-sources:
-  - "book:独学の地図（荒木博行）"
-  - "https://note.com/koga_yu/n/n3b617fa0466b"
-  - "https://bookvinegar.jp/10108/"
-  - "https://tokumoto.jp/2023/07/44409/"
-  - "https://x.com/0xfene/status/2034056108164452437"
-  - "https://www.todoist.com/productivity-methods/zettelkasten-method"
 created: "2026-07-18"
 updated: "2026-07-18"
 reviewed: 3
@@ -58,3 +51,12 @@ reviewed: 3
 - [[plateau-of-latent-potential]] — 同じ複利原理が習慣蓄積にも適用される。見えない蓄積期間を越えると成果が顕在化する
 - [[working-memory-capacity]] — 同時に保持できるチャンク数の制約という別の理由からも、外部化が有効である根拠が導ける
 - [[attention-residue]] — 未完了状態を脳内に保持せず書き出す ready-to-resume plan は、外部化が注意残余を緩和する具体例
+
+## 外部ソース
+
+- S1（要確認）: book:独学の地図（荒木博行） — 対応する主張を未確認。
+- S2（要確認）: https://note.com/koga_yu/n/n3b617fa0466b — 対応する主張を未確認。
+- S3（要確認）: https://bookvinegar.jp/10108/ — 対応する主張を未確認。
+- S4（要確認）: https://tokumoto.jp/2023/07/44409/ — 対応する主張を未確認。
+- S5（要確認）: https://x.com/0xfene/status/2034056108164452437 — 対応する主張を未確認。
+- S6（要確認）: https://www.todoist.com/productivity-methods/zettelkasten-method — 対応する主張を未確認。

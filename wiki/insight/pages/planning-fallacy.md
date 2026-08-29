@@ -1,9 +1,5 @@
 ---
 title: "計画の誤謬"
-sources:
-  - "book:ファスト＆スロー（ダニエル・カーネマン）"
-  - "https://brandgenetics.com/human-thinking/thinking-fast-and-slow/"
-  - "https://medium.com/leadership-motivation-and-impact/what-i-learned-from-thinking-fast-and-slow-a4a47cf8b5d5"
 created: "2026-05-29"
 updated: "2026-05-29"
 reviewed: 3
@@ -51,3 +47,9 @@ reviewed: 3
 - [[availability-heuristic]] — 自分が体験していない他プロジェクトの失敗は想起されにくく統計が活用されない
 - [[exit-criteria-first]] — 計画の誤謬への対処として「いつやめるか」を事前に決める原則と接続する
 - [[parallel-path-trap]] — 複数の選択肢を並行する計画も、それぞれの成功確率を過大評価することで成立している
+
+## 外部ソース
+
+- S1（要確認）: book:ファスト＆スロー（ダニエル・カーネマン） — 対応する主張を未確認。
+- S2（要確認）: https://brandgenetics.com/human-thinking/thinking-fast-and-slow/ — 対応する主張を未確認。
+- S3（要確認）: https://medium.com/leadership-motivation-and-impact/what-i-learned-from-thinking-fast-and-slow-a4a47cf8b5d5 — 対応する主張を未確認。

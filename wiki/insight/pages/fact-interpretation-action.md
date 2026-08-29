@@ -1,10 +1,5 @@
 ---
 title: "事実・解釈・行動の分離（雲雨傘）"
-sources:
-  - "book:コンサル一年目が学ぶこと（大石哲之）"
-  - "https://heart-quake.com/?p=7263"
-  - "https://tokumoto.jp/2023/04/43496/"
-  - "https://data.wingarc.com/sky-rain-umbrella-framework-9892"
 created: "2026-05-23"
 updated: "2026-05-23"
 reviewed: 3
@@ -56,3 +51,10 @@ reviewed: 3
 - [[hypothesis-as-stance]] — 雨（解釈）は仮説（スタンス）に対応する。スタンスなき解釈は検証されない推測にとどまる
 - [[avoidance-generated-reasons]] — 事実収集を際限なく続けることで行動を回避するパターンは、雲→雨への移行を意図的に遅らせる行為
 - [[needs-vs-strategies]] — NVCの「観察と評価の分離」は同じ原則を共感の文脈に適用する。評価が防衛反応を呼び起こし共感を遮断するというメカニズムが加わる
+
+## 外部ソース
+
+- S1（要確認）: book:コンサル一年目が学ぶこと（大石哲之） — 対応する主張を未確認。
+- S2（要確認）: https://heart-quake.com/?p=7263 — 対応する主張を未確認。
+- S3（要確認）: https://tokumoto.jp/2023/04/43496/ — 対応する主張を未確認。
+- S4（要確認）: https://data.wingarc.com/sky-rain-umbrella-framework-9892 — 対応する主張を未確認。

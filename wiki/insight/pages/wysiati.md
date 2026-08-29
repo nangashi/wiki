@@ -1,9 +1,5 @@
 ---
 title: "WYSIATI（見えることが全て）"
-sources:
-  - "book:ファスト＆スロー（ダニエル・カーネマン）"
-  - "https://brandgenetics.com/human-thinking/thinking-fast-and-slow/"
-  - "https://medium.com/@regierari1/a-full-summary-of-thinking-fast-and-slow-by-daniel-kahneman-e57fbd641ec9"
 created: "2026-05-29"
 updated: "2026-05-29"
 reviewed: 3
@@ -53,3 +49,9 @@ WYSIATIを緩和する核心的行為は「今見えていない情報には何�
 - [[survivorship-bias]] — 「見えているものが全て」という前提がサバイバーシップバイアスを増幅する同根の構造
 - [[echo-chamber]] — クラスター内で見えている投稿だけで判断が完結し、投稿されない反例・非事象の不在に気づかない
 - [[question-generation]] — 欠けている情報に注意が向かない構造への実践的対抗。ギャップを人工的に露呈させる操作で問いを生成する
+
+## 外部ソース
+
+- S1（要確認）: book:ファスト＆スロー（ダニエル・カーネマン） — 対応する主張を未確認。
+- S2（要確認）: https://brandgenetics.com/human-thinking/thinking-fast-and-slow/ — 対応する主張を未確認。
+- S3（要確認）: https://medium.com/@regierari1/a-full-summary-of-thinking-fast-and-slow-by-daniel-kahneman-e57fbd641ec9 — 対応する主張を未確認。

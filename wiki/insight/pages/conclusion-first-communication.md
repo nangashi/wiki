@@ -1,9 +1,5 @@
 ---
 title: "結論から先に話す（ピラミッド・ストラクチャー）"
-sources:
-  - "book:コンサル一年目が学ぶこと（大石哲之）"
-  - "https://d21.co.jp/book/detail/978-4-7993-1532-3"
-  - "https://toyokeizai.net/articles/-/740389"
 created: "2026-05-23"
 updated: "2026-05-23"
 reviewed: 3
@@ -52,3 +48,9 @@ reviewed: 3
 - [[fact-interpretation-action]] — 雲雨傘の「傘（行動）」はピラミッドの主張（結論）に対応する
 - [[hypothesis-as-stance]] — スタンス（仮説）を言語化することは、主張の先置きと同じ認識論的機能を持つ
 - [[motivational-questioning]] — 相手の再考を促す文脈では結論先置きより問いかけが有効になる例外ケース
+
+## 外部ソース
+
+- S1（要確認）: book:コンサル一年目が学ぶこと（大石哲之） — 対応する主張を未確認。
+- S2（要確認）: https://d21.co.jp/book/detail/978-4-7993-1532-3 — 対応する主張を未確認。
+- S3（要確認）: https://toyokeizai.net/articles/-/740389 — 対応する主張を未確認。

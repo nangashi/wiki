@@ -1,10 +1,5 @@
 ---
 title: "習慣ループ"
-sources:
-  - "book:複利で伸びる1つの習慣（ジェームズ・クリアー）"
-  - "https://gen-log.com/atomic-habits-habit-loop/"
-  - "https://habitmentors.com/ja/books/atomic-habits/"
-  - "https://blog.taskchute.cloud/atomic-habits/"
 created: "2026-05-25"
 updated: "2026-07-18"
 reviewed: 3
@@ -53,3 +48,10 @@ reviewed: 3
 - [[plateau-of-latent-potential]] — 台地期間は報酬ステップに「成果の実感」が供給されない期間。ループが成果の出る前に途切れる理由の説明
 - [[growth-vs-fixed-mindset]] — 欲求・反応の質を下支えする信念システム
 - [[unlearn]] — 身体化された成功体験の解体。習慣として固着した方法は論理説得でなく前提の意識化によって手放す
+
+## 外部ソース
+
+- S1（要確認）: book:複利で伸びる1つの習慣（ジェームズ・クリアー） — 対応する主張を未確認。
+- S2（要確認）: https://gen-log.com/atomic-habits-habit-loop/ — 対応する主張を未確認。
+- S3（要確認）: https://habitmentors.com/ja/books/atomic-habits/ — 対応する主張を未確認。
+- S4（要確認）: https://blog.taskchute.cloud/atomic-habits/ — 対応する主張を未確認。

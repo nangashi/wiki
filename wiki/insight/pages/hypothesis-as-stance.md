@@ -1,9 +1,5 @@
 ---
 title: "仮説をスタンスとして立てる"
-sources:
-  - "book:イシューからはじめよ（安宅和人）"
-  - "https://note.com/tsubasatada/n/n410144f984ca"
-  - "https://www.countand1.com/2018/05/issue-driven-for-valuable-output.html"
 created: "2026-05-21"
 updated: "2026-05-21"
 reviewed: 3
@@ -57,3 +53,9 @@ reviewed: 3
 - [[conclusion-first-communication]] — スタンスの言語化と結論の先置きは同じ認識論的機能を持つ
 - [[fact-interpretation-action]] — 仮説（スタンス）は雲雨傘の「雨（解釈）」に対応する。解釈を明示することで検証が可能になる
 - [[question-generation]] — スタンスを取ることが検証の問いを定義する側面を、問い生成の操作の一つとして位置づける
+
+## 外部ソース
+
+- S1（要確認）: book:イシューからはじめよ（安宅和人） — 対応する主張を未確認。
+- S2（要確認）: https://note.com/tsubasatada/n/n410144f984ca — 対応する主張を未確認。
+- S3（要確認）: https://www.countand1.com/2018/05/issue-driven-for-valuable-output.html — 対応する主張を未確認。

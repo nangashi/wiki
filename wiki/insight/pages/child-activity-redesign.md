@@ -1,7 +1,5 @@
 ---
 title: "子どもの習慣的スクリーン活動と代替活動の設計"
-sources:
-  - "topic:子どもとゲーム・テレビの問題"
 created: "2026-05-25"
 updated: "2026-07-02"
 reviewed: 3
@@ -81,3 +79,7 @@ reviewed: 3
 - [[growth-vs-fixed-mindset]] — 新しい活動で「下手」な時期を「まだ」として再定義する
 - [[quadrant-ii-principle]] — 代替活動の環境整備は第2領域への意図的投資として機能する
 - [[environment-design-behavior]] — ステップ3の「代替活動の環境整備」は意志力より環境設計を優先するこの原理の直接適用
+
+## 外部ソース
+
+外部ソース未確認。

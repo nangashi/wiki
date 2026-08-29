@@ -1,12 +1,5 @@
 ---
 title: "中断からの復帰コスト（集中復帰時間）"
-sources:
-  - "topic:集中復帰時間（中断からの回復コスト）"
-  - "https://www.ics.uci.edu/~gmark/CHI2005.pdf"
-  - "https://news.gallup.com/businessjournal/23146/too-many-interruptions-work.aspx"
-  - "https://uploads-ssl.webflow.com/5c3e5f88d822bf04fb7e2f3e/5dced54d792b96d316b87380_2008_The%20Cost%20of%20Interrupted%20Work.pdf"
-  - "https://www.microsoft.com/en-us/research/wp-content/uploads/2016/11/CHI_2007_Iqbal_Horvitz-1.pdf"
-  - "https://www.microsoft.com/en-us/research/wp-content/uploads/2018/03/pn1612-paper.pdf"
 created: "2026-08-01"
 updated: "2026-08-01"
 reviewed: 3
@@ -58,3 +51,11 @@ reviewed: 3
 
 - [[attention-residue]] — 中断からの復帰コストの一因。未完了課題への注意の居残りが、working sphereへの復帰を遅らせる機序の一つ
 - [[working-memory-capacity]] — 復帰時に元の文脈（目標・進捗・次の一手）を再構築する負荷は、同時に保持できるチャンク数の制約とも関係する
+
+## 外部ソース
+
+- S1（要確認）: https://www.ics.uci.edu/~gmark/CHI2005.pdf — 対応する主張を未確認。
+- S2（要確認）: https://news.gallup.com/businessjournal/23146/too-many-interruptions-work.aspx — 対応する主張を未確認。
+- S3（要確認）: https://uploads-ssl.webflow.com/5c3e5f88d822bf04fb7e2f3e/5dced54d792b96d316b87380_2008_The%20Cost%20of%20Interrupted%20Work.pdf — 対応する主張を未確認。
+- S4（要確認）: https://www.microsoft.com/en-us/research/wp-content/uploads/2016/11/CHI_2007_Iqbal_Horvitz-1.pdf — 対応する主張を未確認。
+- S5（要確認）: https://www.microsoft.com/en-us/research/wp-content/uploads/2018/03/pn1612-paper.pdf — 対応する主張を未確認。

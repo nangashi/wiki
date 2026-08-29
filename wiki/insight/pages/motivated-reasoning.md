@@ -1,13 +1,5 @@
 ---
 title: "動機づけられた推論（motivated reasoning）"
-sources:
-  - "paper:Kunda (1990) The Case for Motivated Reasoning, Psychological Bulletin 108(3)"
-  - "https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1540-5907.2006.00214.x"
-  - "http://www.keithstanovich.com/Site/Research_on_Reasoning_files/West_Stanovich_JPSP2012.pdf"
-  - "https://rcgd.isr.umich.edu/wp-content/uploads/2018/07/motivated_numeracy_and_enlightened_selfgovernment.pdf"
-  - "paper:Persson et al. (2021) 事前登録追試。motivated numeracyの増幅交互作用は非再現"
-  - "https://www.semanticscholar.org/paper/7a30bb12359fea060162358ad7ac068b8e653c25"
-  - "book:Think Again（Adam Grant）"
 created: "2026-05-21"
 updated: "2026-07-18"
 reviewed: 0
@@ -59,3 +51,13 @@ Adam Grant『Think Again』の牧師・検察官・政治家・科学者はこ�
 - [[commitment-and-consistency]] — 公言したスタンスは一貫性動機を通じて方向目標を生む
 - [[social-proof]] — 「他者も同じ見解」という情報が信念防衛の追加証拠として働く
 - [[system1-system2]] — 単純な対応ではない点が重要。動機づけられた推論は熟慮（システム2）が感情的ゴール（システム1）に仕える構造であり、「よく考えれば正しくなる」を裏切る
+
+## 外部ソース
+
+- S1（要確認）: paper:Kunda (1990) The Case for Motivated Reasoning, Psychological Bulletin 108(3) — 対応する主張を未確認。
+- S2（要確認）: https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1540-5907.2006.00214.x — 対応する主張を未確認。
+- S3（要確認）: http://www.keithstanovich.com/Site/Research_on_Reasoning_files/West_Stanovich_JPSP2012.pdf — 対応する主張を未確認。
+- S4（要確認）: https://rcgd.isr.umich.edu/wp-content/uploads/2018/07/motivated_numeracy_and_enlightened_selfgovernment.pdf — 対応する主張を未確認。
+- S5（要確認）: paper:Persson et al. (2021) 事前登録追試。motivated numeracyの増幅交互作用は非再現 — 対応する主張を未確認。
+- S6（要確認）: https://www.semanticscholar.org/paper/7a30bb12359fea060162358ad7ac068b8e653c25 — 対応する主張を未確認。
+- S7（要確認）: book:Think Again（Adam Grant） — 対応する主張を未確認。

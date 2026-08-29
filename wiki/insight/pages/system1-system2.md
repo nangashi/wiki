@@ -1,10 +1,5 @@
 ---
 title: "システム1とシステム2（二重過程理論）"
-sources:
-  - "book:ファスト＆スロー（ダニエル・カーネマン）"
-  - "https://data.wingarc.com/fast-and-slow-19160"
-  - "https://asu-yoku-laboratory.com/behavioral-economics-system1-system2"
-  - "https://happeningday.hatenablog.com/entry/2026/01/23/140655"
 created: "2026-05-29"
 updated: "2026-07-18"
 reviewed: 3
@@ -72,3 +67,10 @@ reviewed: 3
 - [[motivated-reasoning]] — 二重過程の単純な善玉/悪玉対応を裏切る例。動機づけられた推論は熟慮（システム2）が感情的ゴール（システム1）に仕える構造で、「よく考えれば正しくなる」とは限らない
 - [[illusion-of-explanatory-depth]] — システム2が理解深度を検証しないことで錯覚が成立する
 - [[unlearn]] — 成功した方法の無意識化はシステム1化の一形態。「検証回路の閉鎖」はシステム2が起動しない構造として説明できる
+
+## 外部ソース
+
+- S1（要確認）: book:ファスト＆スロー（ダニエル・カーネマン） — 対応する主張を未確認。
+- S2（要確認）: https://data.wingarc.com/fast-and-slow-19160 — 対応する主張を未確認。
+- S3（要確認）: https://asu-yoku-laboratory.com/behavioral-economics-system1-system2 — 対応する主張を未確認。
+- S4（要確認）: https://happeningday.hatenablog.com/entry/2026/01/23/140655 — 対応する主張を未確認。

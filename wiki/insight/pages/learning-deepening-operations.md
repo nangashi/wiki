@@ -1,13 +1,5 @@
 ---
 title: "学習を深める5つの認知操作"
-sources:
-  - "book:独学の地図（荒木博行）"
-  - "book:ネガティブ・ケイパビリティ 答えの出ない事態に耐える力（帚木蓬生）"
-  - "https://note.com/koga_yu/n/n3b617fa0466b"
-  - "https://bookvinegar.jp/10108/"
-  - "https://tokumoto.jp/2023/07/44409/"
-  - "https://www.tlu.ee/~sirvir/IKM/Learning_and_Learning_Organization/deep_and_surface_approaches_to_learning.html"
-  - "https://economicsnetwork.ac.uk/archive/atherton_learning/deepsurf"
 created: "2026-05-25"
 updated: "2026-07-17"
 reviewed: 3
@@ -90,3 +82,13 @@ Marton & Säljö（1976）は、同じテキストを読む学習者に2つの�
 - [[method-problem-visibility]] — 具体化が働くと事象を概念によって因果構造として見抜けるようになる
 - [[knowledge-externalization]] — 抽象化・具体化の操作が学習記録（ラーニングパレット）の構造化精度を高める
 - [[learning-depth-and-breadth-roles]] — 深い学習（能力づくり）と浅く広い学習（地図づくり）の役割分担。深いアプローチが要るのは能力側の学習
+
+## 外部ソース
+
+- S1（要確認）: book:独学の地図（荒木博行） — 対応する主張を未確認。
+- S2（要確認）: book:ネガティブ・ケイパビリティ 答えの出ない事態に耐える力（帚木蓬生） — 対応する主張を未確認。
+- S3（要確認）: https://note.com/koga_yu/n/n3b617fa0466b — 対応する主張を未確認。
+- S4（要確認）: https://bookvinegar.jp/10108/ — 対応する主張を未確認。
+- S5（要確認）: https://tokumoto.jp/2023/07/44409/ — 対応する主張を未確認。
+- S6（要確認）: https://www.tlu.ee/~sirvir/IKM/Learning_and_Learning_Organization/deep_and_surface_approaches_to_learning.html — 対応する主張を未確認。
+- S7（要確認）: https://economicsnetwork.ac.uk/archive/atherton_learning/deepsurf — 対応する主張を未確認。

@@ -1,7 +1,5 @@
 ---
 title: "生産性低下の構造的誤診"
-sources:
-  - "https://cybozushiki.cybozu.co.jp/articles/m006314.html"
 created: "2026-05-19"
 updated: "2026-05-19"
 reviewed: 3
@@ -52,3 +50,7 @@ AIがコード生成や資料作成をこなせるようになると、量的な
 - [[local-optimization-trap]] — 局所（個人）への過剰フォーカスという類似の構造：部分最適が全体最適にならない数学的根拠
 - [[theory-of-constraints]] — 組織の制約を特定して改善することで生産性の構造問題に介入するフレームワーク
 - [[method-problem-visibility]] — 「違和感に名前をつける」処方箋は、組織レベルでの同型の構造化プロセス
+
+## 外部ソース
+
+- S1（要確認）: https://cybozushiki.cybozu.co.jp/articles/m006314.html — 対応する主張を未確認。

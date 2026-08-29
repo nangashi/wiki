@@ -1,10 +1,5 @@
 ---
 title: "プロセス称賛"
-sources:
-  - "book:マインドセット（キャロル・S・ドゥエック）"
-  - "https://note.com/sazawe/n/n06fd65aac4e6"
-  - "https://corp.miidas.jp/assessment/11726/"
-  - "https://oukoraikon.com/mindset-carol-dweck/"
 created: "2026-05-24"
 updated: "2026-05-24"
 reviewed: 3
@@ -61,3 +56,10 @@ reviewed: 3
 - [[growth-vs-fixed-mindset]] — プロセス称賛は成長マインドセットを誘導する主要な介入点。称賛の種類がマインドセットの形成に直接作用する
 - [[motivational-questioning]] — 問いかけが他者の内発的動機を引き出す原理と共通する。「あなたはこうだ（評価）」より「何をしたか（プロセス）」の言及が自律的動機を支える
 - [[needs-vs-strategies]] — NVCの「観察・ニーズ・リクエスト」フレームは能力評価でなくプロセスと行動に言及する点でプロセス称賛と構造が近い
+
+## 外部ソース
+
+- S1（要確認）: book:マインドセット（キャロル・S・ドゥエック） — 対応する主張を未確認。
+- S2（要確認）: https://note.com/sazawe/n/n06fd65aac4e6 — 対応する主張を未確認。
+- S3（要確認）: https://corp.miidas.jp/assessment/11726/ — 対応する主張を未確認。
+- S4（要確認）: https://oukoraikon.com/mindset-carol-dweck/ — 対応する主張を未確認。

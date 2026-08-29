@@ -1,13 +1,5 @@
 ---
 title: "学習を駆動する問いの生成"
-sources:
-  - "book:独学の地図（荒木博行）"
-  - "book:たった一つを変えるだけ（ダン・ロスステイン、ルース・サンタナ）"
-  - "https://rightquestion.org/what-is-the-qft/"
-  - "https://courses.cs.vt.edu/cs2104/Summer2014/Notes/SocraticQ.pdf"
-  - "https://www.cmu.edu/dietrich/sds/docs/golman/golman_loewenstein_curiosity.pdf"
-  - "https://psychologyfanatic.com/information-gap-theory/"
-  - "https://note.com/koga_yu/n/n3b617fa0466b"
 created: "2026-07-18"
 updated: "2026-07-18"
 reviewed: 3
@@ -88,3 +80,13 @@ Rothstein & SantanaのQFT（Question Formulation Technique、邦訳『たった�
 - [[learning-deepening-operations]] — 停滞1「未解決の問いを挙げられない」の解消手続きが本ページの操作群
 - [[hypothesis-as-stance]] — 操作4の出典。スタンスが検証の完了条件を定義する
 - [[motivational-questioning]] — 他者に問いを向けて再考を促す隣接領域。本ページは自分の探究のための問い生成
+
+## 外部ソース
+
+- S1（要確認）: book:独学の地図（荒木博行） — 対応する主張を未確認。
+- S2（要確認）: book:たった一つを変えるだけ（ダン・ロスステイン、ルース・サンタナ） — 対応する主張を未確認。
+- S3（要確認）: https://rightquestion.org/what-is-the-qft/ — 対応する主張を未確認。
+- S4（要確認）: https://courses.cs.vt.edu/cs2104/Summer2014/Notes/SocraticQ.pdf — 対応する主張を未確認。
+- S5（要確認）: https://www.cmu.edu/dietrich/sds/docs/golman/golman_loewenstein_curiosity.pdf — 対応する主張を未確認。
+- S6（要確認）: https://psychologyfanatic.com/information-gap-theory/ — 対応する主張を未確認。
+- S7（要確認）: https://note.com/koga_yu/n/n3b617fa0466b — 対応する主張を未確認。

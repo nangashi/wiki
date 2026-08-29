@@ -1,10 +1,5 @@
 ---
 title: "好意の原則"
-sources:
-  - "book:影響力の武器（ロバート・B・チャルディーニ）"
-  - "https://crexgroup.com/ja/marketing/career-learning/influence-psychology-summary/"
-  - "https://people-shift.com/articles/cialdinis-6-principles-of-persuasion/"
-  - "https://www.tech-father.com/blog/influence-tool"
 created: "2026-05-25"
 updated: "2026-05-25"
 reviewed: 3
@@ -55,3 +50,10 @@ reviewed: 3
 - [[authority-principle]] — 権威のある人物への好意がさらに従順さを高める相乗効果
 - [[character-ethics-vs-personality-ethics]] — 表面的な好感度スキル（見せ方の技術）はこの原則を意図的に活用している
 - [[needs-vs-strategies]] — 好意でなくニーズへの共感を基盤にした影響力
+
+## 外部ソース
+
+- S1（要確認）: book:影響力の武器（ロバート・B・チャルディーニ） — 対応する主張を未確認。
+- S2（要確認）: https://crexgroup.com/ja/marketing/career-learning/influence-psychology-summary/ — 対応する主張を未確認。
+- S3（要確認）: https://people-shift.com/articles/cialdinis-6-principles-of-persuasion/ — 対応する主張を未確認。
+- S4（要確認）: https://www.tech-father.com/blog/influence-tool — 対応する主張を未確認。

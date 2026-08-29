@@ -1,13 +1,5 @@
 ---
 title: "ニーズとストラテジーの区別"
-sources:
-  - "book:非暴力コミュニケーション（マーシャル・B・ローゼンバーグ）"
-  - "https://en.wikipedia.org/wiki/Nonviolent_Communication"
-  - "https://ja.wikipedia.org/wiki/%E9%9D%9E%E6%9A%B4%E5%8A%9B%E3%82%B3%E3%83%9F%E3%83%A5%E3%83%8B%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3"
-  - "https://baynvc.org/basics-of-nonviolent-communication/"
-  - "https://bayareacbtcenter.com/cornerstones-of-nvc-for-effective-communication/"
-  - "https://nvc-japan.net/material/feelings_needs_list/"
-  - "https://nvc-japan.net/nvc/"
 created: "2026-05-23"
 updated: "2026-07-02"
 reviewed: 3
@@ -95,3 +87,13 @@ NVCにおける共感は「相手の感情とニーズに完全に存在する�
 - [[stimulus-response-freedom]] — 感情の原因は他者でなく自分のニーズの状態という見方と共鳴
 - [[motivational-questioning]] — ニーズを尋ねることが相手の自発的変化を促す
 - [[child-activity-redesign]] — 子どものスクリーン習慣へのこの原理の適用例
+
+## 外部ソース
+
+- S1（要確認）: book:非暴力コミュニケーション（マーシャル・B・ローゼンバーグ） — 対応する主張を未確認。
+- S2（要確認）: https://en.wikipedia.org/wiki/Nonviolent_Communication — 対応する主張を未確認。
+- S3（要確認）: https://ja.wikipedia.org/wiki/%E9%9D%9E%E6%9A%B4%E5%8A%9B%E3%82%B3%E3%83%9F%E3%83%A5%E3%83%8B%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3 — 対応する主張を未確認。
+- S4（要確認）: https://baynvc.org/basics-of-nonviolent-communication/ — 対応する主張を未確認。
+- S5（要確認）: https://bayareacbtcenter.com/cornerstones-of-nvc-for-effective-communication/ — 対応する主張を未確認。
+- S6（要確認）: https://nvc-japan.net/material/feelings_needs_list/ — 対応する主張を未確認。
+- S7（要確認）: https://nvc-japan.net/nvc/ — 対応する主張を未確認。

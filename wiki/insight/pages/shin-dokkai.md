@@ -1,11 +1,5 @@
 ---
 title: "シン読解力（事実伝達文書の精確読解）"
-sources:
-  - "book:シン読解力（新井紀子）"
-  - "https://rst-web.s4e.jp/shin-dokkai"
-  - "https://www.kyobun.co.jp/article/2025022701"
-  - "https://note.com/yusuke_motoyama/n/n54c8df03e8eb"
-  - "https://econ-edu.net/2025/05/01/8392/"
 created: "2026-05-21"
 updated: "2026-05-21"
 reviewed: 3
@@ -79,3 +73,11 @@ reviewed: 3
 - [[language-context-dependence]] — シン読解力の対象となる学習言語は低文脈の言語体系であり、自然習得されない（明示的訓練が必要な理由の原理）
 - [[learning-roi]] — 入力量ではなくシン読解力の有無が学習回収率の前提条件（読書における実証）
 - [[fluency-illusion]] — 誤読でも「読めた気」になる錯覚のメカニズムと同根
+
+## 外部ソース
+
+- S1（要確認）: book:シン読解力（新井紀子） — 対応する主張を未確認。
+- S2（要確認）: https://rst-web.s4e.jp/shin-dokkai — 対応する主張を未確認。
+- S3（要確認）: https://www.kyobun.co.jp/article/2025022701 — 対応する主張を未確認。
+- S4（要確認）: https://note.com/yusuke_motoyama/n/n54c8df03e8eb — 対応する主張を未確認。
+- S5（要確認）: https://econ-edu.net/2025/05/01/8392/ — 対応する主張を未確認。

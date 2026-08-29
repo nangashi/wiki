@@ -1,10 +1,5 @@
 ---
 title: "返報性の原則"
-sources:
-  - "book:影響力の武器（ロバート・B・チャルディーニ）"
-  - "https://crexgroup.com/ja/marketing/career-learning/influence-psychology-summary/"
-  - "https://www.direct-commu.com/terms/influence/"
-  - "https://asu-yoku-laboratory.com/influence-the-psychology-of-persuasion"
 created: "2026-05-25"
 updated: "2026-05-25"
 reviewed: 3
@@ -48,3 +43,10 @@ reviewed: 3
 - [[commitment-and-consistency]] — コミットメントも同様に「断れない状況」を作るメカニズム
 - [[needs-vs-strategies]] — ニーズに基づいた与え方は返報性を超えた自発的協力を生む
 - [[focus-on-contribution]] — 貢献を先に置く姿勢は返報性を意図せず活用している
+
+## 外部ソース
+
+- S1（要確認）: book:影響力の武器（ロバート・B・チャルディーニ） — 対応する主張を未確認。
+- S2（要確認）: https://crexgroup.com/ja/marketing/career-learning/influence-psychology-summary/ — 対応する主張を未確認。
+- S3（要確認）: https://www.direct-commu.com/terms/influence/ — 対応する主張を未確認。
+- S4（要確認）: https://asu-yoku-laboratory.com/influence-the-psychology-of-persuasion — 対応する主張を未確認。
