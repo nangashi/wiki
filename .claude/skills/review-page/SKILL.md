@@ -26,6 +26,8 @@ description: 既存wikiページを独立評価し、改善して再評価する
 
 ### 1. 初回評価
 
+Codex評価の前に、対象記事ごとに `bash .claude/skills/lint/textlint-check.sh <記事パス>` を実行する。`TEXTLINT_REQUIRED`は評価前に修正する。`TEXTLINT_REVIEW`と`TEXTLINT_INFO`は意味・根拠・スタイルガイドに照らして採否を判断し、根拠の強さに関わる表現は外部ソースを確認せず弱めない。修正した場合は再実行し、文脈上残す指摘を記録する。評価だけの明示指示では記事を変更せず、textlint所見として報告する。
+
 `evaluation-protocol.md` に従い、Codex（Sol）を本体Bashから直接・read-only・`run_in_background: true` で起動する。プロンプトはWriteツールで作り、基準全文と記事全文を埋め込み、`< /dev/null` を付ける。Claude Code自身は採点しない。
 
 評価結果は保存前に`evaluation_validator.py`で検証する。不正なら保存せず、エラーや前回出力を加えない同一のクリーンプロンプトでretryする。正常な結果だけを `evaluations/insight/<slug>/` に保存し、raw_score、score_cap、final_score、品質区分、Blocking/Major/Minor、要外部調査、良い点を確認する。評価履歴が現行rubricでも、記事内容を見直す依頼なので初回評価を省略しない。
@@ -95,6 +97,7 @@ insightでは次を報告する。
 - 外部検証の確認済み／未確認／誤り
 - リンク、統合・分割、indexの所見
 - 停止条件と残課題
+- textlintの修正件数と、文脈上残した指摘・理由
 
 itでは次の形式で報告する。
 

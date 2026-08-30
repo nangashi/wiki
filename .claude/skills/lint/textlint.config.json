@@ -1,0 +1,36 @@
+{
+  "rules": {
+    "preset-ja-technical-writing": {
+      "sentence-length": false,
+      "max-comma": false,
+      "max-ten": false,
+      "max-kanji-continuous-len": false,
+      "arabic-kanji-numbers": false,
+      "no-mix-dearu-desumasu": false,
+      "ja-no-mixed-period": false,
+      "no-double-negative-ja": true,
+      "no-dropping-the-ra": true,
+      "no-doubled-conjunctive-particle-ga": false,
+      "no-doubled-conjunction": false,
+      "no-doubled-joshi": false,
+      "no-nfd": true,
+      "no-invalid-control-character": true,
+      "no-zero-width-spaces": true,
+      "no-exclamation-question-mark": false,
+      "no-hankaku-kana": true,
+      "ja-no-weak-phrase": false,
+      "ja-no-successive-word": false,
+      "ja-no-abusage": true,
+      "ja-no-redundant-expression": false,
+      "ja-unnatural-alphabet": true,
+      "no-unmatched-pair": true
+    },
+    "@textlint-ja/preset-ai-writing": {
+      "no-ai-list-formatting": false,
+      "no-ai-hype-expressions": true,
+      "no-ai-emphasis-patterns": false,
+      "no-ai-colon-continuation": true,
+      "ai-tech-writing-guideline": false
+    }
+  }
+}

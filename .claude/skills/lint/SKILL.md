@@ -17,7 +17,11 @@ wiki全体のリンク、孤立、重複、粒度、矛盾、低価値候補を�
 bash .claude/skills/lint/lint-check.sh \
   --collection insight:wiki/insight/pages \
   --collection it:wiki/it/pages
+
+bash .claude/skills/lint/textlint-check.sh 'wiki/insight/pages/*.md'
 ```
+
+textlintはinsight記事だけを対象にする。`TEXTLINT_REQUIRED`は必須修正、`TEXTLINT_REVIEW`は文脈判断、`TEXTLINT_INFO`は根拠・表現の確認候補として扱う。全指摘を一括修正せず、通常の改善キューで対象になった記事を処理するときに記事全体を読んで採否を決め、修正後に対象記事へ再実行する。文脈上正しい指摘は残し、理由を報告する。
 
 ## 構造チェック
 
@@ -34,6 +38,7 @@ bash .claude/skills/lint/lint-check.sh \
 | 8 | INFO | TINY+ORPHANまたはリダイレクトだけの低価値候補 | LLMで独自内容を確認 |
 | 8b | ERROR/WARNING | insight外部ソース節の欠落・要確認・不正ID・不正項目 | スクリプト＋Codex |
 | 9 | INFO | insight評価履歴の欠落・旧rubric・記事変更 | スクリプト＋Codex |
+| 10 | ERROR/WARNING/INFO | insight日本語の決定論的異常・要判断表現 | textlint＋Claude Code |
 
 itの `LARGE` は分割理由にせず、1技術1ページへの集約を優先する。統合・削除・リダイレクト化は必ずユーザー確認を取る。矛盾、リンク漏れ、低価値候補は修正前に対象記事を読み、誤検知を除く。
 
@@ -133,6 +138,7 @@ CHECK-4/6/7を含む通常の改善点は、問題、根拠、差分レベルの
 | チェック | ERROR | WARNING | INFO |
 |---|---:|---:|---:|
 | ... | ... | ... | ... |
+| CHECK-10 textlint | ... | ... | ... |
 
 ### 重複・矛盾・合成機会
 - CHECK-4: 対象 / 根拠 / 統合案、または該当なし

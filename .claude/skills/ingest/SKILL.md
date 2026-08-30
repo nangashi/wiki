@@ -64,6 +64,7 @@ codex exec -C "$(git rev-parse --show-toplevel)" -s read-only \
 - 新規ページは一時的に作成してよいが、`wiki/insight/index.md` の新規項目は品質ループ完了後に確定する。
 - 既存ページの実質的な変更では `updated` と末尾の外部ソースを更新する。新規frontmatterへ `sources`や`reviewed`を追加しない。
 - 本文、関連リンク、逆リンク、外部ソースを先に確定する。変更した逆リンク先を含む全insightページを評価対象にし、共通source validatorで形式を確認する。
+- insight記事の草稿を確定したら、対象記事ごとに `bash .claude/skills/lint/textlint-check.sh <記事パス>` を実行する。`TEXTLINT_REQUIRED`は必ず修正し、`TEXTLINT_REVIEW`と`TEXTLINT_INFO`は記事の意味・根拠・スタイルガイドに照らして修正または維持を判断する。指摘を一律に消さず、修正後に再実行する。文脈上残す指摘は完了報告へ理由を記載する。
 
 ### 4. Codex評価・Claude改善・独立再評価
 
@@ -92,3 +93,4 @@ itは `wiki/it/schema.md` の共通書き込み手順に従う。今回のinsigh
 - 追加した相互リンクとindex更新
 - 停止時の残課題
 - insightを変更した場合の `/anki` 案内
+- textlintの修正件数と、文脈上残した指摘・理由
