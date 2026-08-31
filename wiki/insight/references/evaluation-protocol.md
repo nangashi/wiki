@@ -30,7 +30,7 @@ evaluations/insight/<slug>/YYYYMMDDTHHMMSSZ-v<rubric_version>-<run-id>.md
 ---
 target: "wiki/insight/pages/<slug>.md"
 target_blob: "<git hash-objectで得た評価時内容の完全なhash>"
-rubric_version: 1
+rubric_version: 2
 evaluator: "codex"
 evaluator_model: "gpt-5.6-sol"
 evaluated_at: "YYYY-MM-DDTHH:MM:SSZ"
