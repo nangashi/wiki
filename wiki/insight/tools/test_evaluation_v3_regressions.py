@@ -154,8 +154,7 @@ class StateRegressionTest(unittest.TestCase):
         cli = subprocess.run([sys.executable, str(HERE / 'evaluation_validator.py'), str(old_only)], text=True, capture_output=True)
         self.assertEqual(cli.returncode, 0, cli.stderr)
         # The shell audit must also recognize the old version, not call it malformed.
-        audit = subprocess.run(['bash', str(HERE / 'lint-check.sh'), '--collection', f'insight:{self.pages}',
-                                '--evaluations-root', str(self.history), '--rubric-file', str(self.root / 'wiki/insight/references/article-quality-rubric.md')],
+        audit = subprocess.run([sys.executable, str(HERE / 'check.py'), '--root', str(self.root)],
                                cwd=self.root, text=True, capture_output=True)
         self.assertEqual(audit.returncode, 0, audit.stderr)
         self.assertIn('scope=all', audit.stdout)

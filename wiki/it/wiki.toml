@@ -1,0 +1,16 @@
+id = "it"
+purpose = "技術単位のリファレンス。1技術1ページへ体系的理解・採用判断・実装・運用知見を集約する。"
+pages = "pages"
+index = "index.md"
+schema = "schema.md"
+
+[workflows]
+ingest = "workflows/ingest.md"
+review = "workflows/review.md"
+lint = "workflows/lint.md"
+
+[checks]
+commands = []
+
+[publication]
+mode = "direct"

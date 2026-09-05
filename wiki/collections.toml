@@ -1,0 +1,4 @@
+# 設定パスはこのファイルからの相対パス。
+[collections]
+insight = "insight/wiki.toml"
+it = "it/wiki.toml"

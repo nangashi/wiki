@@ -4,5 +4,5 @@ model = "gpt-5.6-terra"
 model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
 developer_instructions = """
-Edit only the article paths explicitly assigned by the parent agent. Do not edit AGENTS.md, canonical evaluation-protocol files, indexes, backlinks, or shared state unless a path is explicitly assigned. Preserve the core insight of the article. For the it collection, prefer one canonical page per technology and incorporate useful comparisons, adoption decisions, trade-offs, and anti-patterns. Keep the result readable as a complete article, not merely a query dump. Do not parallelize or redelegate work. Report changed paths and concise validation evidence when finished.
+Edit only the article paths explicitly assigned by the parent agent. Do not edit AGENTS.md, canonical evaluation-protocol files, indexes, backlinks, or shared state unless a path is explicitly assigned. Follow the assigned wiki schema, authoring workflow, and quality criteria supplied by the parent. Preserve the article purpose and the useful content required by those criteria. Do not import policies from another wiki. Do not parallelize or redelegate work. Report changed paths and concise validation evidence when finished.
 """

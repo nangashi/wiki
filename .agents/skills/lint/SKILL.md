@@ -1,164 +1,37 @@
 ---
 name: lint
-description: wiki全体の構造監査と、rubric更新時のinsight再評価・改善キュー処理を行う
+description: 指定wikiまたは全wikiの構造・重複・矛盾を監査し、wikiごとに定義された再評価・改善まで実行する
 ---
 
-# $lint スキル
+# $lint
 
-wiki全体のリンク、孤立、重複、粒度、矛盾、低価値候補を監査する。さらにinsight評価履歴を現行rubricと自動照合し、必要なら同じ実行内で独立再評価、対応分布、改善キュー処理まで進む。動作切替オプションは設けない。
+## 範囲と準備
 
-## 事前準備
+`wiki/collections.toml` から対象設定を取得する。wiki指定があればその範囲、未指定なら全登録wikiを対象とする。各対象の `schema`、`workflows.lint` とそこで要求された基準を読む。対象外wikiの評価・改善は起動しない。
 
-1. `wiki/collections.md` と各コレクションの `schema.md` を読む。
-2. insightについて `article-quality-rubric.md`、`japanese-style-guide.md`、`reusability-criteria.md`、[evaluation-protocol.md](../../../wiki/insight/references/evaluation-protocol.md) を全文読む。
-3. 次を実行し、出力を保持する。
+設定内の文書パスは設定ファイルのディレクトリ基準。次のコマンドはリポジトリルートで実行する。
 
 ```bash
-bash .agents/skills/lint/lint-check.sh \
-  --collection insight:wiki/insight/pages \
-  --collection it:wiki/it/pages
-
-bash .agents/skills/lint/textlint-check.sh 'wiki/insight/pages/*.md'
-python3 .agents/skills/lint/wiki_structure.py index --check
+python3 tools/wiki/lint_check.py --collection <id> --checks
+python3 tools/wiki/wiki_structure.py index --collection <id> --check
 ```
 
-textlintはinsight記事だけを対象にする。`TEXTLINT_REQUIRED`は必須修正、`TEXTLINT_REVIEW`は文脈判断、`TEXTLINT_INFO`は根拠・表現の確認候補として扱う。全指摘を一括修正せず、通常の改善キューで対象になった記事を処理するときに記事全体を読んで採否を決め、修正後に対象記事へ再実行する。文脈上正しい指摘は残し、理由を報告する。
+全体の場合は `--collection` を省略する。`--checks` は各対象設定の `checks.commands` を実行する。これは機械診断であり、以下の意味的監査やwiki側の再評価・改善を代行しない。出力を保持し、処理失敗と記事の品質診断を区別する。
 
-## 構造チェック
+## 共通の構造・意味的監査
 
-| CHECK | 重大度 | 内容 | 最終判断 |
-|---|---|---|---|
-| 1 | ERROR | ローカル／クロスコレクションのリンク切れ | スクリプト |
-| 1b | WARNING | 禁止されたwikiエイリアス記法 | スクリプト |
-| 2 | WARNING | 被参照・発リンクともにない孤立ページ | スクリプト |
-| 3 | WARNING | 既存ページタイトルへのリンク漏れ候補 | LLMで誤検知除外 |
-| 4 | WARNING | 同一概念の重複・表記ゆれ | LLM |
-| 5 | INFO | 複数概念、過大・過小、過剰リンクによる粒度ズレ | LLM。文字数は候補抽出だけ |
-| 6 | WARNING | 定義・数値・日付・事実の矛盾 | LLM |
-| 8 | INFO | TINY+ORPHANまたはリダイレクトだけの低価値候補 | LLMで独自内容を確認 |
-| 8b | ERROR/WARNING | insight外部ソース節の欠落・要確認・不正ID・不正項目 | スクリプト＋`evaluator` |
-| 9 | INFO | insight評価履歴の欠落・旧rubric・記事変更 | スクリプト＋`evaluator` |
-| 10 | ERROR/WARNING/INFO | insight日本語の決定論的異常・要判断表現 | textlint＋`editor` |
+- 機械検査はリンク切れ、禁止エイリアス、孤立、タイトル言及によるリンク漏れ候補、記事サイズ・リンク数、低価値候補を取得する。
+- `finder`へ対象ページ群を重複しない範囲で割り当て、indexと全対象ページから問い・主張・条件・引用箇所を抽出させる。各記事の担当を記録し、機械検査が候補にしなかった記事も落とさない。
+- Astraが一覧から比較対象を選び、原文を確認する。CHECK-4は名称・概要・問い・独自情報から重複や表記ゆれを検討し、CHECK-6は同じ定義・数値・条件・推奨の矛盾を確認する。全体監査では担当境界・wiki境界をまたぐ候補も比較する。
+- 記事の粒度、採否、統合・分割の判断は各wikiの基準を使う。サイズだけで分割しない。外部確認なしに矛盾の一方を誤りと断定しない。
+- CHECK-3/5/8の候補は記事を読んで誤検知を除外する。各検出に対象・引用または概要上の根拠・理由・対応案を付け、該当なしも明記する。
 
-itの `LARGE` は分割理由にせず、1技術1ページへの集約を優先する。統合・削除・リダイレクト化は必ずユーザー確認を取る。矛盾、リンク漏れ、低価値候補は修正前に対象記事を読み、誤検知を除く。
+単独wikiの構造検査でも越境リンクの存在確認には登録先を参照するが、対象外wikiの記事を意味的監査・修正・評価する範囲へ自動追加しない。
 
-### LLM担当チェックの実行手順
+## wiki固有の保守と終了
 
-スクリプト結果の確認後、`finder`へページ群を重複しない範囲で割り当て、indexと全ページから問い・主要主張・条件・引用箇所を抽出させる。Astraがコレクション横断の一覧から比較対象を選び、該当ページの原文を確認して次を実行する。各ページの読込担当を記録し、分担境界をまたぐ重複・矛盾も確認する。スクリプトが候補にしなかったページを監査対象から落とさない。
+診断と比較結果を入力として各 `workflows.lint` を実行する。再評価・改善キューが定義されていれば同じ実行内で進め、そのwikiの独立性・保存・停止条件を守る。定義されていない処理を他wikiから移植しない。承認済みの範囲は再確認しない。
 
-1. **CHECK-4 重複概念**: タイトル・表記ゆれだけでなく、概要、扱う問い、独自情報を比較する。同一技術のitページと個別事例は1技術1ページ方針で統合候補にする。似ていても役割・適用条件が異なるなら除外する。
-2. **CHECK-6 矛盾**: 同じ定義、数値、日付、条件、推奨について相反する記述をページ対で示す。外部確認していなければどちらが誤りか断定せず、要確認とする。
+構造上の改善はERROR、WARNING、INFOの順に提示する。統合・削除・リダイレクト化などの承認要否は対象wikiの手順に従う。indexは記事の概要から生成し、サマリを別途執筆しない。被リンクは `python3 tools/wiki/wiki_structure.py backlinks <id>:<slug>` で取得する。
 
-各検出には対象ページ、引用または概要上の根拠、判定理由、具体的な対応案を付ける。該当なしも明記する。CHECK-3/5/8候補も対象記事を読んで誤検知を除外する。
-
-スクリプトの主要出力は次のとおり。
-
-- `BROKEN` / `ALIAS` / `ORPHAN` / `MISSING_LINK`
-- `METRICS` / `LOW_VALUE`
-- `SOURCE_MISSING` / `SOURCE_UNVERIFIED` / `SOURCE_ENTRY_INVALID` / `SOURCE_DUPLICATE_ID`
-- `EVALUATION_STATUS rubric_version=N ...`
-- `EVALUATION_REQUIRED slug=X reason=missing|rubric|content|metadata|output ...`
-- `EVALUATION_HISTORY_WARNING slug=X reason=metadata|output ...`（無効な過去履歴。最新有効評価があれば状態判定を妨げない）
-- `REEVALUATE_SCOPE scope=all|required|none reason=...`
-
-indexのサマリ不一致は `python3 .agents/skills/lint/wiki_structure.py index` で解消する。サマリを別途執筆しない。被リンクは同スクリプトの `backlinks <collection>:<slug>` で確認し、相互リンクのためだけに関連先を書き換えない。
-
-## CHECK-8b: 外部ソース
-
-構造チェックは`insight_source_validator.py`の結果を使う。`SOURCE_MISSING`、一次・二次がなく要確認／参考だけの`SOURCE_UNVERIFIED`は内容が偽とは断定せず、評価の事実基盤（ゲート不合格時は再利用性）の必須項目で対応する。形式不正や重複IDは保存前ERRORとする。一次・二次があっても重要主張の支持範囲が不明なら調査必須、確認済みの追跡性不足なら修正必須とし、判断に影響しない軽微な不足は任意改善とする。URLの文字列から内容や区分を推測せず、frontmatterの旧sourcesへfallbackしない。
-
-## CHECK-9: rubric差分と評価対象の自動決定
-
-評価状態は `evaluations/insight/<slug>/` にある最新の完全に有効な評価で判定する。有効性にはfrontmatterだけでなく、protocolが定める本文schemaの必須サマリ、6観点、対応項目、観点との整合等も含む。無効な過去履歴は警告・件数として残すが、有効評価が1件以上あれば最新有効評価の状態判定を妨げない。
-
-- 最新評価なし: その記事を評価する
-- metadataは正常だが本文schemaを満たす有効評価がない: `reason=output` で評価する
-- 最新 `rubric_version` が現行と異なる記事が1件以上: rubric変更としてinsight全件を再評価する
-- rubricは現行だが `target_blob` が現在の記事ハッシュと異なる: 変更記事を再評価する
-- 全件が現行かつ内容一致: 再評価しない
-
-追加オプションを要求せず、対象件数と実行規模を報告してそのまま同じ `$lint` 実行内で進める。`editor`やAstraが評価を補完・代行しない。
-
-## 独立一括評価
-
-対象ごとに protocolの通常評価を実行する。
-
-対象とrun manifestは`evaluation_state.py init`で生成し、`next`が返す最大3件だけを並行評価する。結果は`save`でsource診断category、評価本文validator、target hash、metadataを確認する。source構造不正は保存せず、SOURCE_MISSING / SOURCE_UNVERIFIEDは対応codeを事実基盤（ゲート不合格時は再利用性）の必須項目に持ち、導出passがfalseの評価だけ保存する。形式不正や実行失敗は`fail`へ渡す。中断後は`resume`、全体分布と改善キューは`normalize`で毎回再構築する。このhelper自体に評価を起動させない。新規runは現行v3を使い、旧rubricの未完了runから混在再開しない。
-
-```bash
-python3 .agents/skills/lint/evaluation_state.py init --manifest <run-dir>/manifest.json --rubric-version <N> --pages-dir wiki/insight/pages
-python3 .agents/skills/lint/evaluation_state.py next --manifest <run-dir>/manifest.json
-# `evaluator`（Sol / low） の結果を次で保存する
-python3 .agents/skills/lint/evaluation_state.py save --manifest <run-dir>/manifest.json --slug <slug> --body <evaluator-out.md>
-python3 .agents/skills/lint/evaluation_state.py fail --manifest <run-dir>/manifest.json --slug <slug> --error <reason>
-python3 .agents/skills/lint/evaluation_state.py resume --manifest <run-dir>/manifest.json
-python3 .agents/skills/lint/evaluation_state.py normalize --output <run-dir>/normalized.json
-```
-
-- 評価の起動、入力、クリーンな再試行、`evaluation_validator.py`、履歴・hash・metadataの保存は [evaluation-protocol.md](../../../wiki/insight/references/evaluation-protocol.md) を正本とする。
-- 各記事をfreshな`evaluator`（Sol / low）が評価し、他記事の評価結果や前回評価結果を渡さない
-- 結果を `evaluations/insight/<slug>/` に保存する
-
-並行上限は3件とし、3件以下の固定バッチで保存する。run manifest、最大2回のクリーンretry、失敗継続、停止時の扱いは protocolに従う。
-
-外部検証はprotocolの共通方式だけを使い、新しい履歴なしの`evaluator`（Sol / low）に依頼する。一括評価時は延期できるが、改善対象記事はキュー処理時に実行する。
-
-## 対応分布と改善キュー
-
-評価完了後だけでなく毎回、全insight記事の最新有効評価から公開判断、修正必須・調査必須・任意改善、観点別所見を再集計する。不正metadataの履歴は使わない。前回停止後もこの再構築によりキューを復元する。run manifestは経緯の補助であり、キューの正本ではない。
-
-キューは現行rubric・記事hash一致の有効評価から、ゲート不合格または修正必須・調査必須がある記事を抽出する。並び順は対象外、修正あり、調査のみ。同順位はslug昇順とし、件数を品質順位にしない。旧評価、未評価、内容変更後は`reevaluation_required`へ分離し、旧評価を現行の公開判断や対応件数へ変換しない。
-
-分布は対象外、修正・調査必須、修正必須、調査必須、公開可、再評価必要の排他的な区分で報告する。任意改善だけの記事は標準改善対象にしない。全体分布を確認した後、一件ずつ`$review-page`と同じ内部ループで必須の調査・修正を処理する。評価前に全記事を書き換えない。
-
-各記事では、必要な外部検証、`editor`（Terra / medium）による1〜3項目の改善、新しい`evaluator`（Sol / low）による独立再評価を行う。利用者は途中で停止できる。停止された場合は処理済み件数、未処理件数、次の対象を残す。統合・削除・リダイレクト化、核心の大幅変更は個別確認を取る。
-
-## 通常の修正
-
-構造上の改善はERROR → WARNING → INFOの順に扱う。明白で局所的な非破壊修正はまとめて提案できる。削除や統合は自動実行しない。
-
-CHECK-4/6を含む通常の改善点は、問題、根拠、差分レベルの推奨対応を一件ずつ提示する。本文・リンク修正は承認後に適用する。統合・分割・削除・リダイレクトは個別確認を取り、スキップ時は変更せず次へ進む。
-
-## 出力形式
-
-```markdown
-## Lint結果サマリ
-
-| チェック | ERROR | WARNING | INFO |
-|---|---:|---:|---:|
-| ... | ... | ... | ... |
-| CHECK-10 textlint | ... | ... | ... |
-
-### 重複・矛盾
-- CHECK-4: 対象 / 根拠 / 統合案、または該当なし
-- CHECK-6: 対象 / 相反する記述 / 要確認事項、または該当なし
-
-### 評価状態
-- rubric_version: N
-- 現行評価: N件
-- 未評価: N件
-- 旧rubric: N件
-- 記事変更後: N件
-- 再評価範囲: 全件 / 対象のみ / なし
-
-### 品質分布
-| 区分 | 件数 |
-|---|---:|
-| 対象外 | N |
-| 修正・調査必須 | N |
-| 修正必須 | N |
-| 調査必須 | N |
-| 公開可 | N |
-| 再評価必要 | N |
-
-### 改善キュー
-| 順位 | slug | 公開判断 | 修正必須 | 調査必須 |
-|---:|---|---|---:|---:|
-
-### 処理結果
-- 改善・再評価済み: N件
-- 未処理: N件
-- 次の対象: ...
-```
-
-件数の増減だけで改善と判断せず、必須の問題が解消されたかと保持した良い点を報告する。任意改善は原則実施せず、必須項目が0件なら終了する。最大3回または同じ実質的な必須問題が2回続けば停止し、未解決を報告する。
+対象wiki別に診断、重複・矛盾、実施した変更・評価、未処理・停止理由を報告する。wiki指定の報告schemaを保持し、異なる評価尺度を合算しない。失敗・未実施を「問題なし」としない。

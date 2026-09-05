@@ -195,15 +195,15 @@ class SourceValidatorTest(unittest.TestCase):
     def test_lint_continues_after_source_issue(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            pages = root / "pages"
-            pages.mkdir()
+            pages = root / "wiki/insight/pages"
+            pages.mkdir(parents=True)
             self.write(pages, "bad.md", "外部ソース未確認。")
-            rubric = root / "rubric.md"
+            rubric = root / "wiki/insight/references/article-quality-rubric.md"
+            rubric.parent.mkdir()
             rubric.write_text("**rubric_version: 1**\n", encoding="utf-8")
             subprocess.run(["git", "init", "-q"], cwd=root, check=True)
             result = subprocess.run(
-                ["bash", str(HERE / "lint-check.sh"), "--collection", f"insight:{pages}",
-                 "--evaluations-root", str(root / "evaluations"), "--rubric-file", str(rubric)],
+                [sys.executable, str(HERE / "check.py"), "--root", str(root)],
                 cwd=root, text=True, capture_output=True)
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn("SOURCE_MISSING", result.stdout)

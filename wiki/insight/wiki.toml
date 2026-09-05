@@ -1,0 +1,17 @@
+id = "insight"
+purpose = "再利用可能な推論モデル。因果・構造を使って未知ケースの予測・診断・判断に使う。"
+pages = "pages"
+index = "index.md"
+schema = "schema.md"
+
+[workflows]
+ingest = "workflows/ingest.md"
+review = "workflows/review.md"
+lint = "workflows/lint.md"
+
+[checks]
+commands = [["python3", "wiki/insight/tools/check.py"]]
+
+[publication]
+mode = "checked"
+command = ["python3", "wiki/insight/tools/publication.py"]

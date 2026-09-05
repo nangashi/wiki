@@ -130,8 +130,8 @@ Astraが必須対応から1回につき1〜3項目を選び、必要な調査後
 通常評価の保存も共通helperを使う。`init`と`next`で対象と評価開始時のhashを記録してから評価を起動する。`save`は開始時と保存時のhash一致を確認する。手動で本文の合否や対応項目を補完しない。
 
 ```bash
-python3 .agents/skills/lint/evaluation_validator.py <evaluator-out.md> --slug <slug> --rubric-version 3
-python3 .agents/skills/lint/evaluation_state.py init --manifest <run-dir>/manifest.json --rubric-version 3 --target <slug>:wiki/insight/pages/<slug>.md
-python3 .agents/skills/lint/evaluation_state.py next --manifest <run-dir>/manifest.json
-python3 .agents/skills/lint/evaluation_state.py save --manifest <run-dir>/manifest.json --slug <slug> --body <evaluator-out.md>
+python3 wiki/insight/tools/evaluation_validator.py <evaluator-out.md> --slug <slug> --rubric-version 3
+python3 wiki/insight/tools/evaluation_state.py init --manifest <run-dir>/manifest.json --rubric-version 3 --target <slug>:wiki/insight/pages/<slug>.md
+python3 wiki/insight/tools/evaluation_state.py next --manifest <run-dir>/manifest.json
+python3 wiki/insight/tools/evaluation_state.py save --manifest <run-dir>/manifest.json --slug <slug> --body <evaluator-out.md>
 ```
