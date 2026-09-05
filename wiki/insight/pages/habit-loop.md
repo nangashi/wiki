@@ -2,7 +2,6 @@
 title: "習慣ループ"
 created: "2026-05-25"
 updated: "2026-07-18"
-reviewed: 3
 ---
 
 # 習慣ループ

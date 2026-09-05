@@ -2,7 +2,6 @@
 title: "精緻的質問"
 created: "2026-05-20"
 updated: "2026-07-18"
-reviewed: 3
 ---
 
 # 精緻的質問

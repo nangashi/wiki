@@ -2,7 +2,6 @@
 title: "貢献への集中"
 created: "2026-05-24"
 updated: "2026-05-24"
-reviewed: 3
 ---
 
 # 貢献への集中

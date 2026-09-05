@@ -2,7 +2,6 @@
 title: "動機づけられた推論（motivated reasoning）"
 created: "2026-05-21"
 updated: "2026-07-18"
-reviewed: 0
 ---
 
 # 動機づけられた推論（motivated reasoning）

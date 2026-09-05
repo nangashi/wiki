@@ -242,6 +242,33 @@ class StateTest(unittest.TestCase):
         ]
         self.assertEqual([r["slug"] for r in sorted(records, key=queue_rank)], ["a", "b", "m", "z"])
 
+    def test_lint_does_not_sample_when_all_evaluations_are_current(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            pages = root / "wiki/insight/pages"
+            pages.mkdir(parents=True)
+            (pages / "current.md").write_text(
+                article("- S1（一次）: https://example.com/source — 根拠"), encoding="utf-8")
+            rubric = root / "rubric.md"
+            rubric.write_text("**rubric_version: 1**\n", encoding="utf-8")
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            manifest = root / "manifest.json"
+            evaluations_root = root / "evaluations/insight"
+            self.run_tool(root, "init", "--manifest", str(manifest), "--rubric-version", "1",
+                          "--run-id", "abcdefgh", "--pages-dir", str(pages))
+            self.run_tool(root, "next", "--manifest", str(manifest), "--limit", "1")
+            body = root / "evaluation.md"
+            body.write_text(evaluation("current"), encoding="utf-8")
+            self.run_tool(root, "save", "--manifest", str(manifest), "--slug", "current", "--body", str(body),
+                          "--evaluations-root", str(evaluations_root), "--evaluated-at", "2026-08-29T00:00:00Z",
+                          "--evaluation-run-id", "ijklmnop")
+            result = subprocess.run(
+                ["bash", str(HERE / "lint-check.sh"), "--collection", f"insight:{pages}",
+                 "--evaluations-root", str(evaluations_root), "--rubric-file", str(rubric)],
+                cwd=root, text=True, capture_output=True, check=True)
+            self.assertIn("REEVALUATE_SCOPE  scope=none  reason=all_current  count=0", result.stdout)
+            self.assertNotIn("SAMPLE_EVALUATION", result.stdout)
+
 
 class SourceValidatorTest(unittest.TestCase):
     def write(self, root: Path, name: str, source_section: str, frontmatter_extra: str = "") -> Path:
@@ -293,18 +320,30 @@ class SourceValidatorTest(unittest.TestCase):
                     self.assertTrue(any(item.code == "SOURCE_ENTRY_INVALID" and item.reason == "frontmatter_source_key_forbidden" for item in errors))
                     self.assertNotEqual(self.cli(path).returncode, 0)
 
-    def test_description_sentence_count(self):
+    def test_nonsequential_ids_and_short_descriptions_are_allowed(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            for name, description, valid in (
-                ("one", "一文で支える。", True),
-                ("two", "一文目で核心を支える。二文目で範囲を限定する。", True),
-                ("three", "一。二。三。", False),
-                ("question", "何を支える！？", True),
+            for name, section in (
+                ("gapped", "- S2（一次）: https://example.com/a — 短い説明"),
+                ("reordered", "- S9（一次）: https://example.com/a — a\n- S3（二次）: https://example.com/b — b"),
             ):
                 with self.subTest(name=name):
-                    path = self.write(root, f"{name}.md", f"- S1（一次）: https://example.com/a.b?x=1!2 — {description}")
-                    self.assertEqual(not validate_sources(path), valid)
+                    path = self.write(root, f"{name}.md", section)
+                    self.assertFalse(validate_sources(path))
+
+    def test_empty_description_is_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = self.write(Path(directory), "empty.md", "- S1（一次）: https://example.com/a — ")
+            errors = validate_sources(path)
+            self.assertTrue(any(item.code == "SOURCE_ENTRY_INVALID" for item in errors))
+
+    def test_undefined_body_reference_is_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path = self.write(root, "undefined.md", "- S2（一次）: https://example.com/a — 根拠")
+            path.write_text(path.read_text(encoding="utf-8").replace("テスト本文。", "テスト本文。[S1]"), encoding="utf-8")
+            errors = validate_sources(path)
+            self.assertTrue(any(item.reason == "unknown_body_reference=S1" for item in errors))
 
     def test_lint_continues_after_source_issue(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -317,8 +356,8 @@ class SourceValidatorTest(unittest.TestCase):
             subprocess.run(["git", "init", "-q"], cwd=root, check=True)
             result = subprocess.run(
                 ["bash", str(HERE / "lint-check.sh"), "--collection", f"insight:{pages}",
-                 "--evaluations-root", str(root / "evaluations"), "--rubric-file", str(rubric),
-                 "--suggestions-root", str(root / "suggestions")], cwd=root, text=True, capture_output=True)
+                 "--evaluations-root", str(root / "evaluations"), "--rubric-file", str(rubric)],
+                cwd=root, text=True, capture_output=True)
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn("SOURCE_MISSING", result.stdout)
             self.assertIn("insight外部ソース診断あり。lint全体は継続します", result.stdout)

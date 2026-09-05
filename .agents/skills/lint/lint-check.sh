@@ -16,16 +16,11 @@
 # LLMが担当するチェック:
 #   CHECK-4: 重複概念（意味的類似性）
 #   CHECK-6: 矛盾（セマンティック推論）
-#   CHECK-7: 未接続の合成機会
-#
-# 補助出力:
-#   SAMPLE_EVALUATION: 品質ドリフト監査用にランダムに3ページ選出
-#   OPEN_SUGGESTION: suggestions/ 配下で有効なfrontmatterを持つopen提案
 #
 # 使い方:
 #   bash lint-check.sh --collection name:path [--collection name2:path2 ...]
 # テスト専用内部引数:
-#   --evaluations-root path --rubric-file path --suggestions-root path
+#   --evaluations-root path --rubric-file path
 #
 # 例:
 #   bash .agents/skills/lint/lint-check.sh \
@@ -40,7 +35,6 @@ declare -A collection_paths  # collection_paths[name]=path
 declare -a collection_names  # 順序保持用
 evaluations_root="evaluations/insight"
 rubric_file="wiki/insight/references/article-quality-rubric.md"
-suggestions_root="suggestions"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -56,10 +50,6 @@ while [[ $# -gt 0 ]]; do
       ;;
     --rubric-file)
       rubric_file="$2"
-      shift 2
-      ;;
-    --suggestions-root)
-      suggestions_root="$2"
       shift 2
       ;;
     *)
@@ -342,7 +332,6 @@ eval_output_invalid=0
 invalid_metadata_history=0
 invalid_output_history=0
 insight_total=0
-declare -a insight_slugs
 
 parsed_target=""
 parsed_blob=""
@@ -412,12 +401,6 @@ validate_evaluation_output() {
   local expected_slug="$2"
   python3 "${script_dir}/evaluation_validator.py" "$eval_file" --slug "$expected_slug" >/dev/null 2>&1
 }
-
-for key in "${!col_slug_to_file[@]}"; do
-  col="${key%%/*}"
-  [[ "$col" != "insight" ]] && continue
-  insight_slugs+=("${key##*/}")
-done
 
 if [ -z "$current_version" ]; then
   echo "WARN: ${rubric_file} に rubric_version: N が見つかりません。CHECK-9 をスキップします"
@@ -503,7 +486,7 @@ else
   elif [ "$c9" -gt 0 ]; then
     echo "REEVALUATE_SCOPE  scope=required  reason=missing_or_content_changed  count=${c9}"
   else
-    echo "REEVALUATE_SCOPE  scope=sample  reason=all_current  count=0"
+    echo "REEVALUATE_SCOPE  scope=none  reason=all_current  count=0"
   fi
 
   [ "$c9" -eq 0 ] && echo "OK: 全insight記事の評価が現行rubric・現行内容と一致"
@@ -511,48 +494,8 @@ else
 fi
 echo ""
 
-# ── 品質ドリフト監査: 全評価が現行の場合のみランダムに3件 ────────────
-echo "=== SAMPLE_EVALUATION: 品質ドリフト監査対象 ==="
-if [ -z "$current_version" ] || [ ${#insight_slugs[@]} -eq 0 ]; then
-  echo "INFO: サンプル評価対象なし"
-elif [ "${c9:-1}" -gt 0 ]; then
-  echo "INFO: 再評価対象があるためサンプル評価を省略"
-else
-  sample_n=3
-  [ "${#insight_slugs[@]}" -lt "$sample_n" ] && sample_n=${#insight_slugs[@]}
-  while IFS= read -r slug; do
-    echo "SAMPLE_EVALUATION  collection=insight  slug=${slug}"
-  done < <(printf '%s\n' "${insight_slugs[@]}" | shuf -n "$sample_n")
-fi
-echo ""
-
-# ── suggestions/ のスキャン ──────────────────────────────────────────
-echo "=== SUGGESTIONS: suggestions/ ディレクトリの未処理提案 ==="
-csg=0
-
-if [ -d "$suggestions_root" ]; then
-  while IFS= read -r sf; do
-    if [ "$(sed -n '1p' "$sf")" != "---" ]; then
-      continue
-    fi
-    suggestion_meta=$(awk 'NR==1 && $0=="---" {inside=1; next} inside && $0=="---" {found=1; exit} inside {print} END {if (!found) exit 1}' "$sf") || continue
-    status=$(printf '%s\n' "$suggestion_meta" | sed -n -E 's/^status:[[:space:]]*"?([a-z]+)"?$/\1/p')
-    target=$(printf '%s\n' "$suggestion_meta" | sed -n -E 's/^target:[[:space:]]*"?([^"[:space:]][^"]*)"?$/\1/p')
-    target="${target%\"}"
-    if [ "$status" = "open" ] && [ -n "$target" ]; then
-      echo "OPEN_SUGGESTION  file=${sf}  target=${target}"
-      csg=$((csg + 1))
-    fi
-  done < <(find "$suggestions_root" -maxdepth 1 -name "*.md" ! -name ".gitkeep" | sort)
-fi
-
-[ "$csg" -eq 0 ] && echo "OK: 未処理suggestionなし"
-echo "COUNT: $csg"
-echo ""
-
 # ── 完了 ─────────────────────────────────────────────────────────────
 echo "=== DONE ==="
-echo "NOTE: CHECK-4(重複概念)・CHECK-6(矛盾)・CHECK-7(合成機会) はLLM分析が必要"
+echo "NOTE: CHECK-4(重複概念)・CHECK-6(矛盾) はLLM分析が必要"
 echo "NOTE: CHECK-8 の候補はLLMが内容を確認し、削除前にユーザー確認を取ること"
 echo "NOTE: CHECK-9 は evaluation-protocol.md に従い、同じlint実行内でCodex再評価・ランキング・改善キュー処理へ進む"
-echo "NOTE: SAMPLE_EVALUATION はAstraが採点せず、新しいCodex実行で品質ドリフトを確認する"

@@ -2,7 +2,6 @@
 title: "制約理論（TOC）"
 created: "2026-05-23"
 updated: "2026-07-18"
-reviewed: 3
 ---
 
 # 制約理論（TOC）

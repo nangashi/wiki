@@ -2,7 +2,6 @@
 title: "好意の原則"
 created: "2026-05-25"
 updated: "2026-05-25"
-reviewed: 3
 ---
 
 # 好意の原則

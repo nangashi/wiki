@@ -62,18 +62,9 @@ def validate(path: Path) -> list[SourceDiagnostic]:
         kinds.append(kind)
         if kind == "要確認" and description != "対応する主張を未確認。":
             errors.append(diagnostic("SOURCE_ENTRY_INVALID", f"S{source_id}_unverified_description"))
-        if kind != "要確認":
-            # 日本語本文の終止符だけを数える。URLや書誌情報に含まれうる
-            # ASCII periodは文数に使わず、！？の連続は1つの終止として扱う。
-            sentences = len(re.findall(r"[。！？!?]+", description))
-            if sentences not in {1, 2} or not re.search(r"[。！？!?]$", description):
-                errors.append(diagnostic("SOURCE_ENTRY_INVALID", f"S{source_id}_description_must_be_1_or_2_sentences"))
     duplicates = sorted({source_id for source_id in ids if ids.count(source_id) > 1}, key=int)
     for source_id in duplicates:
         errors.append(diagnostic("SOURCE_DUPLICATE_ID", f"S{source_id}"))
-    expected = [str(i) for i in range(1, len(ids) + 1)]
-    if ids and ids != expected:
-        errors.append(diagnostic("SOURCE_ENTRY_INVALID", "ids_not_sequential"))
     if not ids:
         errors.append(diagnostic("SOURCE_MISSING", "no_valid_entries"))
     elif not any(kind in {"一次", "二次"} for kind in kinds):

@@ -2,7 +2,6 @@
 title: "知識の外部化"
 created: "2026-07-18"
 updated: "2026-07-18"
-reviewed: 3
 ---
 
 # 知識の外部化

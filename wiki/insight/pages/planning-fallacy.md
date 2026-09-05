@@ -2,7 +2,6 @@
 title: "計画の誤謬"
 created: "2026-05-29"
 updated: "2026-05-29"
-reviewed: 3
 ---
 
 # 計画の誤謬

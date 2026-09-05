@@ -2,7 +2,6 @@
 title: "希少性の原則"
 created: "2026-05-25"
 updated: "2026-08-23"
-reviewed: 3
 ---
 
 # 希少性の原則

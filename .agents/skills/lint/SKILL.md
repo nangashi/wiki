@@ -19,6 +19,7 @@ bash .agents/skills/lint/lint-check.sh \
   --collection it:wiki/it/pages
 
 bash .agents/skills/lint/textlint-check.sh 'wiki/insight/pages/*.md'
+python3 .agents/skills/lint/wiki_structure.py index --check
 ```
 
 textlintはinsight記事だけを対象にする。`TEXTLINT_REQUIRED`は必須修正、`TEXTLINT_REVIEW`は文脈判断、`TEXTLINT_INFO`は根拠・表現の確認候補として扱う。全指摘を一括修正せず、通常の改善キューで対象になった記事を処理するときに記事全体を読んで採否を決め、修正後に対象記事へ再実行する。文脈上正しい指摘は残し、理由を報告する。
@@ -34,7 +35,6 @@ textlintはinsight記事だけを対象にする。`TEXTLINT_REQUIRED`は必須�
 | 4 | WARNING | 同一概念の重複・表記ゆれ | LLM |
 | 5 | INFO | 複数概念、過大・過小、過剰リンクによる粒度ズレ | LLM。文字数は候補抽出だけ |
 | 6 | WARNING | 定義・数値・日付・事実の矛盾 | LLM |
-| 7 | INFO | 対比・分類・統合枠組みにできる未接続の合成機会 | LLM |
 | 8 | INFO | TINY+ORPHANまたはリダイレクトだけの低価値候補 | LLMで独自内容を確認 |
 | 8b | ERROR/WARNING | insight外部ソース節の欠落・要確認・不正ID・不正項目 | スクリプト＋`evaluator` |
 | 9 | INFO | insight評価履歴の欠落・旧rubric・記事変更 | スクリプト＋`evaluator` |
@@ -44,24 +44,24 @@ itの `LARGE` は分割理由にせず、1技術1ページへの集約を優先�
 
 ### LLM担当チェックの実行手順
 
-スクリプト結果の確認後、`finder`へページ群を重複しない範囲で割り当て、indexと全ページから問い・主要主張・条件・引用箇所を抽出させる。Astraがコレクション横断の一覧から比較対象を選び、該当ページの原文を確認して次を実行する。各ページの読込担当を記録し、分担境界をまたぐ重複・矛盾・合成機会も確認する。スクリプトが候補にしなかったページを監査対象から落とさない。
+スクリプト結果の確認後、`finder`へページ群を重複しない範囲で割り当て、indexと全ページから問い・主要主張・条件・引用箇所を抽出させる。Astraがコレクション横断の一覧から比較対象を選び、該当ページの原文を確認して次を実行する。各ページの読込担当を記録し、分担境界をまたぐ重複・矛盾も確認する。スクリプトが候補にしなかったページを監査対象から落とさない。
 
 1. **CHECK-4 重複概念**: タイトル・表記ゆれだけでなく、概要、扱う問い、独自情報を比較する。同一技術のitページと個別事例は1技術1ページ方針で統合候補にする。似ていても役割・適用条件が異なるなら除外する。
 2. **CHECK-6 矛盾**: 同じ定義、数値、日付、条件、推奨について相反する記述をページ対で示す。外部確認していなければどちらが誤りか断定せず、要確認とする。
-3. **CHECK-7 合成機会**: 同じ問いへの異なるアプローチ、複数ページに共通する分類軸、統合枠組みを探す。表面的な類似や単なるリンク追加は合成機会にしない。
 
 各検出には対象ページ、引用または概要上の根拠、判定理由、具体的な対応案を付ける。該当なしも明記する。CHECK-3/5/8候補も対象記事を読んで誤検知を除外する。
 
 スクリプトの主要出力は次のとおり。
 
 - `BROKEN` / `ALIAS` / `ORPHAN` / `MISSING_LINK`
-- `METRICS` / `LOW_VALUE` / `OPEN_SUGGESTION`
+- `METRICS` / `LOW_VALUE`
 - `SOURCE_MISSING` / `SOURCE_UNVERIFIED` / `SOURCE_ENTRY_INVALID` / `SOURCE_DUPLICATE_ID`
 - `EVALUATION_STATUS rubric_version=N ...`
 - `EVALUATION_REQUIRED slug=X reason=missing|rubric|content|metadata|output ...`
 - `EVALUATION_HISTORY_WARNING slug=X reason=metadata|output ...`（無効な過去履歴。最新有効評価があれば状態判定を妨げない）
-- `REEVALUATE_SCOPE scope=all|required reason=...`
-- `SAMPLE_EVALUATION slug=X`（全評価が現行なら品質ドリフト監査用）
+- `REEVALUATE_SCOPE scope=all|required|none reason=...`
+
+indexのサマリ不一致は `python3 .agents/skills/lint/wiki_structure.py index` で解消する。サマリを別途執筆しない。被リンクは同スクリプトの `backlinks <collection>:<slug>` で確認し、相互リンクのためだけに関連先を書き換えない。
 
 ## CHECK-8b: 外部ソース
 
@@ -69,13 +69,13 @@ itの `LARGE` は分割理由にせず、1技術1ページへの集約を優先�
 
 ## CHECK-9: rubric差分と評価対象の自動決定
 
-評価状態は記事frontmatterの旧 `reviewed` 整数ではなく、`evaluations/insight/<slug>/` にある最新の完全に有効な評価で判定する。有効性にはfrontmatterだけでなく、protocolが定める本文schemaの必須サマリ、6観点、Blocking/Major/Minor等も含む。無効な過去履歴は警告・件数として残すが、有効評価が1件以上あれば最新有効評価の状態判定を妨げない。
+評価状態は `evaluations/insight/<slug>/` にある最新の完全に有効な評価で判定する。有効性にはfrontmatterだけでなく、protocolが定める本文schemaの必須サマリ、6観点、Blocking/Major/Minor等も含む。無効な過去履歴は警告・件数として残すが、有効評価が1件以上あれば最新有効評価の状態判定を妨げない。
 
 - 最新評価なし: その記事を評価する
 - metadataは正常だが本文schemaを満たす有効評価がない: `reason=output` で評価する
 - 最新 `rubric_version` が現行と異なる記事が1件以上: rubric変更としてinsight全件を再評価する
 - rubricは現行だが `target_blob` が現在の記事ハッシュと異なる: 変更記事を再評価する
-- 全件が現行かつ内容一致: 構造監査に加え、`SAMPLE_EVALUATION` の3件を`evaluator`で再評価して品質ドリフトだけ確認する
+- 全件が現行かつ内容一致: 再評価しない
 
 追加オプションを要求せず、対象件数と実行規模を報告してそのまま同じ `$lint` 実行内で進める。`editor`やAstraが点数を補完・代行しない。
 
@@ -119,13 +119,11 @@ Blocking/Majorありと70点未満を標準の改善対象とする。最初に�
 
 各記事では、必要な外部検証、`editor`（Terra / medium）による1〜3項目の改善、新しい`evaluator`（Sol / low）による独立再評価を行う。利用者は途中で停止できる。停止された場合は処理済み件数、未処理件数、次の対象を残す。統合・削除・リダイレクト化、核心の大幅変更は個別確認を取る。
 
-## suggestionと通常の修正
+## 通常の修正
 
-`OPEN_SUGGESTION` は `suggestions/` 直下で、先頭frontmatterに有効な `status: open` と `target:` を持つ提案だけを対象とする。設計書・監査報告などfrontmatterのない文書は含めない。内容と対象ページを読み、適用／却下／スキップを確認する。適用時は `status: applied`、却下時は `status: rejected` にする。
+構造上の改善はERROR → WARNING → INFOの順に扱う。明白で局所的な非破壊修正はまとめて提案できる。削除や統合は自動実行しない。
 
-構造上の改善は未処理suggestion → ERROR → WARNING → INFOの順に扱う。明白で局所的な非破壊修正はまとめて提案できる。削除や統合は自動実行しない。
-
-CHECK-4/6/7を含む通常の改善点は、問題、根拠、差分レベルの推奨対応を一件ずつ提示する。本文・リンク修正は承認後に適用する。統合・分割・削除・リダイレクト・新規関係ページは個別確認を取り、スキップ時は変更せず次へ進む。
+CHECK-4/6を含む通常の改善点は、問題、根拠、差分レベルの推奨対応を一件ずつ提示する。本文・リンク修正は承認後に適用する。統合・分割・削除・リダイレクトは個別確認を取り、スキップ時は変更せず次へ進む。
 
 ## 出力形式
 
@@ -137,10 +135,9 @@ CHECK-4/6/7を含む通常の改善点は、問題、根拠、差分レベルの
 | ... | ... | ... | ... |
 | CHECK-10 textlint | ... | ... | ... |
 
-### 重複・矛盾・合成機会
+### 重複・矛盾
 - CHECK-4: 対象 / 根拠 / 統合案、または該当なし
 - CHECK-6: 対象 / 相反する記述 / 要確認事項、または該当なし
-- CHECK-7: 対象群 / 共通構造 / 関係概念案、または該当なし
 
 ### 評価状態
 - rubric_version: N
@@ -148,7 +145,7 @@ CHECK-4/6/7を含む通常の改善点は、問題、根拠、差分レベルの
 - 未評価: N件
 - 旧rubric: N件
 - 記事変更後: N件
-- 再評価範囲: 全件 / 対象のみ / サンプルのみ
+- 再評価範囲: 全件 / 対象のみ / なし
 
 ### 品質分布
 | 区分 | 件数 |

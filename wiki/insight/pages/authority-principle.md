@@ -2,7 +2,6 @@
 title: "権威の原則"
 created: "2026-05-25"
 updated: "2026-07-02"
-reviewed: 3
 ---
 
 # 権威の原則

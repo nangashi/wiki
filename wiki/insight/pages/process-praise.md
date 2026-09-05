@@ -2,7 +2,6 @@
 title: "プロセス称賛"
 created: "2026-05-24"
 updated: "2026-05-24"
-reviewed: 3
 ---
 
 # プロセス称賛

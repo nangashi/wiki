@@ -2,7 +2,6 @@
 title: "流暢性の錯覚"
 created: "2026-05-20"
 updated: "2026-07-18"
-reviewed: 3
 ---
 
 # 流暢性の錯覚

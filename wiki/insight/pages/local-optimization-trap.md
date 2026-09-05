@@ -2,7 +2,6 @@
 title: "局所最適の罠"
 created: "2026-05-23"
 updated: "2026-05-23"
-reviewed: 3
 ---
 
 # 局所最適の罠

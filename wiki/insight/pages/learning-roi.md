@@ -2,7 +2,6 @@
 title: "学習回収率"
 created: "2026-05-19"
 updated: "2026-07-18"
-reviewed: 3
 ---
 
 # 学習回収率

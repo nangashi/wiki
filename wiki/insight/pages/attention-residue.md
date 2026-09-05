@@ -2,7 +2,6 @@
 title: "Attention Residue（注意残余）"
 created: "2026-08-01"
 updated: "2026-08-01"
-reviewed: 3
 ---
 
 # Attention Residue（注意残余）
