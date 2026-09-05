@@ -42,9 +42,12 @@ class TestV3(unittest.TestCase):
   self.assertFalse(validate_text(ev(s,action("調査必須","事実基盤")),"sample")["valid"])
  def test_rejected(self): self.assertTrue(validate_text(ev(actions=action("修正必須","再利用性"),gate="不合格"),"sample")["valid"])
  def test_numeric_rejected(self): self.assertFalse(validate_text(ev().replace("- reusability_gate: 合格","- reusability_gate: 合格\n- final_score: 100"),"sample")["valid"])
- def test_unknown_version_and_empty_applicability_rejected(self):
-  self.assertFalse(validate_text(ev(),"sample",4)["valid"])
+ def test_future_version_and_empty_applicability_rejected(self):
+  self.assertFalse(validate_text(ev(),"sample",5)["valid"])
   self.assertFalse(validate_text(ev({x:"対象外" for x in D}),"sample")["valid"])
+ def test_v3_qualitative_history_remains_readable(self):
+  history="---\nrubric_version: 3\n---\n"+ev()
+  self.assertTrue(validate_text(history,"sample")["valid"])
  def test_legacy_version_routes_to_frozen_validator(self):
   legacy=validate_text("# Insight記事評価: sample\n", "sample", 2)
   self.assertFalse(legacy["valid"])
@@ -60,7 +63,7 @@ class StateCliTest(unittest.TestCase):
   (pages/"sample.md").write_text(f'''---\ntitle: "t"\n---\n# t\n## 外部ソース\n{source}\n''',encoding="utf-8")
   subprocess.run(["git","init","-q"],cwd=root,check=True); return tmp,root,pages
  def init_next(self,root,pages):
-  manifest=root/"manifest.json"; self.tool(root,"init","--manifest",str(manifest),"--rubric-version","3","--pages-dir",str(pages)); self.tool(root,"next","--manifest",str(manifest),"--limit","1"); return manifest
+  manifest=root/"manifest.json"; self.tool(root,"init","--manifest",str(manifest),"--rubric-version","4","--pages-dir",str(pages)); self.tool(root,"next","--manifest",str(manifest),"--limit","1"); return manifest
  def test_cli_save_records_claimed_hash(self):
   tmp,root,pages=self.setup()
   with tmp:
@@ -85,16 +88,17 @@ class StateCliTest(unittest.TestCase):
   with tmp:
    manifest=self.init_next(root,pages); b=root/"b.md"; b.write_text(ev())
    self.assertNotEqual(self.tool(root,"save","--manifest",str(manifest),"--slug","sample","--body",str(b),"--evaluations-root",str(root/"eval"),check=False).returncode,0)
-   self.assertNotEqual(self.tool(root,"init","--manifest",str(root/"old.json"),"--rubric-version","2","--pages-dir",str(pages),check=False).returncode,0)
+   self.assertNotEqual(self.tool(root,"init","--manifest",str(root/"old.json"),"--rubric-version","3","--pages-dir",str(pages),check=False).returncode,0)
+   self.assertNotEqual(self.tool(root,"init","--manifest",str(root/"future.json"),"--rubric-version","5","--pages-dir",str(pages),check=False).returncode,0)
    d=json.loads(manifest.read_text()); d["rubric_version"]=2; manifest.write_text(json.dumps(d)); self.assertNotEqual(self.tool(root,"resume","--manifest",str(manifest),check=False).returncode,0)
  def test_mixed_history_and_stale_excluded(self):
   tmp,root,pages=self.setup()
   with tmp:
    manifest=self.init_next(root,pages); b=root/"b.md"; b.write_text(ev()); self.tool(root,"save","--manifest",str(manifest),"--slug","sample","--body",str(b),"--evaluations-root",str(root/"eval"),"--evaluated-at","2026-01-01T00:00:00Z","--evaluation-run-id","abcdefgh")
    # A malformed historical file is reported; a changed page is re-evaluation-required.
-   bad=root/"eval/sample/20260102T000000Z-v3-bcdefghi.md"; bad.write_text("bad")
+   bad=root/"eval/sample/20260102T000000Z-v4-bcdefghi.md"; bad.write_text("bad")
    (pages/"sample.md").write_text((pages/"sample.md").read_text()+"変更\n")
-   out=root/"n.json"; self.tool(root,"normalize","--pages-dir",str(pages),"--evaluations-root",str(root/"eval"),"--rubric-version","3","--output",str(out))
+   out=root/"n.json"; self.tool(root,"normalize","--pages-dir",str(pages),"--evaluations-root",str(root/"eval"),"--rubric-version","4","--output",str(out))
    data=json.loads(out.read_text()); self.assertEqual(data["records"][0]["status"],"changed"); self.assertFalse(data["improvement_queue"]); self.assertTrue(data["invalid_history"]); self.assertTrue(data["reevaluation_required"])
 
 if __name__=="__main__": unittest.main()

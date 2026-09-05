@@ -17,11 +17,11 @@
 | insightの出典処理変更 | [schema](../wiki/insight/schema.md)、評価プロトコル | `wiki/insight/tools/insight_source_validator.py`、`check.py` | insightテスト。出典形式と主張の支持判断を混同しない |
 | 日本語検査変更 | [日本語基準](../wiki/insight/references/japanese-style-guide.md) | `wiki/insight/tools/textlint-check.sh`、`textlint-report.mjs`、`textlint.config.json` | textlintテスト。必須・要判断・参考の区分と実行失敗を確認 |
 | 委譲・エージェント設定変更 | [委譲手順](delegation.md)、独立評価に関係する場合は対象wikiのプロトコル | `.codex/config.toml`、`.codex/agents/*.toml` | 役割・モデル・推論強度・権限・履歴分離の整合を確認。設定変更だけで記事評価を起動しない |
-| 配置・責務変更 | [接続仕様](wiki-contract.md)、[ADR 0001](adr/0001-independent-wiki-policies.md) | 移動対象とその参照元 | 現行参照を更新し、関係する検証を実行。過去の評価・suggestions内の旧パスは当時の記録として保持 |
+| 配置・責務変更 | [接続仕様](wiki-contract.md) | 移動対象とその参照元 | 現行参照を更新し、関係する検証を実行。過去の評価・suggestions内の旧パスは当時の記録として保持 |
 
 ## 読み込み経路の確認例
 
-文書を追加・移動するときは、必要になる条件を判断できる入口にリンクを置く。全資料をAGENTS.mdへ列挙しない。共通の実行手順はスキル、wiki固有の判断はworkflow・基準、実装の契約は接続仕様、理由はADRを正本とする。
+文書を追加・移動するときは、必要になる条件を判断できる入口にリンクを置く。全資料をAGENTS.mdへ列挙しない。共通の実行手順はスキル、wiki固有の判断はworkflow・基準、実装の契約は接続仕様を正本とする。現在の理解・変更判断に必要な理由は該当する正本に併記し、仕様とともに更新する。判断ごとの履歴文書は作らない。
 
 | 依頼 | 必要な読み込み | この段階では不要 |
 |---|---|---|

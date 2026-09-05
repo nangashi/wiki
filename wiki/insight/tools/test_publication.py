@@ -25,13 +25,15 @@ class PublicationTest(unittest.TestCase):
         self.pages.mkdir(parents=True)
         references = self.root / "wiki/insight/references"
         references.mkdir()
-        (references / "article-quality-rubric.md").write_text("**rubric_version: 3**\n", encoding="utf-8")
+        (references / "article-quality-rubric.md").write_text("**rubric_version: 4**\n", encoding="utf-8")
         self.write_page("current")
         self.write_page("changed")
+        self.write_page("legacy")
         self.write_page("source-malformed", source="外部ソース未確認。")
         subprocess.run(["git", "init", "-q"], cwd=self.root, check=True)
         self.write_evaluation("current")
         self.write_evaluation("changed")
+        self.write_evaluation("legacy", rubric_version=3)
         changed = self.pages / "changed.md"
         changed.write_text(changed.read_text(encoding="utf-8") + "更新。\n", encoding="utf-8")
         self.write_evaluation("source-malformed")
@@ -44,16 +46,16 @@ class PublicationTest(unittest.TestCase):
             f"---\ntitle: x\n---\n\n# {slug}\n\n## 概要\n\n公開条件を検証する。\n\n## 外部ソース\n\n{source}\n",
             encoding="utf-8")
 
-    def write_evaluation(self, slug: str) -> None:
+    def write_evaluation(self, slug: str, rubric_version: int = 4) -> None:
         page = self.pages / f"{slug}.md"
         blob = subprocess.run(["git", "hash-object", str(page)], check=True, text=True, capture_output=True).stdout.strip()
-        destination = self.root / "evaluations/insight" / slug / "20260101T000000Z-v3-abcdefgh.md"
+        destination = self.root / "evaluations/insight" / slug / f"20260101T000000Z-v{rubric_version}-abcdefgh.md"
         destination.parent.mkdir(parents=True)
         destination.write_text(
             "---\n"
             f'target: "wiki/insight/pages/{slug}.md"\n'
             f'target_blob: "{blob}"\n'
-            "rubric_version: 3\n"
+            f"rubric_version: {rubric_version}\n"
             'evaluator: "codex"\n'
             'evaluator_model: "gpt-5.6-sol"\n'
             'evaluated_at: "2026-01-01T00:00:00Z"\n'
@@ -69,6 +71,17 @@ class PublicationTest(unittest.TestCase):
         result = self.invoke("current")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("INSIGHT_PUBLICATION ALLOW", result.stdout)
+
+    def test_v3_history_is_legacy_and_cannot_allow_publication(self) -> None:
+        from evaluation_state import latest_evaluations
+        records, invalid = latest_evaluations(self.pages, self.root / "evaluations/insight")
+        legacy = next(record for record in records if record["slug"] == "legacy")
+        self.assertEqual(legacy["status"], "legacy")
+        self.assertEqual(legacy["rubric_version"], 3)
+        self.assertFalse(invalid)
+        result = self.invoke("legacy")
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIn("INSIGHT_PUBLICATION DENY", result.stdout)
 
     def test_changed_and_malformed_sources_are_denied(self) -> None:
         for slug in ("changed", "source-malformed", "missing"):

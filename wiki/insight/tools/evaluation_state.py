@@ -19,7 +19,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from evaluation_validator import validate_text
+from evaluation_validator import CURRENT_RUBRIC_VERSION, validate_text
 from insight_source_validator import validate as validate_sources
 
 MAX_BATCH = 3
@@ -34,7 +34,10 @@ def current_rubric_version(pages_dir: Path) -> int:
             match = re.search(r"rubric_version:\s*([0-9]+)", candidate.read_text(encoding="utf-8"))
             if not match:
                 raise ValueError(f"rubric_version is missing from {candidate}")
-            return int(match.group(1))
+            version = int(match.group(1))
+            if version > CURRENT_RUBRIC_VERSION:
+                raise ValueError(f"unsupported future rubric_version: {version}")
+            return version
     raise ValueError("canonical article-quality-rubric.md was not found")
 
 
@@ -113,8 +116,8 @@ def parse_metadata(path: Path, expected_slug: str) -> dict | None:
 
 
 def cmd_init(args: argparse.Namespace) -> int:
-    if args.rubric_version != 3:
-        raise SystemExit("new evaluation runs require rubric_version=3")
+    if args.rubric_version != CURRENT_RUBRIC_VERSION:
+        raise SystemExit(f"new evaluation runs require rubric_version={CURRENT_RUBRIC_VERSION}")
     targets: list[tuple[str, str]] = []
     for spec in args.target:
         slug, sep, path = spec.partition(":")
@@ -139,8 +142,8 @@ def cmd_init(args: argparse.Namespace) -> int:
 
 def cmd_next(args: argparse.Namespace) -> int:
     data = load(args.manifest)
-    if data.get("rubric_version") != 3:
-        raise SystemExit("obsolete evaluation run cannot be resumed; initialize a v3 run")
+    if data.get("rubric_version") != CURRENT_RUBRIC_VERSION:
+        raise SystemExit(f"obsolete evaluation run cannot be resumed; initialize a v{CURRENT_RUBRIC_VERSION} run")
     candidates = [i for i in data["items"] if i["status"] in {"pending", "retry"}]
     selected = candidates[: min(args.limit, MAX_BATCH)]
     for item in selected:
@@ -177,8 +180,8 @@ def cmd_fail(args: argparse.Namespace) -> int:
 
 def cmd_resume(args: argparse.Namespace) -> int:
     data = load(args.manifest)
-    if data.get("rubric_version") != 3:
-        raise SystemExit("obsolete evaluation run cannot be resumed; initialize a v3 run")
+    if data.get("rubric_version") != CURRENT_RUBRIC_VERSION:
+        raise SystemExit(f"obsolete evaluation run cannot be resumed; initialize a v{CURRENT_RUBRIC_VERSION} run")
     count = 0
     for item in data["items"]:
         if item["status"] == "running":
@@ -192,8 +195,8 @@ def cmd_resume(args: argparse.Namespace) -> int:
 
 def cmd_save(args: argparse.Namespace) -> int:
     data = load(args.manifest)
-    if data.get("rubric_version") != 3:
-        raise SystemExit("obsolete evaluation run cannot save into v3 history")
+    if data.get("rubric_version") != CURRENT_RUBRIC_VERSION:
+        raise SystemExit(f"obsolete evaluation run cannot save into v{CURRENT_RUBRIC_VERSION} history")
     item = item_for(data, args.slug)
     if item["status"] != "running":
         raise SystemExit(f"{args.slug} is not running")
@@ -201,7 +204,7 @@ def cmd_save(args: argparse.Namespace) -> int:
     if raw.startswith("---\n"):
         print("Codex本文にfrontmatterを含めることはできません", file=sys.stderr)
         return 1
-    result = validate_text(raw, args.slug, 3)
+    result = validate_text(raw, args.slug, CURRENT_RUBRIC_VERSION)
     if not result["valid"]:
         print("; ".join(result["errors"]), file=sys.stderr)
         return 1
@@ -251,7 +254,7 @@ def cmd_save(args: argparse.Namespace) -> int:
         raise SystemExit("target changed before save")
     atomic_write(destination, frontmatter + raw.lstrip())
     # Validate what was persisted, including trusted metadata.
-    if parse_metadata(destination, args.slug) is None or not validate_text(destination.read_text(encoding="utf-8"), args.slug, 3)["valid"]:
+    if parse_metadata(destination, args.slug) is None or not validate_text(destination.read_text(encoding="utf-8"), args.slug, CURRENT_RUBRIC_VERSION)["valid"]:
         destination.unlink()
         raise SystemExit("persisted evaluation failed validation")
     if git_blob(target) != before:
@@ -336,7 +339,7 @@ def parser() -> argparse.ArgumentParser:
     p.add_argument("--manifest", type=Path, required=True); p.add_argument("--slug", required=True); p.add_argument("--body", type=Path, required=True)
     p.add_argument("--evaluations-root", type=Path, default=Path("evaluations/insight")); p.add_argument("--evaluated-at"); p.add_argument("--evaluation-run-id"); p.set_defaults(func=cmd_save)
     p = sub.add_parser("normalize")
-    p.add_argument("--pages-dir", type=Path, default=Path("wiki/insight/pages")); p.add_argument("--evaluations-root", type=Path, default=Path("evaluations/insight")); p.add_argument("--rubric-version", type=int, choices=[3]); p.add_argument("--output", type=Path); p.set_defaults(func=cmd_normalize)
+    p.add_argument("--pages-dir", type=Path, default=Path("wiki/insight/pages")); p.add_argument("--evaluations-root", type=Path, default=Path("evaluations/insight")); p.add_argument("--rubric-version", type=int, choices=[CURRENT_RUBRIC_VERSION]); p.add_argument("--output", type=Path); p.set_defaults(func=cmd_normalize)
     return root
 
 

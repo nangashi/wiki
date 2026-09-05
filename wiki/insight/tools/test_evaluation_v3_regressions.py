@@ -57,6 +57,7 @@ class V3RegressionTest(unittest.TestCase):
         self.assertTrue(validate_text(body, 'sample', 2)['valid'])
         self.assertFalse(validate_text(body, 'sample', 3)['valid'])
         self.assertFalse(validate_text(body, 'sample', 4)['valid'])
+        self.assertFalse(validate_text(body, 'sample', 5)['valid'])
         self.assertTrue(validate_text('---\nrubric_version: 2\n---\n' + body)['valid'])
 
 
@@ -68,7 +69,7 @@ class StateRegressionTest(unittest.TestCase):
         self.tool = lambda *args, **kwargs: helper.tool(self.root, *args, **kwargs)
         refs = self.root / 'wiki/insight/references'
         refs.mkdir()
-        (refs / 'article-quality-rubric.md').write_text('**rubric_version: 3**\n')
+        (refs / 'article-quality-rubric.md').write_text('**rubric_version: 4**\n')
         self.manifest = helper.init_next(self.root, self.pages)
         self.body = self.root / 'body.md'
         self.body.write_text(fixtures.ev())
@@ -103,14 +104,14 @@ class StateRegressionTest(unittest.TestCase):
         self.assertEqual(json.loads(self.manifest.read_text())['items'][0]['status'], 'retry')
         for slug in ('alpha', 'bravo', 'charlie', 'delta'):
             (self.pages / f'{slug}.md').write_text((self.pages / 'sample.md').read_text())
-        self.tool('init', '--manifest', str(self.manifest), '--rubric-version', '3', '--pages-dir', str(self.pages))
+        self.tool('init', '--manifest', str(self.manifest), '--rubric-version', '4', '--pages-dir', str(self.pages))
         result = self.tool('next', '--manifest', str(self.manifest))
         self.assertEqual(result.stdout.count('EVALUATION_NEXT slug='), 3)
         self.assertEqual(sum(i['status'] == 'pending' for i in json.loads(self.manifest.read_text())['items']), 2)
 
     def test_old_save_next_resume_refused(self):
         data = json.loads(self.manifest.read_text())
-        data['rubric_version'] = 2
+        data['rubric_version'] = 3
         self.manifest.write_text(json.dumps(data))
         for operation in ('next', 'resume'):
             self.assertNotEqual(self.tool(operation, '--manifest', str(self.manifest), check=False).returncode, 0)
@@ -133,15 +134,15 @@ class StateRegressionTest(unittest.TestCase):
         current = next(self.history.glob('sample/*.md'))
         text = current.read_text()
         metadata = text[:text.index('\n---\n', 4) + 5]
-        legacy_meta = metadata.replace('rubric_version: 3', 'rubric_version: 2').replace('2026-01-02', '2026-01-01')
+        legacy_meta = metadata.replace('rubric_version: 4', 'rubric_version: 2').replace('2026-01-02', '2026-01-01')
         old = current.parent / '20260101T000000Z-v2-abcdefgh.md'
         old.write_text(legacy_meta + evaluation())
-        (current.parent / '20260103T000000Z-v3-bcdefghi.md').write_text('bad')
+        (current.parent / '20260103T000000Z-v4-bcdefghi.md').write_text('bad')
         records, invalid = latest_evaluations(self.pages, self.history)
         self.assertEqual(records[0]['status'], 'current')
-        self.assertEqual(records[0]['rubric_version'], 3)
+        self.assertEqual(records[0]['rubric_version'], 4)
         self.assertTrue(invalid)
-        # A legacy-only sibling stays readable, but is excluded from v3 decisions.
+        # A legacy-only sibling stays readable, but is excluded from v4 decisions.
         (self.pages / 'old.md').write_text((self.pages / 'sample.md').read_text())
         (self.history / 'old').mkdir()
         old_only = self.history / 'old/20260101T000000Z-v2-abcdefgh.md'

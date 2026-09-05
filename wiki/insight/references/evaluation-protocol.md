@@ -1,6 +1,6 @@
 # insight評価プロトコル
 
-**rubric_version: 3**。 `article-quality-rubric.md`、`reusability-criteria.md`、`japanese-style-guide.md`を全文入力にし、記事ごとにfreshなread-only **evaluator（gpt-5.6-sol / low）** が評価する。執筆会話、前回評価、他記事の結果は渡さない。Astraとeditorは独立評価の判定や根拠を代行しない。集計と公開可否の導出は保存層で行う。
+**rubric_version: 4**。 `article-quality-rubric.md`、`reusability-criteria.md`、`japanese-style-guide.md`を全文入力にし、記事ごとにfreshなread-only **evaluator（gpt-5.6-sol / low）** が評価する。執筆会話、前回評価、他記事の結果は渡さない。Astraとeditorは独立評価の判定や根拠を代行しない。集計と公開可否の導出は保存層で行う。
 
 ## 保存と入力
 
@@ -10,7 +10,7 @@
 ---
 target: "wiki/insight/pages/<slug>.md"
 target_blob: "<git hash-objectで得た評価時内容の完全なhash>"
-rubric_version: 3
+rubric_version: 4
 evaluator: "codex"
 evaluator_model: "gpt-5.6-sol"
 evaluated_at: "YYYY-MM-DDTHH:MM:SSZ"
@@ -82,7 +82,7 @@ codex exec -C . -s read-only -m gpt-5.6-sol \
 
 ## 検証と保存
 
-`evaluation_validator.py`で本文schemaを検証してから保存する。v3 metadataに数値評価の旧本文を受け入れない。validatorはP番号、6観点、状態と対応項目の整合、調査必須の追加フィールド、必須項目の存在を確認する。
+`evaluation_validator.py`で本文schemaを検証してから保存する。v3/v4 metadataに数値評価の旧本文を受け入れない。v4は機序と介入効果の根拠を区別し、節をまたぐ主要主張の意味的一致を明示的に確認する基準改定であり、本文schemaはv3と共通とする。validatorはP番号、6観点、状態と対応項目の整合、調査必須の追加フィールド、必須項目の存在を確認する。
 
 source診断のcodeが対応する必須項目に独立した識別子として含まれるかは、evaluation_state.pyの保存処理が検証する。
 
@@ -122,7 +122,7 @@ Astraが必須対応から1回につき1〜3項目を選び、必要な調査後
 
 ## 履歴・一括処理
 
-旧v1/v2は履歴として読めても現行評価にはしない。validatorは明示された`--rubric-version`を優先し、なければmetadata version、raw bodyでは3を使う。新規init/saveは旧versionを拒否する。旧rubricの有効評価が1件でもあれば、`$lint`実行時に全件再評価する。評価欠落やmetadata不正だけの場合は該当記事を再評価する。旧runの未完了状態をv3としてresumeしない。
+旧v1/v2/v3は履歴として読めても現行評価にはしない。validatorは明示された`--rubric-version`を優先し、なければmetadata version、raw bodyでは4を使う。新規init/saveは旧versionを拒否する。旧rubricの有効評価が1件でもあれば、`$lint`実行時に全件再評価する。評価欠落やmetadata不正だけの場合は該当記事を再評価する。旧runの未完了状態をv4としてresumeしない。
 
 `evaluation_state.py`はmanifest、retry/failed/pending、resume、保存、正規化だけを担当し、evaluatorを起動しない。run開始時は`evaluations/insight/runs/YYYYMMDDTHHMMSSZ-<run-id>/manifest.json`を状態の正本、`manifest.md`を表示として作る。最大3件の固定バッチで評価し、各結果を保存・検証してからmanifestへ追記する。中断時は新しいバッチを始めず、進行中の保存可能な結果とmanifestを確定する。`normalize`の分布キーは`対象外`、`修正・調査必須`、`修正必須`、`調査必須`、`公開可`、`再評価必要`を排他的に使う。現行version・内容一致の必須または不合格だけをキューに置き、順序は`対象外`、修正あり、調査のみ、slugとする。件数は品質順位ではない。旧版・欠落・内容不一致は再評価必要として別に報告する。
 
@@ -130,8 +130,8 @@ Astraが必須対応から1回につき1〜3項目を選び、必要な調査後
 通常評価の保存も共通helperを使う。`init`と`next`で対象と評価開始時のhashを記録してから評価を起動する。`save`は開始時と保存時のhash一致を確認する。手動で本文の合否や対応項目を補完しない。
 
 ```bash
-python3 wiki/insight/tools/evaluation_validator.py <evaluator-out.md> --slug <slug> --rubric-version 3
-python3 wiki/insight/tools/evaluation_state.py init --manifest <run-dir>/manifest.json --rubric-version 3 --target <slug>:wiki/insight/pages/<slug>.md
+python3 wiki/insight/tools/evaluation_validator.py <evaluator-out.md> --slug <slug> --rubric-version 4
+python3 wiki/insight/tools/evaluation_state.py init --manifest <run-dir>/manifest.json --rubric-version 4 --target <slug>:wiki/insight/pages/<slug>.md
 python3 wiki/insight/tools/evaluation_state.py next --manifest <run-dir>/manifest.json
 python3 wiki/insight/tools/evaluation_state.py save --manifest <run-dir>/manifest.json --slug <slug> --body <evaluator-out.md>
 ```
@@ -139,7 +139,7 @@ python3 wiki/insight/tools/evaluation_state.py save --manifest <run-dir>/manifes
 一括評価では、上記の `init --target` の代わりに対象全体を指定できる。失敗・中断後の再開・分布の再構築も同じhelperを使う。
 
 ```bash
-python3 wiki/insight/tools/evaluation_state.py init --manifest <run-dir>/manifest.json --rubric-version 3 --pages-dir wiki/insight/pages
+python3 wiki/insight/tools/evaluation_state.py init --manifest <run-dir>/manifest.json --rubric-version 4 --pages-dir wiki/insight/pages
 python3 wiki/insight/tools/evaluation_state.py fail --manifest <run-dir>/manifest.json --slug <slug> --error <reason>
 python3 wiki/insight/tools/evaluation_state.py resume --manifest <run-dir>/manifest.json
 python3 wiki/insight/tools/evaluation_state.py normalize --output <run-dir>/normalized.json
