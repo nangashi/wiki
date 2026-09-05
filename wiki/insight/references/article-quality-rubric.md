@@ -2,7 +2,7 @@
 
 **rubric_version: 2**
 
-このファイルは、insight記事の作成・評価・改善で共有する品質基準の正本である。評価者はCodex、改善者はClaude Codeとし、Claude Code自身は採点しない。
+このファイルは、insight記事の作成・評価・改善で共有する品質基準の正本である。独立評価はevaluator（Sol）、改善はeditor（Terra）、統括はAstraが担当する。Astraとeditorは採点しない。
 
 配点、アンカー、ゲート、上限、合格条件、または参照する `reusability-criteria.md` / `japanese-style-guide.md` を実質的に変更したら `rubric_version` を増やす。誤字修正や意味を変えない表現調整では増やさない。
 
@@ -169,6 +169,6 @@ Codexが出力する本文には次を必ず含める。Codexは保存用frontma
 - 優先順位つき改善項目。各項目に対象箇所、問題、改善後に満たす条件、改善方法、要外部調査（はい/いいえ）。「何を足すか」だけでなく「何を削るか」も検討し、削減候補がないと判断した場合はその根拠を良い点へ含める
 - 改善時に保持すべき良い点
 
-## Claude Codeが保存時に付与するmetadata
+## Astraが保存時に付与するmetadata
 
-Codex本文のschema検証と算術検証に合格した後、Claude Codeが `evaluation-protocol.md` に従って検証済みのfrontmatterを付与する。metadataはCodex本文の要求ではなく、評価履歴の同一性・新旧判定を担う保存層である。本文不正時のクリーンretryでは、このmetadataをCodexへの期待出力へ混ぜない。
+evaluator本文のschema検証と算術検証に合格した後、Astraが `evaluation-protocol.md` に従って検証済みのfrontmatterを付与する。metadataはevaluator本文の要求ではなく、評価履歴の同一性・新旧判定を担う保存層である。本文不正時のクリーンretryでは、このmetadataをevaluatorへの期待出力へ混ぜない。

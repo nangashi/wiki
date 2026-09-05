@@ -3,32 +3,32 @@ name: review-page
 description: 既存wikiページを独立評価し、改善して再評価する
 ---
 
-# /review-page スキル
+# $review-page スキル
 
-1ページまたは明示された少数ページを見直す入口。insightではCodex評価、Claude Code改善、新しいCodexによる再評価までを既定動作とする。「評価だけして変更しないで」など明示的な自然言語指示がある場合だけ、評価後に記事を変更しない。動作切替オプションは設けない。
+1ページまたは明示された少数ページを見直す入口。insightでは独立評価、改善、新しい独立再評価までを既定動作とする。「評価だけして変更しないで」など明示的な自然言語指示がある場合だけ、評価後に記事を変更しない。動作切替オプションは設けない。
 
 ## 引数
 
 ```text
-/review-page <slug>
-/review-page <slug1> <slug2> ...
+$review-page <slug>
+$review-page <slug1> <slug2> ...
 ```
 
-曖昧な場合は `insight:<slug>` / `it:<slug>` でコレクションを特定できる。全件評価は `/lint` の責務であり、このスキルへ全件用オプションを追加しない。
+曖昧な場合は `insight:<slug>` / `it:<slug>` でコレクションを特定できる。全件評価は `$lint` の責務であり、このスキルへ全件用オプションを追加しない。
 
 ## 事前準備
 
 1. `wiki/collections.md`、対象コレクションの `schema.md`、両indexを読む。
-2. insightなら `reusability-criteria.md`、`article-quality-rubric.md`、`japanese-style-guide.md`、`evaluation-protocol.md` を全文読む。
+2. insightなら `reusability-criteria.md`、`article-quality-rubric.md`、`japanese-style-guide.md`、[evaluation-protocol.md](../../../wiki/insight/references/evaluation-protocol.md) を全文読む。
 3. 対象記事、関連リンク先、意味的に近いページを読む。
 
 ## insightレビュー
 
 ### 1. 初回評価
 
-Codex評価の前に、対象記事ごとに `bash .claude/skills/lint/textlint-check.sh <記事パス>` を実行する。`TEXTLINT_REQUIRED`は評価前に修正する。`TEXTLINT_REVIEW`と`TEXTLINT_INFO`は意味・根拠・スタイルガイドに照らして採否を判断し、根拠の強さに関わる表現は外部ソースを確認せず弱めない。修正した場合は再実行し、文脈上残す指摘を記録する。評価だけの明示指示では記事を変更せず、textlint所見として報告する。
+独立評価の前に、対象記事ごとに `bash .agents/skills/lint/textlint-check.sh <記事パス>` を実行する。`TEXTLINT_REQUIRED`は評価前に修正する。`TEXTLINT_REVIEW`と`TEXTLINT_INFO`は意味・根拠・スタイルガイドに照らして採否を判断し、根拠の強さに関わる表現は外部ソースを確認せず弱めない。修正した場合は再実行し、文脈上残す指摘を記録する。評価だけの明示指示では記事を変更せず、textlint所見として報告する。
 
-`evaluation-protocol.md` に従い、Codex（Sol）を本体Bashから直接・read-only・`run_in_background: true` で起動する。プロンプトはWriteツールで作り、基準全文と記事全文を埋め込み、`< /dev/null` を付ける。Claude Code自身は採点しない。
+評価の起動、入力、クリーンな再試行、`evaluation_validator.py`、履歴・hash・metadataの保存、停止条件は [evaluation-protocol.md](../../../wiki/insight/references/evaluation-protocol.md) に従う。**`evaluator`（Sol / low）** は基準全文と記事全文だけを受け取るfreshなread-only評価者で、以前の点数・出力・結論を受け取らない。`editor`自身は採点しない。Astraが採否と統合を決める。
 
 評価結果は保存前に`evaluation_validator.py`で検証する。不正なら保存せず、エラーや前回出力を加えない同一のクリーンプロンプトでretryする。正常な結果だけを `evaluations/insight/<slug>/` に保存し、raw_score、score_cap、final_score、品質区分、Blocking/Major/Minor、要外部調査、良い点を確認する。評価履歴が現行rubricでも、記事内容を見直す依頼なので初回評価を省略しない。
 
@@ -45,15 +45,15 @@ Codex評価の前に、対象記事ごとに `bash .claude/skills/lint/textlint-
 
 ### 3. 外部検証と改善
 
-`evaluation-protocol.md` の条件に該当すれば、別のCodex実行で外部検証する。未確認と誤りを区別する。
+`evaluation-protocol.md` の条件に該当すれば、新しい履歴なしの **`evaluator`（Sol / low）** で外部検証する。未確認と誤りを区別する。
 
-評価のみの明示指示がなければ、Claude CodeがBlocking、Major、最低観点から1〜3項目の修正方針を提示し、承認された改善を適用する。Codexが示した「改善後に満たす条件」を記事に合わせて実現し、既存の良い点、事実、出典を保持する。点数のために不要な例や説明を足さない。
+評価のみの明示指示がなければ、**`editor`（Terra / medium）** がBlocking、Major、最低観点から1〜3項目の修正方針を提示し、承認された改善を適用する。`evaluator`が示した「改善後に満たす条件」を記事に合わせて実現し、既存の良い点、事実、出典を保持する。点数のために不要な例や説明を足さない。
 
 実質的な記事変更では `updated` を更新する。本文、外部ソース、関連リンク、逆リンクを先に確定し、関連先も変更したならその全insightページを再評価対象に含める。旧 `reviewed` 整数は評価状態に使わず、そのためだけに変更・削除しない。
 
 ### 4. 独立再評価
 
-改善後は、共通source validatorを先に実行する。`category=structure`は評価履歴を保存せず修正する。既存記事の`category=quality`（SOURCE_MISSING / SOURCE_UNVERIFIED）は、それに対応するBlocking、score_cap 49、`pass: いいえ`を持つ評価だけ保存し、改善queueへ載せてよい。評価本文validatorも通し、前回点数・評価結果を渡さない新しいCodex実行で変更された全insightページを再評価して履歴を保存する。合格または停止条件まで最大3回とする。1〜4点差だけに反応せず、品質区分、Blocking/Major、観点別傾向で改善を判断する。最終評価後は記事blobを変えず、必要なindex更新だけを最後に行う。
+改善後は、共通source validatorを先に実行する。`category=structure`は評価履歴を保存せず修正する。既存記事の`category=quality`（SOURCE_MISSING / SOURCE_UNVERIFIED）は、それに対応するBlocking、score_cap 49、`pass: いいえ`を持つ評価だけ保存し、改善queueへ載せてよい。評価本文validatorも通し、前回点数・評価結果を渡さない新しい`evaluator`（Sol / low）で変更された全insightページを再評価して履歴を保存する。合格または停止条件まで最大3回とする。1〜4点差だけに反応せず、品質区分、Blocking/Major、観点別傾向で改善を判断する。最終評価後は記事blobを変えず、必要なindex更新だけを最後に行う。
 
 評価のみの明示指示では、初回評価と外部検証、構造上の所見を報告して終了し、記事・index・関連先を変更しない。
 

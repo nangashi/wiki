@@ -16,7 +16,7 @@ insight wiki のページから、概念・考え方の習得を目的とした 
 
 - **目的**: insight wiki の概念・考え方を長期記憶に定着させる（暗記ではなく理解の想起）
 - **対象**: `wiki/insight/pages/` のみ（現在72ページ）。it コレクションは対象外
-- **成果物**: `/anki` スキル（`.claude/skills/anki/`）。単発のカード生成だけでなく、**insight wiki と Anki の継続的な同期**を実現する: (1) カード生成時に生成元・生成結果を記録する (2) 記事の追加・変更・削除を検知したらカードへの反映案を提案する (3) ユーザー承認後にAnkiへ反映する
+- **成果物**: `$anki` スキル（`.agents/skills/anki/`）。単発のカード生成だけでなく、**insight wiki と Anki の継続的な同期**を実現する: (1) カード生成時に生成元・生成結果を記録する (2) 記事の追加・変更・削除を検知したらカードへの反映案を提案する (3) ユーザー承認後にAnkiへ反映する
 - **言語**: カードは日本語（wikiのタイトル・本文が日本語のため）
 
 ## 設計方針（暫定）
@@ -83,7 +83,7 @@ wikiを正本、Ankiを派生物とする一方向同期。3つの動作で構�
 カードをAnkiへ投入したら `anki/state.json` にページのコンテンツハッシュ・基準version・CardId・note IDを記録する。この記録が検知の基準点になる。
 
 **2. 検知と提案（実装済み）**
-`/anki` を引数なしで実行したら sync モードとして動作する: `wiki/insight/pages/*.md` と `state.json` を突合し、全ページを次の4分類に仕分けて報告する。
+`$anki` を引数なしで実行したら sync モードとして動作する: `wiki/insight/pages/*.md` と `state.json` を突合し、全ページを次の4分類に仕分けて報告する。
 
 | 分類 | 判定 | 提案内容 |
 |------|------|---------|
@@ -97,7 +97,7 @@ wikiを正本、Ankiを派生物とする一方向同期。3つの動作で構�
 **3. 承認と反映（実装済みの承認フローを流用）**
 提案への承認を得てから addNote / updateNoteFields / stale 化を実行し、成功分だけ state.json を更新する。部分承認（ページ単位・カード単位）を許容する。
 
-**検知のトリガー**: 同期はstate突合によるpull型なので、`/anki` の実行が起点になる。加えて `/ingest`・`/query` がinsightページを作成・更新した際、作業サマリで「/anki での同期」を提案する1行を各スキルに追記する（自動実行はしない。提案のみ）。
+**検知のトリガー**: 同期はstate突合によるpull型なので、`$anki` の実行が起点になる。加えて `$ingest`・`$query` がinsightページを作成・更新した際、作業サマリで「$anki での同期」を提案する1行を各スキルに追記する（自動実行はしない。提案のみ）。
 
 - [x] **1. Ankiへの投入経路の技術調査**（最優先・要ユーザー確認と連動）
   - 候補: (a) AnkiConnect（デスクトップAnkiを起動した状態でHTTP API経由・ノート更新可） (b) genanki等で `.apkg` を生成しユーザーが手動インポート (c) AnkiWeb直接（公式APIなし・スクレイピングは不可）
@@ -139,7 +139,7 @@ wikiを正本、Ankiを派生物とする一方向同期。3つの動作で構�
 ## 実装タスク（調査完了後）
 
 1. [x] カード生成基準を `anki/card-criteria.md` として文書化する（version 1）
-2. [x] `.claude/skills/anki/SKILL.md` を作成する。実装フロー:
+2. [x] `.agents/skills/anki/SKILL.md` を作成する。実装フロー:
    - 対象ページの選定（全件 / 指定スラグ / 前回以降の差分）
    - ページの型・内容からカード案を生成（基準ファイル参照）
    - ユーザーにカード案を提示・承認
@@ -150,11 +150,11 @@ wikiを正本、Ankiを派生物とする一方向同期。3つの動作で構�
 5. [x] **syncモードの実装**: 引数なし実行をsyncモードとし、新規・変更・削除・未変更を分類する手順と読み取り専用の `sync_status.py` を実装
 6. [x] **変更ページの反映提案フォーマットの実装**: カード単位の維持/文面更新/stale化/新規追加をdiff付きで提示する形式、部分承認、CardId維持による学習履歴保全をSKILL.mdに明記
 7. [x] **contentHash の正規定義を明文化**: frontmatter・改行・末尾改行を含むファイル全体のバイト列を正規化せずSHA-256にかけ、`sha256:<hex>` とする定義をSKILL.mdとスクリプトに実装。既存stateの2件が未変更判定になることを確認
-8. [x] **ingest/queryスキルへの同期提案の追記**: insightページを作成・更新した場合だけ、完了報告に「`/anki` で反映案を確認できる」旨を加える指示を正本 `.claude/skills/{ingest,query}/SKILL.md` に追記
+8. [x] **ingest/queryスキルへの同期提案の追記**: insightページを作成・更新した場合だけ、完了報告に「`$anki` で反映案を確認できる」旨を加える指示を正本 `.agents/skills/{ingest,query}/SKILL.md` に追記
 
 ### 実装結果（2026-07-19）
 
-- `.claude/skills/anki/scripts/anki_connect.py` を作成。WSLからWindows PowerShellを介して、loopback限定のAnkiConnectへ接続する
+- `.agents/skills/anki/scripts/anki_connect.py` を作成。WSLからWindows PowerShellを介して、loopback限定のAnkiConnectへ接続する
 - `insight` デッキと `Insight Basic` ノートタイプを新規作成。既存名との衝突なし
 - サンプル5枚を追加し、Ankiから再読込して本文・タグ・CardId・note IDを検証した
 - `anki/state.json` にコンテンツハッシュ、基準version、note IDを保存した
@@ -169,4 +169,4 @@ wikiを正本、Ankiを派生物とする一方向同期。3つの動作で構�
 
 - `wiki/insight/schema.md` — コンテンツ型分類・概要セクションの構造（カード素材の抽出元）
 - `wiki/insight/index.md` — カテゴリ構成（デッキ/タグ設計の参考）
-- `.claude/skills/` — 既存スキルの構成規約（スキル定義の正本はここのみ。`.agents/` に実体を作らない）
+- `.agents/skills/` — 既存スキルの構成規約（Codex用スキル定義の唯一の正本）

@@ -3,22 +3,22 @@ name: lint
 description: wiki全体の構造監査と、rubric更新時のinsight再評価・改善キュー処理を行う
 ---
 
-# /lint スキル
+# $lint スキル
 
-wiki全体のリンク、孤立、重複、粒度、矛盾、低価値候補を監査する。さらにinsight評価履歴を現行rubricと自動照合し、必要なら同じ実行内でCodex再評価、ランキング、改善キュー処理まで進む。動作切替オプションは設けない。
+wiki全体のリンク、孤立、重複、粒度、矛盾、低価値候補を監査する。さらにinsight評価履歴を現行rubricと自動照合し、必要なら同じ実行内で独立再評価、ランキング、改善キュー処理まで進む。動作切替オプションは設けない。
 
 ## 事前準備
 
 1. `wiki/collections.md` と各コレクションの `schema.md` を読む。
-2. insightについて `article-quality-rubric.md`、`japanese-style-guide.md`、`reusability-criteria.md`、`evaluation-protocol.md` を全文読む。
+2. insightについて `article-quality-rubric.md`、`japanese-style-guide.md`、`reusability-criteria.md`、[evaluation-protocol.md](../../../wiki/insight/references/evaluation-protocol.md) を全文読む。
 3. 次を実行し、出力を保持する。
 
 ```bash
-bash .claude/skills/lint/lint-check.sh \
+bash .agents/skills/lint/lint-check.sh \
   --collection insight:wiki/insight/pages \
   --collection it:wiki/it/pages
 
-bash .claude/skills/lint/textlint-check.sh 'wiki/insight/pages/*.md'
+bash .agents/skills/lint/textlint-check.sh 'wiki/insight/pages/*.md'
 ```
 
 textlintはinsight記事だけを対象にする。`TEXTLINT_REQUIRED`は必須修正、`TEXTLINT_REVIEW`は文脈判断、`TEXTLINT_INFO`は根拠・表現の確認候補として扱う。全指摘を一括修正せず、通常の改善キューで対象になった記事を処理するときに記事全体を読んで採否を決め、修正後に対象記事へ再実行する。文脈上正しい指摘は残し、理由を報告する。
@@ -36,15 +36,15 @@ textlintはinsight記事だけを対象にする。`TEXTLINT_REQUIRED`は必須�
 | 6 | WARNING | 定義・数値・日付・事実の矛盾 | LLM |
 | 7 | INFO | 対比・分類・統合枠組みにできる未接続の合成機会 | LLM |
 | 8 | INFO | TINY+ORPHANまたはリダイレクトだけの低価値候補 | LLMで独自内容を確認 |
-| 8b | ERROR/WARNING | insight外部ソース節の欠落・要確認・不正ID・不正項目 | スクリプト＋Codex |
-| 9 | INFO | insight評価履歴の欠落・旧rubric・記事変更 | スクリプト＋Codex |
-| 10 | ERROR/WARNING/INFO | insight日本語の決定論的異常・要判断表現 | textlint＋Claude Code |
+| 8b | ERROR/WARNING | insight外部ソース節の欠落・要確認・不正ID・不正項目 | スクリプト＋`evaluator` |
+| 9 | INFO | insight評価履歴の欠落・旧rubric・記事変更 | スクリプト＋`evaluator` |
+| 10 | ERROR/WARNING/INFO | insight日本語の決定論的異常・要判断表現 | textlint＋`editor` |
 
 itの `LARGE` は分割理由にせず、1技術1ページへの集約を優先する。統合・削除・リダイレクト化は必ずユーザー確認を取る。矛盾、リンク漏れ、低価値候補は修正前に対象記事を読み、誤検知を除く。
 
 ### LLM担当チェックの実行手順
 
-スクリプト結果の確認後、indexと全ページをコレクション横断で読み、次を明示的に実行する。
+スクリプト結果の確認後、`finder`へページ群を重複しない範囲で割り当て、indexと全ページから問い・主要主張・条件・引用箇所を抽出させる。Astraがコレクション横断の一覧から比較対象を選び、該当ページの原文を確認して次を実行する。各ページの読込担当を記録し、分担境界をまたぐ重複・矛盾・合成機会も確認する。スクリプトが候補にしなかったページを監査対象から落とさない。
 
 1. **CHECK-4 重複概念**: タイトル・表記ゆれだけでなく、概要、扱う問い、独自情報を比較する。同一技術のitページと個別事例は1技術1ページ方針で統合候補にする。似ていても役割・適用条件が異なるなら除外する。
 2. **CHECK-6 矛盾**: 同じ定義、数値、日付、条件、推奨について相反する記述をページ対で示す。外部確認していなければどちらが誤りか断定せず、要確認とする。
@@ -65,7 +65,7 @@ itの `LARGE` は分割理由にせず、1技術1ページへの集約を優先�
 
 ## CHECK-8b: 外部ソース
 
-構造チェックは`insight_source_validator.py`の結果を使う。`SOURCE_MISSING`、一次・二次がなく要確認／参考だけの`SOURCE_UNVERIFIED`は評価上Blocking、形式不正や重複IDは保存前ERRORとする。一次・二次があっても核心となる強い主張とsource IDの対応が不明ならCodex評価でMajor、補足的主張だけの対応漏れならMinorとする。URLの文字列から内容や区分を推測せず、frontmatterの旧sourcesへfallbackしない。
+構造チェックは`insight_source_validator.py`の結果を使う。`SOURCE_MISSING`、一次・二次がなく要確認／参考だけの`SOURCE_UNVERIFIED`は評価上Blocking、形式不正や重複IDは保存前ERRORとする。一次・二次があっても核心となる強い主張とsource IDの対応が不明なら`evaluator`評価でMajor、補足的主張だけの対応漏れならMinorとする。URLの文字列から内容や区分を推測せず、frontmatterの旧sourcesへfallbackしない。
 
 ## CHECK-9: rubric差分と評価対象の自動決定
 
@@ -75,36 +75,33 @@ itの `LARGE` は分割理由にせず、1技術1ページへの集約を優先�
 - metadataは正常だが本文schemaを満たす有効評価がない: `reason=output` で評価する
 - 最新 `rubric_version` が現行と異なる記事が1件以上: rubric変更としてinsight全件を再評価する
 - rubricは現行だが `target_blob` が現在の記事ハッシュと異なる: 変更記事を再評価する
-- 全件が現行かつ内容一致: 構造監査に加え、`SAMPLE_EVALUATION` の3件をCodexで再評価して品質ドリフトだけ確認する
+- 全件が現行かつ内容一致: 構造監査に加え、`SAMPLE_EVALUATION` の3件を`evaluator`で再評価して品質ドリフトだけ確認する
 
-追加オプションを要求せず、対象件数と実行規模を報告してそのまま同じ `/lint` 実行内で進める。Claude Code自身やClaudeのサブエージェントに採点させない。
+追加オプションを要求せず、対象件数と実行規模を報告してそのまま同じ `$lint` 実行内で進める。`editor`やAstraが点数を補完・代行しない。
 
-## Codex一括評価
+## 独立一括評価
 
-対象ごとに `evaluation-protocol.md` の通常評価を実行する。
+対象ごとに protocolの通常評価を実行する。
 
-対象とrun manifestは`evaluation_state.py init`で生成し、`next`が返す最大3件だけを本体Bashから並行起動する。結果は`save`でsource診断category、評価本文validator、target hash、metadataを確認する。source構造不正は保存せず、SOURCE_MISSING / SOURCE_UNVERIFIEDは対応するBlocking・score_cap 49・不合格が揃う評価だけ保存する。形式不正や実行失敗は`fail`へ渡す。中断後は`resume`、全体分布と改善キューは`normalize`で毎回再構築する。このhelper自体にCodexを起動させない。
+対象とrun manifestは`evaluation_state.py init`で生成し、`next`が返す最大3件だけを並行評価する。結果は`save`でsource診断category、評価本文validator、target hash、metadataを確認する。source構造不正は保存せず、SOURCE_MISSING / SOURCE_UNVERIFIEDは対応するBlocking・score_cap 49・不合格が揃う評価だけ保存する。形式不正や実行失敗は`fail`へ渡す。中断後は`resume`、全体分布と改善キューは`normalize`で毎回再構築する。このhelper自体に評価を起動させない。
 
 ```bash
-python3 .claude/skills/lint/evaluation_state.py init --manifest <run-dir>/manifest.json --rubric-version <N> --pages-dir wiki/insight/pages
-python3 .claude/skills/lint/evaluation_state.py next --manifest <run-dir>/manifest.json
-# 上の最大3件だけを本体Bashからcodex execし、各結果を次で保存する
-python3 .claude/skills/lint/evaluation_state.py save --manifest <run-dir>/manifest.json --slug <slug> --body <codex-out.md>
-python3 .claude/skills/lint/evaluation_state.py fail --manifest <run-dir>/manifest.json --slug <slug> --error <reason>
-python3 .claude/skills/lint/evaluation_state.py resume --manifest <run-dir>/manifest.json
-python3 .claude/skills/lint/evaluation_state.py normalize --output <run-dir>/normalized.json
+python3 .agents/skills/lint/evaluation_state.py init --manifest <run-dir>/manifest.json --rubric-version <N> --pages-dir wiki/insight/pages
+python3 .agents/skills/lint/evaluation_state.py next --manifest <run-dir>/manifest.json
+# `evaluator`（Sol / low） の結果を次で保存する
+python3 .agents/skills/lint/evaluation_state.py save --manifest <run-dir>/manifest.json --slug <slug> --body <evaluator-out.md>
+python3 .agents/skills/lint/evaluation_state.py fail --manifest <run-dir>/manifest.json --slug <slug> --error <reason>
+python3 .agents/skills/lint/evaluation_state.py resume --manifest <run-dir>/manifest.json
+python3 .agents/skills/lint/evaluation_state.py normalize --output <run-dir>/normalized.json
 ```
 
-- Claude CodeのWriteツールで自己完結プロンプトを `/tmp` に作る
-- rubric、再利用性基準、日本語基準、記事全文、出力形式を埋め込む
-- 本体Bashから `run_in_background: true` で `codex exec -m gpt-5.6-sol -s read-only` を直接起動する
-- `< /dev/null` を必ず付け、結果は `-o` ファイルから読む
-- 各記事を独立した新しいCodex実行にし、他記事の点数や前回点数を渡さない
+- 評価の起動、入力、クリーンな再試行、`evaluation_validator.py`、履歴・hash・metadataの保存は [evaluation-protocol.md](../../../wiki/insight/references/evaluation-protocol.md) を正本とする。
+- 各記事をfreshな`evaluator`（Sol / low）が評価し、他記事の点数や前回点数を渡さない
 - 結果を `evaluations/insight/<slug>/` に保存する
 
-並行上限は3件とし、3件以下の固定バッチで保存する。run manifest、最大2回のクリーンretry、失敗継続、停止時の扱いは `evaluation-protocol.md` に従う。全プロセスを本体Bashが保持し、サブエージェント経由にしない。
+並行上限は3件とし、3件以下の固定バッチで保存する。run manifest、最大2回のクリーンretry、失敗継続、停止時の扱いは protocolに従う。
 
-外部検証は `evaluation-protocol.md` の共通方式だけを使う。一括ランキング前は延期できるが、改善対象記事はキュー処理時に実行する。
+外部検証はprotocolの共通方式だけを使い、新しい履歴なしの`evaluator`（Sol / low）に依頼する。一括ランキング前は延期できるが、改善対象記事はキュー処理時に実行する。
 
 ## ランキングと改善キュー
 
@@ -118,9 +115,9 @@ python3 .claude/skills/lint/evaluation_state.py normalize --output <run-dir>/nor
 4. final_score 60〜69
 5. final_score 70以上
 
-Blocking/Majorありと70点未満を標準の改善対象とする。最初に全体分布を確認し、その後で一件ずつ `review-page` と同じ内部改善ループを実行する。評価前に全記事を書き換えない。
+Blocking/Majorありと70点未満を標準の改善対象とする。最初に全体分布を確認し、その後で一件ずつ `$review-page` と同じ内部改善ループを実行する。評価前に全記事を書き換えない。
 
-各記事では、必要な外部検証、Claude Codeによる1〜3項目の改善、新しいCodexによる独立再評価を行う。利用者は途中で停止できる。停止された場合は処理済み件数、未処理件数、次の対象を残す。統合・削除・リダイレクト化、核心の大幅変更は個別確認を取る。
+各記事では、必要な外部検証、`editor`（Terra / medium）による1〜3項目の改善、新しい`evaluator`（Sol / low）による独立再評価を行う。利用者は途中で停止できる。停止された場合は処理済み件数、未処理件数、次の対象を残す。統合・削除・リダイレクト化、核心の大幅変更は個別確認を取る。
 
 ## suggestionと通常の修正
 

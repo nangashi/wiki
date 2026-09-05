@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """State and persistence helper for bulk insight evaluations.
 
-The helper never launches Codex.  Claude Code owns process creation; this
-module only prepares/claims work, validates results, adds trusted metadata,
-saves history, resumes interrupted runs, and rebuilds the quality queue.
+The helper never launches Codex.  Astra orchestration owns process creation;
+this module only prepares/claims work, validates results, adds trusted
+metadata, saves history, resumes interrupted runs, and rebuilds the quality
+queue.
 """
 
 from __future__ import annotations

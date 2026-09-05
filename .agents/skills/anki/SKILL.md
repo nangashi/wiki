@@ -22,7 +22,7 @@ insight wikiを正本として、理解と適用を問う少数のカードを�
 - 引数なし: **syncモード**。最初に次を実行し、全ページを `new` / `changed` / `deleted` / `unchanged` に分類する
 
   ```bash
-  python3 .claude/skills/anki/scripts/sync_status.py
+  python3 .agents/skills/anki/scripts/sync_status.py
   ```
 
 - 指定スラグ: `wiki/insight/pages/<slug>.md` を対象にする
@@ -42,7 +42,7 @@ contentHashは、`wiki/insight/pages/<slug>.md` の**ファイル全体のバイ
 
 ### 2. カード案を生成・審査する
 
-`anki/card-criteria.md` に厳密に従う。ページごとに1〜3枚とし、網羅しようとしない。
+`anki/card-criteria.md` に厳密に従う。ページごとに1〜3枚とし、網羅しようとしない。複数ページのカード案作成は`editor`（Terra / medium）へページ単位で委譲し、対象記事・カード基準・既存カードだけを渡す。Astraが案の採否と提示を担当し、Ankiとstateへの書き込みは子に任せない。
 
 各案についてまず内部で次を検査する。
 
@@ -53,13 +53,13 @@ contentHashは、`wiki/insight/pages/<slug>.md` の**ファイル全体のバイ
 - 他の案と重複・干渉しないか
 - 事象→対処なら答えに概念名があるか
 
-次に、以下2点は生成した本人の自己判定では見落としやすい（直前に書いた案の文脈がまだ残っているため）。同一ページで2枚以上のカード案がある場合、各案のQ/Aのみ（タイトル・タグ・出典・他カードの文面を含めない）をAgentツールで新規のサブエージェントに渡し、独立に判定させる。1枚しか作らない場合はこのサブエージェント確認を省略してよい。
+次に、以下2点は生成した本人の自己判定では見落としやすい（直前に書いた案の文脈がまだ残っているため）。同一ページで2枚以上のカード案がある場合、各案のQ/Aのみ（タイトル・タグ・出典・他カードの文面を含めない）を新しい履歴なしの**`evaluator`（Sol / low）** に一案ずつ渡し、独立に判定させる。次の判定基準と「各観点の合否・Q/Aから判断できない点」を返す出力形式を添え、記事の点数評価は行わせない。1枚しか作らない場合はこのサブエージェント確認を省略してよい。
 
 - 問いが一意か
 - タイトル・タグ・出典・他カードを見なくても、何の領域・主体・状況についての問いか分かるか
 - 抽象語やフレームワーク名だけに文脈を依存していないか
 
-サブエージェントが「分からない」と判定した案は、対象を明示する形に修正する。
+`evaluator`が「分からない」と判定した案は、対象を明示する形に修正する。
 
 不合格案は修正または破棄する。ページの核心を理解できない場合はカードを作らず、ページ改善候補として報告する。
 
@@ -106,9 +106,9 @@ syncモードの冒頭または末尾で分類件数を必ず報告する。`unc
 Windows版Ankiが起動していることを確認し、次を実行する。
 
 ```bash
-python3 .claude/skills/anki/scripts/anki_connect.py version
-python3 .claude/skills/anki/scripts/anki_connect.py deckNames
-python3 .claude/skills/anki/scripts/anki_connect.py modelNames
+python3 .agents/skills/anki/scripts/anki_connect.py version
+python3 .agents/skills/anki/scripts/anki_connect.py deckNames
+python3 .agents/skills/anki/scripts/anki_connect.py modelNames
 ```
 
 接続はWindows側のloopbackへPowerShell経由で行う。AnkiConnectをLANへbindしない。

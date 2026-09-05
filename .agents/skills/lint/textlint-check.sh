@@ -6,7 +6,7 @@ script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 config_path="${script_dir}/textlint.config.json"
 
 if [ "$#" -eq 0 ]; then
-  echo "usage: bash .claude/skills/lint/textlint-check.sh <file-or-glob> [...]" >&2
+  echo "usage: bash .agents/skills/lint/textlint-check.sh <file-or-glob> [...]" >&2
   exit 2
 fi
 

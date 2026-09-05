@@ -137,7 +137,7 @@ frontmatterに`source`または`sources`を置かない。記事末尾の`## 外
 
 ## 共通書き込み手順
 
-この手順は書込み入口 `/ingest` が使用する。`/query` で追加が承認された場合も、query自身は書き込まず `/ingest` へ引き渡してこの手順を実行する。
+この手順は書込み入口 `$ingest` が使用する。`$query` で追加が承認された場合も、query自身は書き込まず `$ingest` へ引き渡してこの手順を実行する。
 
 ### ステップ1: 既存ページを把握する
 `wiki/insight/index.md` を読み、すでに記録されている概念とその内容を把握する。
@@ -260,10 +260,10 @@ index.md のサマリをもとに、今回のソースと既存ページの間�
 
 新規作成したページ、および本文を変更したページは変更の大小にかかわらず `evaluation-protocol.md` を実行する。評価履歴の `target_blob` と現在の記事内容を常に一致させる。
 
-1. Codex（Sol）が `article-quality-rubric.md` と `japanese-style-guide.md` で採点する。Codexはread-onlyで、Claude Codeのサブエージェントを介さず本体Bashから起動する。
-2. 評価に外部調査が必要な項目があれば、同プロトコルの条件に従い別のCodex実行で検証する。未確認を誤りと断定しない。
-3. 合格条件を満たさなければ、Claude CodeがBlocking、Major、最低観点から1〜3項目を改善する。Claude Code自身は採点しない。
-4. 改善後は、前回点数を渡さない新しいCodex実行で再評価する。
+1. 新しい履歴なしのevaluator（Sol）が `article-quality-rubric.md` と `japanese-style-guide.md` で採点する。AstraがCodex標準のサブエージェント機能で起動し、前回評価や執筆会話を渡さず、記事を変更させない。起動と検証の詳細は `evaluation-protocol.md` に従う。
+2. 評価に外部調査が必要な項目があれば、同プロトコルの条件に従い別のevaluatorで検証する。未確認を誤りと断定しない。
+3. 合格条件を満たさなければ、AstraがBlocking、Major、最低観点から1〜3項目を選び、editor（Terra）へ改善を委譲する。Astraとeditorは採点しない。
+4. 改善後は、前回点数を渡さない新しい履歴なしのevaluatorで再評価する。
 5. 合格または停止条件まで最大3回とし、評価履歴を `evaluations/insight/<slug>/` に保存する。
 
 具体例・数値・コード・固有名の不在だけを低品質とみなさない。未知ケースへの推論力、論理的な接続、適用境界、事実基盤、情報設計、日本語の自然さを共通ルーブリックで判断する。
@@ -287,5 +287,5 @@ index.md のサマリをもとに、今回のソースと既存ページの間�
 - スキップした概念（理由付き）
 - 追加した関連リンク
 - Codex評価の初回／最終点、品質区分、Blocking/Major、観点別傾向
-- Claude Codeが行った改善と、停止時に残った課題
+- Astraとeditorが行った改善と、停止時に残った課題
 - 外部検証を行った主張と、未確認のまま残した主張

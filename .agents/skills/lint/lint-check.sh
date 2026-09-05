@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# .claude/skills/lint/lint-check.sh
+# .agents/skills/lint/lint-check.sh
 #
 # 構造的lintチェックを実行し、結果を標準出力に出力する。
 # /lint スキルがこのスクリプトを先に実行し、出力をもとにLLM分析を行う。
@@ -28,7 +28,7 @@
 #   --evaluations-root path --rubric-file path --suggestions-root path
 #
 # 例:
-#   bash .claude/skills/lint/lint-check.sh \
+#   bash .agents/skills/lint/lint-check.sh \
 #     --collection insight:wiki/insight/pages \
 #     --collection it:wiki/it/pages
 
@@ -555,4 +555,4 @@ echo "=== DONE ==="
 echo "NOTE: CHECK-4(重複概念)・CHECK-6(矛盾)・CHECK-7(合成機会) はLLM分析が必要"
 echo "NOTE: CHECK-8 の候補はLLMが内容を確認し、削除前にユーザー確認を取ること"
 echo "NOTE: CHECK-9 は evaluation-protocol.md に従い、同じlint実行内でCodex再評価・ランキング・改善キュー処理へ進む"
-echo "NOTE: SAMPLE_EVALUATION はClaudeが採点せず、新しいCodex実行で品質ドリフトを確認する"
+echo "NOTE: SAMPLE_EVALUATION はAstraが採点せず、新しいCodex実行で品質ドリフトを確認する"
