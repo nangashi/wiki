@@ -2,7 +2,7 @@
 
 **rubric_version: 5**
 
-insight記事の作成、独立評価、改善で共有する品質基準の正本。独立評価はfreshなevaluator（Sol）、改善はeditor（Terra）、統括はAstraが担う。Astraとeditorは評価結果を代行しない。
+insight記事の作成、独立評価、改善で共有する品質基準の正本。独立評価はfreshなevaluator（Sol）、統括はAstraが担う。改善担当は[評価プロトコル](evaluation-protocol.md#改善と外部検証)の委譲・直接処理条件に従う。Astraとeditorは評価結果を代行しない。
 
 この基準、再利用性基準、または日本語スタイルガイドを実質的に変えたらversionを上げる。表記だけの修正では上げない。
 
