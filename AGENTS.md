@@ -10,4 +10,5 @@
 
 - 記事の取り込みは `$ingest`、照会は `$query`、記事改善は `$review-page`、全体監査は `$lint`。登録一覧 `wiki/collections.toml` → 対象の `wiki.toml` → 該当操作の手順から、その段階に必要な文書を読む。記事変更前に対象wikiのschemaと操作手順を確認する。
 - 委譲するときは [委譲手順](docs/delegation.md) を読む。
+- セッション末尾の振り返りは、手動で `$retrospect` を実行する。
 - スキル・設定・ツール・運用文書を保守するときは [保守案内](docs/maintenance.md) の対応行から、必要な仕様・実装・検証へ進む。
