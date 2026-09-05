@@ -1,6 +1,6 @@
 # insight記事品質ルーブリック
 
-**rubric_version: 4**
+**rubric_version: 5**
 
 insight記事の作成、独立評価、改善で共有する品質基準の正本。独立評価はfreshなevaluator（Sol）、改善はeditor（Terra）、統括はAstraが担う。Astraとeditorは評価結果を代行しない。
 

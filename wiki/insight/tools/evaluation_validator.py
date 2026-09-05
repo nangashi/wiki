@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 DIMENSIONS = ("核心と推論力", "論理と構造", "有用性と適用境界", "事実基盤", "情報設計", "日本語の自然さ")
-CURRENT_RUBRIC_VERSION = 4
+CURRENT_RUBRIC_VERSION = 5
 ACTION_TYPES = ("修正必須", "調査必須", "任意改善")
 REQUIRED_TYPES = ACTION_TYPES[:2]
 SECTIONS = ("再利用性ゲート", "観点別評価", "対応項目", "良い点")
@@ -122,9 +122,9 @@ def validate_text(text: str, expected_slug: str | None = None,
         if version in {1, 2}:
             from evaluation_validator_legacy import validate_text as legacy
             return legacy(text, expected_slug)
-        # Versions 3 and 4 intentionally share this qualitative body schema.
-        # v3 remains readable only as persisted history; new runs use v4.
-        if version not in {3, CURRENT_RUBRIC_VERSION}:
+        # Versions 3, 4 and 5 intentionally share this qualitative body schema.
+        # v3/v4 remain readable as persisted history; new runs use v5.
+        if version not in {3, 4, CURRENT_RUBRIC_VERSION}:
             raise ValidationError(f"unsupported rubric_version: {version}")
         body = _body(text).strip() + "\n"
         headings = list(re.finditer(r"(?m)^## (.+?)[ \t]*$", body))
