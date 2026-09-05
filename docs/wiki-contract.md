@@ -1,6 +1,6 @@
 # Wikiと共通スキルの接続仕様
 
-このファイルは現在有効な設定・呼び出し・責務の契約を定義する。判断理由は [ADR 0001](adr/0001-independent-wiki-policies.md)。通常の記事作業では対象wikiの設定と操作手順を読み、この文書全文やADRを毎回読む必要はない。
+このファイルは現在有効な設定・呼び出し・責務の契約を定義する。変更対象から実装・検証を探す場合は [保守案内](maintenance.md)。判断理由は [ADR 0001](adr/0001-independent-wiki-policies.md)。通常の記事作業では対象wikiの設定と操作手順を読み、この文書全文やADRを毎回読む必要はない。
 
 ## 責務と正本
 
@@ -8,7 +8,7 @@
 |---|---|
 | リポジトリ | `AGENTS.md`は入口と共通方針、`.codex/agents/`はモデル・役割・権限 |
 | 登録一覧 | `wiki/collections.toml`はwiki IDと設定の所在のみ |
-| 共通スキル | `.agents/skills/`は対象選択・読込・進行・報告。wiki固有の基準・名前による分岐を持たない |
+| 共通スキル | `.agents/skills/`は対象選択・段階別読込・進行・index更新・報告。wiki固有の基準・名前による分岐を持たない |
 | 共通ツール | `tools/wiki/`は設定読込・記事探索・リンク解決・index生成・構造診断 |
 | 各wiki | `wiki.toml`は目的と参照先、schemaは形式・粒度・出典、workflowsは操作手順、referencesは品質・採用基準、toolsは固有処理 |
 
@@ -46,7 +46,7 @@ commands = []
 mode = "direct"
 ```
 
-`pages`、`index`、`schema`、各workflowのパスはその設定ファイルのディレクトリ基準。記事ディレクトリ・index・schema・3つのworkflowは用意してから登録する。`purpose`は選択に十分な短い説明にし、詳細な採用基準はworkflowが参照する文書へ置く。専用query手順は現時点では不要。
+`pages`、`index`、`schema`、各workflowのパスはその設定ファイルのディレクトリ基準。記事ディレクトリ・index・schema・3つのworkflowは用意してから登録する。`purpose`は選択に十分な短い説明にし、詳細な採用基準はworkflowが参照する文書へ置く。`workflows.ingest` の冒頭で採用判断用のschema・基準を明示し、執筆・評価時の参照文書と分ける。queryの追加提案はこの採用判断部分から読む。専用query手順は現時点では不要。
 
 `publication.mode`は必ず明示する。`direct`は機械的な公開審査なしであり、執筆・品質確認を省略する意味ではない。`checked`では次のcommandを必須とする。
 
@@ -69,7 +69,7 @@ Python 3.11以降では標準`tomllib`、Python 3.8〜3.10では同梱のTomli�
 
 検査・公開判定コマンドは読み取り専用とし、記事・index・評価履歴を更新しない。評価の起動・改善・履歴保存はworkflowを実行する親が調整する。実行不能・設定不正・必要入力の欠落を「問題なし」「公開可」に変換しない。
 
-共通スキルへ引き渡す状態は、変更対象、実施した検査・評価と根拠の場所、公開／保留、残課題・停止理由を含める。wiki固有の詳細な評価出力はそのwikiのschemaに従い、異なる尺度を合算しない。
+共通スキルへ引き渡す状態は、変更対象、実施した検査・評価と根拠の場所、公開／保留、残課題・停止理由を含める。wiki側手順は品質・公開・停止条件を判断してこの状態を返し、index更新コマンドは実行しない。共通スキルが条件を確認して対象indexを更新する。wiki固有の詳細な評価出力はそのwikiのschemaに従い、異なる尺度を合算しない。
 
 ## 共通CLI
 
@@ -104,15 +104,10 @@ indexの`--check`は不一致時1、実行エラー時2、それ以外0。構造
 
 通常はAGENTS.mdと選択したスキル → 設定 → 対象操作手順 → 必要な基準・記事の順に読む。対象明示時は他wikiの品質文書を読まない。queryは記事・indexを検索し、運用文書と評価履歴を回答の知識ソースへ混ぜない。
 
-子には対象記事・必要な基準・許可された編集範囲・出力schema・完了条件を渡す。独立評価はwikiのプロトコルに従い、前回評価や執筆会話を渡さない。履歴・indexの更新は親が直列化する。モデル設定をwiki側へ複製しない。
+委譲時の共通手順は [委譲手順](delegation.md)、独立評価の固有手順は対象wikiのプロトコルを正本とする。モデル設定をwiki側へ複製しない。
 
 ## 変更時の検証
 
-```bash
-python3 -m unittest discover -s tools/wiki -p 'test_*.py'
-python3 -m unittest discover -s wiki/insight/tools -p 'test_*.py'
-bash wiki/insight/tools/test-textlint-check.sh
-python3 tools/wiki/wiki_structure.py index --check
-```
+コマンドと変更対象別の選択は [保守案内](maintenance.md#検証コマンド) を参照する。
 
 共通実装は仮の第三wiki、選択範囲の分離、越境リンク、checkedの許可・拒否・失敗、既存公開維持を検証する。固有実装はそのwikiのテストで検証する。設定・ツールの移行では記事・index・評価履歴のパスと内容を保ち、既存評価状態の一致を確認する。新しいwikiの追加だけで共通スキル本文を変更しないことを受入条件とする。

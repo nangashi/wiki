@@ -116,7 +116,7 @@ source診断のcodeが対応する必須項目に独立した識別子として�
 
 保存時のfrontmatterには`target`、`target_blob`、`evaluation_run_id`、`evaluator`、`evaluator_model`、`verified_at`、`run_id`を付ける。調査不能は未確認であり誤りではない。
 
-Astraが必須対応から1回につき1〜3項目を選び、必要な調査後にeditorへ最小修正を委譲する。本文・外部ソース・関連リンクを先に確定し、変更したinsight記事はすべて最終評価する。最終評価後に記事blobを変更せずindexを生成する。
+Astraが必須対応から1回につき1〜3項目を選び、必要な調査後にeditorへ最小修正を委譲する。本文・外部ソース・関連リンクを先に確定し、変更したinsight記事はすべて最終評価する。最終評価後は記事blobを変更せず、評価履歴・公開判断・残課題を共通スキルへ返す。index生成は共通スキルが担当する。
 
 ゲート合格かつ必須項目がなければ任意改善を残して終了する。最大3回、または同じ実質的な必須項目が2回続けば停止し、未解決事項を報告する。外部検証と記事変更の後は、前回評価を渡さないfreshな独立評価で最終記事を確認する。
 
@@ -134,4 +134,13 @@ python3 wiki/insight/tools/evaluation_validator.py <evaluator-out.md> --slug <sl
 python3 wiki/insight/tools/evaluation_state.py init --manifest <run-dir>/manifest.json --rubric-version 3 --target <slug>:wiki/insight/pages/<slug>.md
 python3 wiki/insight/tools/evaluation_state.py next --manifest <run-dir>/manifest.json
 python3 wiki/insight/tools/evaluation_state.py save --manifest <run-dir>/manifest.json --slug <slug> --body <evaluator-out.md>
+```
+
+一括評価では、上記の `init --target` の代わりに対象全体を指定できる。失敗・中断後の再開・分布の再構築も同じhelperを使う。
+
+```bash
+python3 wiki/insight/tools/evaluation_state.py init --manifest <run-dir>/manifest.json --rubric-version 3 --pages-dir wiki/insight/pages
+python3 wiki/insight/tools/evaluation_state.py fail --manifest <run-dir>/manifest.json --slug <slug> --error <reason>
+python3 wiki/insight/tools/evaluation_state.py resume --manifest <run-dir>/manifest.json
+python3 wiki/insight/tools/evaluation_state.py normalize --output <run-dir>/normalized.json
 ```

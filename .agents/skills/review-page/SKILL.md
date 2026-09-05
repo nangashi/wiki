@@ -11,7 +11,7 @@ description: 指定された既存wiki記事を、そのwikiの基準でレビ�
 2. 設定の `schema`、`workflows.review` と指定された基準、対象記事を読む。index・関連先・類似記事は必要な範囲で参照する。他wikiの基準は対象記事に適用しない。
 3. `workflows.review` に従ってレビュー、必要な調査、改善・再評価まで実行する。「評価だけ」など明示された範囲を優先し、既に承認された修正を再確認しない。
 4. 独立評価が要求される場合は、そのwikiの評価手順で入力・履歴分離・出力schema・保存・停止条件を守る。実行不能なら評価を代行しない。
-5. 変更した記事を確定し、wikiの公開・終了条件を確認してから `python3 tools/wiki/wiki_structure.py index --collection <id>` で対象indexを生成する。評価だけの場合は記事・indexを変更しない。
+5. wiki側手順から変更対象、検査・評価と根拠、公開／保留、残課題・停止理由を受け取る。変更した記事を確定し、wikiの公開・終了条件を確認してから `python3 tools/wiki/wiki_structure.py index --collection <id>` で対象indexを生成する。index更新はこの共通スキルだけが担当し、サマリは記事の概要から生成する。評価だけの場合は記事・indexを変更しない。
 
 被リンクは `python3 tools/wiki/wiki_structure.py backlinks <id>:<slug>` で取得する。相互リンクのためだけに関連先を変更しない。設定内の文書パスは設定ファイルのディレクトリ基準、コマンドはリポジトリルートで実行する。
 

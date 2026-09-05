@@ -16,7 +16,7 @@ python3 tools/wiki/lint_check.py --collection <id> --checks
 python3 tools/wiki/wiki_structure.py index --collection <id> --check
 ```
 
-全体の場合は `--collection` を省略する。`--checks` は各対象設定の `checks.commands` を実行する。これは機械診断であり、以下の意味的監査やwiki側の再評価・改善を代行しない。出力を保持し、処理失敗と記事の品質診断を区別する。
+全体の場合は `--collection` を省略する。`--checks` は各対象設定の `checks.commands` を実行する。これは機械診断であり、以下の意味的監査やwiki側の再評価・改善を代行しない。出力を保持してwiki側手順へ渡す。wiki側では取得済み診断を再実行せず、再開時に結果がない場合や記事変更で診断が古くなった場合に必要な検査だけ再取得する。処理失敗と記事の品質診断を区別する。
 
 ## 共通の構造・意味的監査
 
@@ -32,6 +32,6 @@ python3 tools/wiki/wiki_structure.py index --collection <id> --check
 
 診断と比較結果を入力として各 `workflows.lint` を実行する。再評価・改善キューが定義されていれば同じ実行内で進め、そのwikiの独立性・保存・停止条件を守る。定義されていない処理を他wikiから移植しない。承認済みの範囲は再確認しない。
 
-構造上の改善はERROR、WARNING、INFOの順に提示する。統合・削除・リダイレクト化などの承認要否は対象wikiの手順に従う。indexは記事の概要から生成し、サマリを別途執筆しない。被リンクは `python3 tools/wiki/wiki_structure.py backlinks <id>:<slug>` で取得する。
+構造上の改善はERROR、WARNING、INFOの順に提示する。統合・削除・リダイレクト化などの承認要否は対象wikiの手順に従う。wiki側手順から変更対象、検査・評価と根拠、公開／保留、残課題・停止理由を受け取る。変更したwikiの公開・終了条件を確認してから、この共通スキルが `python3 tools/wiki/wiki_structure.py index --collection <id>` を実行する。indexは記事の概要から生成し、サマリを別途執筆しない。被リンクは `python3 tools/wiki/wiki_structure.py backlinks <id>:<slug>` で取得する。
 
 対象wiki別に診断、重複・矛盾、実施した変更・評価、未処理・停止理由を報告する。wiki指定の報告schemaを保持し、異なる評価尺度を合算しない。失敗・未実施を「問題なし」としない。

@@ -1,8 +1,13 @@
 # insightへの取り込み
 
-## 必要な入力と基準
+## 条件付き参照
 
-入力ソース・採用先・新規／追記候補を受け取る。`../schema.md`、`../references/reusability-criteria.md`、`../references/article-quality-rubric.md`、`../references/japanese-style-guide.md`、[評価プロトコル](../references/evaluation-protocol.md)を全文読む。
+入力ソース・採用先・新規／追記候補を受け取る。必要な段階でのみ次を読む。
+
+- **採用判断で読む文書**: `../schema.md` の粒度ルールと `../references/reusability-criteria.md`。`$query` はこの採用判断部分とここで指定された基準だけを読む。
+- **執筆時**: `../schema.md`、`../references/article-quality-rubric.md`、`../references/japanese-style-guide.md`。
+- **評価時**: `../references/article-quality-rubric.md` と [評価プロトコル](../references/evaluation-protocol.md)。
+
 核心が何を説明し、どんな推論に使えるかを明確にし、その理解と適用判断に必要な情報へ絞る。再利用性のR1〜R4で採用判定し、不合格候補と一次・二次の根拠を確保できない候補は記事化せず保留する。
 
 ## 独立調査
@@ -98,7 +103,7 @@ schema.mdの「粒度ルール > 新規 vs 追記の判断フロー」に従う�
 - 新規・更新ページの「関連」セクションに、理解や判断に役立つ関連概念へのリンクを追加
 - 相互リンクは必須にしない。関連先からも独自の説明が必要な場合だけ、そのページを更新する
 - リンク形式: `[[スラグ]]` + 関係の説明
-- 被リンクは `python3 tools/wiki/wiki_structure.py backlinks insight:<slug>` で取得する
+- 共通スキルが取得した被リンクを参考にする
 
 本文、`## 関連`、`## 外部ソース`をこの時点で確定し、変更されたinsightページをすべて評価対象へ加える。被リンクの取得だけでは記事を変更せず、再評価も発生しない。
 
@@ -106,17 +111,9 @@ schema.mdの「粒度ルール > 新規 vs 追記の判断フロー」に従う�
 
 新規記事と本文を変更した全記事に [評価プロトコル](../references/evaluation-protocol.md) を実行する。freshな独立評価、検証・保存、必須調査、最小改善、新しい独立再評価、停止条件を省略しない。最終評価後は記事blobを変更しない。
 
-### ステップ6: index.mdを生成する
+### ステップ6: 共通スキルへ引き渡す
 
-全変更ページの最終評価が保存され、`target_blob`が現内容と一致してからindexを最後に生成する。新規ページが停止条件までに公開条件を満たさなければindexへ追加しない。
-
-```bash
-python3 tools/wiki/wiki_structure.py index --collection insight
-# 新規記事の公開時。現行rubric・記事hash一致・採用適合・必須項目なし・出典形式をスクリプトで確認する
-python3 tools/wiki/wiki_structure.py index --collection insight --add insight:<slug>
-```
-
-サマリは`## 概要`の最初の段落を改行だけ折り畳んで使う。別途執筆・短縮せず、内容の改善は記事の概要で行う。既存カテゴリと公開済み項目は保持され、新規項目は「未分類」に入る。必要なら項目の分類先だけ移動する。未公開の草稿は`--add`なしでは追加されない。
+全変更ページの最終評価が保存され、`target_blob`が現内容と一致してから共通スキルへ引き渡す。新規ページは現行rubric、記事hash一致、採用適合、必須項目なし、出典形式の公開条件を満たすまで保留とする。index更新と被リンク取得は共通スキルが実行する。
 
 ### ステップ7: 作業サマリを出力する
 以下を報告する:
@@ -127,3 +124,4 @@ python3 tools/wiki/wiki_structure.py index --collection insight --add insight:<s
 - 初回／最終の公開判断、修正必須・調査必須の解消内容、任意改善と保持した良い点
 - Astraとeditorが行った改善と、停止時に残った課題
 - 外部検証を行った主張と、未確認のまま残した主張
+- 変更記事と根拠の場所、公開／保留、残課題・停止理由

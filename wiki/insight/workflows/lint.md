@@ -1,6 +1,6 @@
 # insightの監査・評価保守
 
-`../schema.md`、採用・品質・日本語基準と [評価プロトコル](../references/evaluation-protocol.md) を全文読む。共通lintが取得した `check.py` の出典・評価状態診断を使う。単独でこの手順を再開する場合だけ `python3 wiki/insight/tools/check.py --root .` で再取得する。
+`../schema.md`、採用・品質・日本語基準と [評価プロトコル](../references/evaluation-protocol.md) を全文読む。共通lintが取得した `check.py` の出典・評価状態診断を使う。再開時に診断結果がない場合や記事変更で診断が古くなった場合は `python3 wiki/insight/tools/check.py --root .` で再取得する。
 
 `bash wiki/insight/tools/textlint-check.sh 'wiki/insight/pages/*.md'` を実行する。必須修正・文脈判断・参考を区別し、改善対象記事を処理するときに全文を読んで採否を決める。一括修正しない。修正後は対象記事へ再実行し、残した指摘の理由を報告する。
 
@@ -24,27 +24,11 @@
 
 ## 独立一括評価
 
-対象ごとに protocolの通常評価を実行する。
+対象ごとに[評価プロトコル](../references/evaluation-protocol.md)の通常評価を実行する。起動・入力・独立性・retry・validator・source診断・履歴／hash／metadataの保存・失敗継続・停止時の扱いは同プロトコルを正本とする。
 
-対象とrun manifestは`evaluation_state.py init`で生成し、`next`が返す最大3件だけを並行評価する。結果は`save`でsource診断category、評価本文validator、target hash、metadataを確認する。source構造不正は保存せず、SOURCE_MISSING / SOURCE_UNVERIFIEDは対応codeを事実基盤（ゲート不合格時は再利用性）の必須項目に持ち、導出passがfalseの評価だけ保存する。形式不正や実行失敗は`fail`へ渡す。中断後は`resume`、全体分布と改善キューは`normalize`で毎回再構築する。このhelper自体に評価を起動させない。新規runは現行v3を使い、旧rubricの未完了runから混在再開しない。
+対象とrun manifestはプロトコルに従って生成・再開する。中断後はmanifestを再開し、旧rubricの未完了runと混在させない。評価完了・中断のいずれでも正規化して全体分布と改善キューを再構築する。評価helper自体に評価を起動させない。
 
-```bash
-python3 wiki/insight/tools/evaluation_state.py init --manifest <run-dir>/manifest.json --rubric-version <N> --pages-dir wiki/insight/pages
-python3 wiki/insight/tools/evaluation_state.py next --manifest <run-dir>/manifest.json
-# `evaluator`（Sol / low） の結果を次で保存する
-python3 wiki/insight/tools/evaluation_state.py save --manifest <run-dir>/manifest.json --slug <slug> --body <evaluator-out.md>
-python3 wiki/insight/tools/evaluation_state.py fail --manifest <run-dir>/manifest.json --slug <slug> --error <reason>
-python3 wiki/insight/tools/evaluation_state.py resume --manifest <run-dir>/manifest.json
-python3 wiki/insight/tools/evaluation_state.py normalize --output <run-dir>/normalized.json
-```
-
-- 評価の起動、入力、クリーンな再試行、`evaluation_validator.py`、履歴・hash・metadataの保存は [evaluation-protocol.md](../references/evaluation-protocol.md) を正本とする。
-- 各記事をfreshな`evaluator`（Sol / low）が評価し、他記事の評価結果や前回評価結果を渡さない
-- 結果を `evaluations/insight/<slug>/` に保存する
-
-並行上限は3件とし、3件以下の固定バッチで保存する。run manifest、最大2回のクリーンretry、失敗継続、停止時の扱いは protocolに従う。
-
-外部検証はprotocolの共通方式だけを使い、新しい履歴なしの`evaluator`（Sol / low）に依頼する。一括評価時は延期できるが、改善対象記事はキュー処理時に実行する。
+外部検証はプロトコルの方式だけを使う。一括評価時は延期できるが、改善対象記事はキュー処理時に実行する。
 
 ## 対応分布と改善キュー
 
@@ -54,7 +38,7 @@ python3 wiki/insight/tools/evaluation_state.py normalize --output <run-dir>/norm
 
 分布は対象外、修正・調査必須、修正必須、調査必須、公開可、再評価必要の排他的な区分で報告する。任意改善だけの記事は標準改善対象にしない。全体分布を確認した後、一件ずつ`$review-page`と同じ内部ループで必須の調査・修正を処理する。評価前に全記事を書き換えない。
 
-各記事では、必要な外部検証、`editor`（Terra / medium）による1〜3項目の改善、新しい`evaluator`（Sol / low）による独立再評価を行う。利用者は途中で停止できる。停止された場合は処理済み件数、未処理件数、次の対象を残す。統合・削除・リダイレクト化、核心の大幅変更は個別確認を取る。
+各記事では、必要な外部検証、`editor`（Terra / medium）による1〜3項目の改善、新しい独立再評価を行う。利用者は途中で停止できる。停止された場合は処理済み件数、未処理件数、次の対象を残す。統合・削除・リダイレクト化、核心の大幅変更は個別確認を取る。
 
 ## 通常の修正
 
@@ -104,4 +88,4 @@ CHECK-4/6を含む通常の改善点は、問題、根拠、差分レベルの�
 - 次の対象: ...
 ```
 
-件数の増減だけで改善と判断せず、必須の問題が解消されたかと保持した良い点を報告する。任意改善は原則実施せず、必須項目が0件なら終了する。最大3回または同じ実質的な必須問題が2回続けば停止し、未解決を報告する。
+件数の増減だけで改善と判断せず、必須の問題が解消されたかと保持した良い点を報告する。任意改善は原則実施せず、必須項目が0件なら終了する。最大3回または同じ実質的な必須問題が2回続けば停止し、未解決を報告する。変更記事、根拠の場所、公開／保留、残課題・停止理由を共通スキルへ返し、index更新と被リンク取得は共通スキルが実行する。
