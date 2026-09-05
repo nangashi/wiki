@@ -34,7 +34,7 @@ updated: "YYYY-MM-DD"
 ---
 ```
 
-評価は `evaluations/insight/<slug>/` の評価ファイルにある `rubric_version` と `target_blob` で追跡する。点数を記事frontmatterへ保存しない。
+評価は `evaluations/insight/<slug>/` の評価ファイルにある `rubric_version` と `target_blob` で追跡する。評価結果を記事frontmatterへ保存しない。
 
 ### 本文構成
 
@@ -228,11 +228,11 @@ find wiki/insight/pages -name "*.md" | sort
 
 新規作成したページ、および本文を変更したページは変更の大小にかかわらず `evaluation-protocol.md` を実行する。評価履歴の `target_blob` と現在の記事内容を常に一致させる。
 
-1. 新しい履歴なしのevaluator（Sol）が `article-quality-rubric.md` と `japanese-style-guide.md` で採点する。AstraがCodex標準のサブエージェント機能で起動し、前回評価や執筆会話を渡さず、記事を変更させない。起動と検証の詳細は `evaluation-protocol.md` に従う。
-2. 評価に外部調査が必要な項目があれば、同プロトコルの条件に従い別のevaluatorで検証する。未確認を誤りと断定しない。
-3. 合格条件を満たさなければ、AstraがBlocking、Major、最低観点から1〜3項目を選び、editor（Terra）へ改善を委譲する。Astraとeditorは採点しない。
-4. 改善後は、前回点数を渡さない新しい履歴なしのevaluatorで再評価する。
-5. 合格または停止条件まで最大3回とし、評価履歴を `evaluations/insight/<slug>/` に保存する。
+1. 新しい履歴なしのevaluator（Sol）が `article-quality-rubric.md` と `japanese-style-guide.md` で評価する。AstraがCodex標準のサブエージェント機能で起動し、前回評価や執筆会話を渡さず、記事を変更させない。起動と検証の詳細は `evaluation-protocol.md` に従う。
+2. 調査必須項目は、同プロトコルに従い別のevaluatorで検証し、結果に応じて維持・修正・削除を決める。未確認を誤りと断定せず、必要な理由と結果ごとの対応を明示する。核心に不要な主張なら削除で解消してもよい。
+3. 修正必須・調査必須が残る場合、Astraが依存順に1〜3項目を選び、必要な調査後にeditor（Terra）へ改善を委譲する。任意改善は原則対応せず、公開・終了を妨げない。Astraとeditorは独立評価を代行しない。
+4. 改善後は、前回評価結果を渡さない新しい履歴なしのevaluatorで再評価する。
+5. 必須項目が解消されるか停止条件に達するまで最大3回とし、評価履歴を `evaluations/insight/<slug>/` に保存する。
 
 具体例・数値・コード・固有名の不在だけを低品質とみなさない。未知ケースへの推論力、論理的な接続、適用境界、事実基盤、情報設計、日本語の自然さを共通ルーブリックで判断する。
 
@@ -240,11 +240,11 @@ find wiki/insight/pages -name "*.md" | sort
 
 ### ステップ6: index.mdを生成する
 
-全変更ページの最終評価が保存され、`target_blob`が現内容と一致してからindexを最後に生成する。新規ページが停止条件までに合格しなければindexへ追加しない。
+全変更ページの最終評価が保存され、`target_blob`が現内容と一致してからindexを最後に生成する。新規ページが停止条件までに公開条件を満たさなければindexへ追加しない。
 
 ```bash
 python3 .agents/skills/lint/wiki_structure.py index --collection insight
-# 新規記事の公開時。現行rubric・記事hash一致・合格をスクリプトで確認する
+# 新規記事の公開時。現行rubric・記事hash一致・採用適合・必須項目なし・出典形式をスクリプトで確認する
 python3 .agents/skills/lint/wiki_structure.py index --add insight:<slug>
 ```
 
@@ -256,6 +256,6 @@ python3 .agents/skills/lint/wiki_structure.py index --add insight:<slug>
 - 更新したページ一覧（タイトル・追加内容の要約）
 - スキップした概念（理由付き）
 - 追加した関連リンク
-- Codex評価の初回／最終点、品質区分、Blocking/Major、観点別傾向
+- 初回／最終の公開判断、修正必須・調査必須の解消内容、任意改善と保持した良い点
 - Astraとeditorが行った改善と、停止時に残った課題
 - 外部検証を行った主張と、未確認のまま残した主張

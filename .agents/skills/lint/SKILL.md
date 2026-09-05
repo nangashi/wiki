@@ -5,7 +5,7 @@ description: wiki全体の構造監査と、rubric更新時のinsight再評価�
 
 # $lint スキル
 
-wiki全体のリンク、孤立、重複、粒度、矛盾、低価値候補を監査する。さらにinsight評価履歴を現行rubricと自動照合し、必要なら同じ実行内で独立再評価、ランキング、改善キュー処理まで進む。動作切替オプションは設けない。
+wiki全体のリンク、孤立、重複、粒度、矛盾、低価値候補を監査する。さらにinsight評価履歴を現行rubricと自動照合し、必要なら同じ実行内で独立再評価、対応分布、改善キュー処理まで進む。動作切替オプションは設けない。
 
 ## 事前準備
 
@@ -65,11 +65,11 @@ indexのサマリ不一致は `python3 .agents/skills/lint/wiki_structure.py ind
 
 ## CHECK-8b: 外部ソース
 
-構造チェックは`insight_source_validator.py`の結果を使う。`SOURCE_MISSING`、一次・二次がなく要確認／参考だけの`SOURCE_UNVERIFIED`は評価上Blocking、形式不正や重複IDは保存前ERRORとする。一次・二次があっても核心となる強い主張とsource IDの対応が不明なら`evaluator`評価でMajor、補足的主張だけの対応漏れならMinorとする。URLの文字列から内容や区分を推測せず、frontmatterの旧sourcesへfallbackしない。
+構造チェックは`insight_source_validator.py`の結果を使う。`SOURCE_MISSING`、一次・二次がなく要確認／参考だけの`SOURCE_UNVERIFIED`は内容が偽とは断定せず、評価の事実基盤（ゲート不合格時は再利用性）の必須項目で対応する。形式不正や重複IDは保存前ERRORとする。一次・二次があっても重要主張の支持範囲が不明なら調査必須、確認済みの追跡性不足なら修正必須とし、判断に影響しない軽微な不足は任意改善とする。URLの文字列から内容や区分を推測せず、frontmatterの旧sourcesへfallbackしない。
 
 ## CHECK-9: rubric差分と評価対象の自動決定
 
-評価状態は `evaluations/insight/<slug>/` にある最新の完全に有効な評価で判定する。有効性にはfrontmatterだけでなく、protocolが定める本文schemaの必須サマリ、6観点、Blocking/Major/Minor等も含む。無効な過去履歴は警告・件数として残すが、有効評価が1件以上あれば最新有効評価の状態判定を妨げない。
+評価状態は `evaluations/insight/<slug>/` にある最新の完全に有効な評価で判定する。有効性にはfrontmatterだけでなく、protocolが定める本文schemaの必須サマリ、6観点、対応項目、観点との整合等も含む。無効な過去履歴は警告・件数として残すが、有効評価が1件以上あれば最新有効評価の状態判定を妨げない。
 
 - 最新評価なし: その記事を評価する
 - metadataは正常だが本文schemaを満たす有効評価がない: `reason=output` で評価する
@@ -77,13 +77,13 @@ indexのサマリ不一致は `python3 .agents/skills/lint/wiki_structure.py ind
 - rubricは現行だが `target_blob` が現在の記事ハッシュと異なる: 変更記事を再評価する
 - 全件が現行かつ内容一致: 再評価しない
 
-追加オプションを要求せず、対象件数と実行規模を報告してそのまま同じ `$lint` 実行内で進める。`editor`やAstraが点数を補完・代行しない。
+追加オプションを要求せず、対象件数と実行規模を報告してそのまま同じ `$lint` 実行内で進める。`editor`やAstraが評価を補完・代行しない。
 
 ## 独立一括評価
 
 対象ごとに protocolの通常評価を実行する。
 
-対象とrun manifestは`evaluation_state.py init`で生成し、`next`が返す最大3件だけを並行評価する。結果は`save`でsource診断category、評価本文validator、target hash、metadataを確認する。source構造不正は保存せず、SOURCE_MISSING / SOURCE_UNVERIFIEDは対応するBlocking・score_cap 49・不合格が揃う評価だけ保存する。形式不正や実行失敗は`fail`へ渡す。中断後は`resume`、全体分布と改善キューは`normalize`で毎回再構築する。このhelper自体に評価を起動させない。
+対象とrun manifestは`evaluation_state.py init`で生成し、`next`が返す最大3件だけを並行評価する。結果は`save`でsource診断category、評価本文validator、target hash、metadataを確認する。source構造不正は保存せず、SOURCE_MISSING / SOURCE_UNVERIFIEDは対応codeを事実基盤（ゲート不合格時は再利用性）の必須項目に持ち、導出passがfalseの評価だけ保存する。形式不正や実行失敗は`fail`へ渡す。中断後は`resume`、全体分布と改善キューは`normalize`で毎回再構築する。このhelper自体に評価を起動させない。新規runは現行v3を使い、旧rubricの未完了runから混在再開しない。
 
 ```bash
 python3 .agents/skills/lint/evaluation_state.py init --manifest <run-dir>/manifest.json --rubric-version <N> --pages-dir wiki/insight/pages
@@ -96,26 +96,20 @@ python3 .agents/skills/lint/evaluation_state.py normalize --output <run-dir>/nor
 ```
 
 - 評価の起動、入力、クリーンな再試行、`evaluation_validator.py`、履歴・hash・metadataの保存は [evaluation-protocol.md](../../../wiki/insight/references/evaluation-protocol.md) を正本とする。
-- 各記事をfreshな`evaluator`（Sol / low）が評価し、他記事の点数や前回点数を渡さない
+- 各記事をfreshな`evaluator`（Sol / low）が評価し、他記事の評価結果や前回評価結果を渡さない
 - 結果を `evaluations/insight/<slug>/` に保存する
 
 並行上限は3件とし、3件以下の固定バッチで保存する。run manifest、最大2回のクリーンretry、失敗継続、停止時の扱いは protocolに従う。
 
-外部検証はprotocolの共通方式だけを使い、新しい履歴なしの`evaluator`（Sol / low）に依頼する。一括ランキング前は延期できるが、改善対象記事はキュー処理時に実行する。
+外部検証はprotocolの共通方式だけを使い、新しい履歴なしの`evaluator`（Sol / low）に依頼する。一括評価時は延期できるが、改善対象記事はキュー処理時に実行する。
 
-## ランキングと改善キュー
+## 対応分布と改善キュー
 
-評価完了後だけでなく毎回、全insight記事の最新有効評価からraw_score、final_score、品質区分、Blocking/Major、最低観点を再集計する。不正metadataの履歴は使わない。前回停止後もこの再構築によりキューを復元する。run manifestは経緯の補助であり、キューの正本ではない。
+評価完了後だけでなく毎回、全insight記事の最新有効評価から公開判断、修正必須・調査必須・任意改善、観点別所見を再集計する。不正metadataの履歴は使わない。前回停止後もこの再構築によりキューを復元する。run manifestは経緯の補助であり、キューの正本ではない。
 
-次の順で安定的に並べる。同順位はfinal_score昇順、slug昇順とする。
+キューは現行rubric・記事hash一致の有効評価から、ゲート不合格または修正必須・調査必須がある記事を抽出する。並び順は対象外、修正あり、調査のみ。同順位はslug昇順とし、件数を品質順位にしない。旧評価、未評価、内容変更後は`reevaluation_required`へ分離し、旧評価を現行の公開判断や対応件数へ変換しない。
 
-1. 採点対象外またはBlockingあり
-2. Majorあり
-3. final_score 60未満
-4. final_score 60〜69
-5. final_score 70以上
-
-Blocking/Majorありと70点未満を標準の改善対象とする。最初に全体分布を確認し、その後で一件ずつ `$review-page` と同じ内部改善ループを実行する。評価前に全記事を書き換えない。
+分布は対象外、修正・調査必須、修正必須、調査必須、公開可、再評価必要の排他的な区分で報告する。任意改善だけの記事は標準改善対象にしない。全体分布を確認した後、一件ずつ`$review-page`と同じ内部ループで必須の調査・修正を処理する。評価前に全記事を書き換えない。
 
 各記事では、必要な外部検証、`editor`（Terra / medium）による1〜3項目の改善、新しい`evaluator`（Sol / low）による独立再評価を行う。利用者は途中で停止できる。停止された場合は処理済み件数、未処理件数、次の対象を残す。統合・削除・リダイレクト化、核心の大幅変更は個別確認を取る。
 
@@ -150,16 +144,16 @@ CHECK-4/6を含む通常の改善点は、問題、根拠、差分レベルの�
 ### 品質分布
 | 区分 | 件数 |
 |---|---:|
-| 採点対象外 | N |
-| 0〜59 | N |
-| 60〜69 | N |
-| 70〜79 | N |
-| 80〜89 | N |
-| 90〜100 | N |
+| 対象外 | N |
+| 修正・調査必須 | N |
+| 修正必須 | N |
+| 調査必須 | N |
+| 公開可 | N |
+| 再評価必要 | N |
 
 ### 改善キュー
-| 順位 | slug | final | Blocking | Major | 最低観点 |
-|---:|---|---:|---:|---:|---|
+| 順位 | slug | 公開判断 | 修正必須 | 調査必須 |
+|---:|---|---|---:|---:|
 
 ### 処理結果
 - 改善・再評価済み: N件
@@ -167,4 +161,4 @@ CHECK-4/6を含む通常の改善点は、問題、根拠、差分レベルの�
 - 次の対象: ...
 ```
 
-1〜4点差は通常の揺れとして扱い、品質区分、Blocking/Major、観点別傾向を報告の中心にする。
+件数の増減だけで改善と判断せず、必須の問題が解消されたかと保持した良い点を報告する。任意改善は原則実施せず、必須項目が0件なら終了する。最大3回または同じ実質的な必須問題が2回続けば停止し、未解決を報告する。

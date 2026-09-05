@@ -22,7 +22,7 @@ class WikiStructureTest(unittest.TestCase):
             (self.root / "wiki" / collection / "pages").mkdir(parents=True)
         (self.root / "wiki" / "insight" / "references").mkdir(parents=True)
         (self.root / "wiki" / "insight" / "references" / "article-quality-rubric.md").write_text(
-            "# rubric\n\n**rubric_version: 2**\n", encoding="utf-8")
+            "# rubric\n\n**rubric_version: 3**\n", encoding="utf-8")
         self.write_index("insight", "# Index\n\n## A\n\n- [[kept]] — 古い要約\n- [[gone]] — 消える\n\n## B\n\n- [[draft]] — 既存公開\n")
         self.write_index("it", "# IT\n\n## Existing\n\n- [[target]] — 古い\n- [[fenced-overview]] — 古い\n")
         self.write_page("insight", "kept", "保持したい概要\n次の行も同じ段落。")
@@ -62,7 +62,7 @@ class WikiStructureTest(unittest.TestCase):
         subprocess.run(["git", "add", "wiki"], cwd=self.root, check=True)
         subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@e", "commit", "-qm", "init"], cwd=self.root, check=True)
 
-    def write_evaluation(self, slug: str, passed: bool, rubric_version: int = 2) -> None:
+    def write_evaluation(self, slug: str, passed: bool, rubric_version: int = 3, action_type: str = "修正必須") -> None:
         major = "- 評価上の主要な不足。" if not passed else "- なし"
         improvements = """### P1: 主要な不足を解消する
 
@@ -118,6 +118,46 @@ class WikiStructureTest(unittest.TestCase):
 
 - x
 """.format(slug=slug, passed="はい" if passed else "いいえ", major=major, improvements=improvements)
+        if rubric_version >= 3:
+            dimensions = ("核心と推論力", "論理と構造", "有用性と適用境界", "事実基盤", "情報設計", "日本語の自然さ")
+            optional = action_type == "任意改善"
+            actions = "- なし"
+            if not passed or optional:
+                actions = f"""### P1: 根拠の対応を確認する
+- 種別: {action_type}
+- 観点: 事実基盤
+- 対象箇所: 概要の根拠
+- 問題: 主張と根拠の対応が不明
+- 改善後に満たす条件: 主張の支持範囲を追跡できる
+- 対応方法: 対応資料を確認する
+"""
+                if action_type == "調査必須":
+                    actions += """- 確認対象: 資料が概要の主張を支持するか
+- 必要な理由: 支持範囲によって採用判断が変わる
+- 調査先: S1
+- 結果ごとの対応: 支持されれば維持、支持されなければ修正、確認不能なら採用保留
+"""
+            rows = "\n".join(f"| {d} | {'要対応' if d == '事実基盤' and not passed and not optional else '十分'} | 本文を確認した根拠。 |" for d in dimensions)
+            body = f"""# Insight記事評価: {slug}
+- reusability_gate: 合格
+
+## 再利用性ゲート
+- R1: 合格。判断に使える。
+- R2: 合格。構造を再利用できる。
+- R3: 該当なし。
+- R4: 条件を示している。
+
+## 観点別評価
+| 観点 | 状態 | 根拠 |
+|---|---|---|
+{rows}
+
+## 対応項目
+{actions}
+
+## 良い点
+- 概要が明確である。
+"""
         blob = subprocess.run(["git", "hash-object", f"wiki/insight/pages/{slug}.md"], cwd=self.root,
                               check=True, text=True, capture_output=True).stdout.strip()
         path = self.root / "evaluations" / "insight" / slug / f"20260101T000000Z-v{rubric_version}-abcdefgh.md"
@@ -175,6 +215,29 @@ class WikiStructureTest(unittest.TestCase):
         text = (self.root / "wiki/insight/index.md").read_text(encoding="utf-8")
         self.assertEqual(text.count("[[new-pass]]"), 1)
         self.assertIn("## 未分類", text)
+
+    def test_research_blocks_publication_but_optional_does_not(self) -> None:
+        self.write_page("insight", "research", "調査が必要な記事。")
+        self.write_evaluation("research", passed=False, action_type="調査必須")
+        before = (self.root / "wiki/insight/index.md").read_text(encoding="utf-8")
+        result = self.invoke("index", "--add", "insight:research")
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertEqual((self.root / "wiki/insight/index.md").read_text(encoding="utf-8"), before)
+        self.write_page("insight", "optional", "任意改善だけが残る記事。")
+        self.write_evaluation("optional", passed=True, action_type="任意改善")
+        result = self.invoke("index", "--add", "insight:optional")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("[[optional]]", (self.root / "wiki/insight/index.md").read_text(encoding="utf-8"))
+
+    def test_passing_evaluation_cannot_override_unverified_sources(self) -> None:
+        self.write_page("insight", "unverified", "出典を未確認の記事。")
+        page = self.root / "wiki/insight/pages/unverified.md"
+        page.write_text(page.read_text(encoding="utf-8").replace("S1（二次）", "S1（要確認）").replace("概要の根拠。", "対応する主張を未確認。"), encoding="utf-8")
+        self.write_evaluation("unverified", passed=True)
+        before = (self.root / "wiki/insight/index.md").read_text(encoding="utf-8")
+        result = self.invoke("index", "--add", "insight:unverified")
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertEqual((self.root / "wiki/insight/index.md").read_text(encoding="utf-8"), before)
 
     def test_backlinks_resolve_direction_cross_links_and_do_not_change_articles(self) -> None:
         before = (self.root / "wiki/it/pages/source.md").read_text(encoding="utf-8")

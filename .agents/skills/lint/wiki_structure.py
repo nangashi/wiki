@@ -139,7 +139,7 @@ def render_index(root: Path, collection: str, additions: set[str]) -> str:
         if not path.is_file():
             fail(f"追加対象の記事がありません: {collection}:{slug}")
         if collection == "insight" and not approved_insight(root, slug):
-            fail(f"未公開または不合格のinsight記事は追加できません: {slug}")
+            fail(f"公開条件を満たさないinsight記事は追加できません: {slug}")
     block = "\n".join(f"- [[{slug}]] — {overview_summary(page_path(root, collection, slug))}" for slug in missing)
     uncategorized = re.search(r"(?m)^## 未分類\s*$", rendered)
     if uncategorized:

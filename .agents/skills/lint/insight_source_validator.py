@@ -22,7 +22,7 @@ class SourceDiagnostic:
 
 def diagnostic(code: str, reason: str) -> SourceDiagnostic:
     if code in {"SOURCE_MISSING", "SOURCE_UNVERIFIED"}:
-        return SourceDiagnostic(code, "quality", "BLOCKING", reason)
+        return SourceDiagnostic(code, "quality", "REQUIRED", reason)
     return SourceDiagnostic(code, "structure", "ERROR", reason)
 
 

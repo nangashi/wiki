@@ -28,13 +28,13 @@ $review-page <slug1> <slug2> ...
 
 独立評価の前に、対象記事ごとに `bash .agents/skills/lint/textlint-check.sh <記事パス>` を実行する。`TEXTLINT_REQUIRED`は評価前に修正する。`TEXTLINT_REVIEW`と`TEXTLINT_INFO`は意味・根拠・スタイルガイドに照らして採否を判断し、根拠の強さに関わる表現は外部ソースを確認せず弱めない。修正した場合は再実行し、文脈上残す指摘を記録する。評価だけの明示指示では記事を変更せず、textlint所見として報告する。
 
-評価の起動、入力、クリーンな再試行、`evaluation_validator.py`、履歴・hash・metadataの保存、停止条件は [evaluation-protocol.md](../../../wiki/insight/references/evaluation-protocol.md) に従う。**`evaluator`（Sol / low）** は基準全文と記事全文だけを受け取るfreshなread-only評価者で、以前の点数・出力・結論を受け取らない。`editor`自身は採点しない。Astraが採否と統合を決める。
+評価の起動、入力、クリーンな再試行、`evaluation_validator.py`、履歴・hash・metadataの保存、停止条件は [evaluation-protocol.md](../../../wiki/insight/references/evaluation-protocol.md) に従う。**`evaluator`（Sol / low）** は基準全文と記事全文だけを受け取るfreshなread-only評価者で、以前の評価結果・結論を受け取らない。`editor`自身は独立評価を代行しない。Astraが採否と統合を決める。
 
-評価結果は保存前に`evaluation_validator.py`で検証する。不正なら保存せず、エラーや前回出力を加えない同一のクリーンプロンプトでretryする。正常な結果だけを `evaluations/insight/<slug>/` に保存し、raw_score、score_cap、final_score、品質区分、Blocking/Major/Minor、要外部調査、良い点を確認する。評価履歴が現行rubricでも、記事内容を見直す依頼なので初回評価を省略しない。
+評価結果は保存前に`evaluation_validator.py`で検証する。不正なら保存せず、エラーや前回出力を加えない同一のクリーンプロンプトでretryする。正常な結果だけを `evaluations/insight/<slug>/` に保存し、導出された公開判断、修正必須・調査必須・任意改善、良い点を確認する。評価履歴が現行rubricでも、記事内容を見直す依頼なので初回評価を省略しない。
 
 ### 2. wiki内の構造レビュー
 
-記事本体の100点評価と混ぜず、次を別に確認する。
+記事本体の品質評価と混ぜず、次を別に確認する。
 
 - リンク不足・ノイズ: 関係の強い前提、対比、上下位概念へ、理解に必要な方向のリンクを張る
 - 統合候補: 他ページの一節に収まり、独自の検索入口や内容が乏しい
@@ -47,15 +47,15 @@ $review-page <slug1> <slug2> ...
 
 ### 3. 外部検証と改善
 
-`evaluation-protocol.md` の条件に該当すれば、新しい履歴なしの **`evaluator`（Sol / low）** で外部検証する。未確認と誤りを区別する。
+`調査必須`があれば、新しい履歴なしの **`evaluator`（Sol / low）** で検証する。確認対象・必要な理由・調査先・結果ごとの対応に従い、維持・修正・削除・採用保留を決める。未確認と誤りを区別する。核心に不要な主張は削除して調査を省略してもよい。
 
-評価のみの明示指示がなければ、**`editor`（Terra / medium）** がBlocking、Major、最低観点から1〜3項目の修正方針を提示し、承認された改善を適用する。`evaluator`が示した「改善後に満たす条件」を記事に合わせて実現し、既存の良い点、事実、出典を保持する。点数のために不要な例や説明を足さない。
+評価のみの明示指示がなければ、**`editor`（Terra / medium）** が修正必須から依存順に1〜3項目の修正方針を提示し、承認された改善を適用する。`evaluator`が示した「改善後に満たす条件」を記事に合わせて実現し、既存の良い点、事実、出典を保持する。任意改善は原則対応せず、公開・終了を妨げない。不要な例や説明を足さない。
 
 実質的な記事変更では `updated` を更新する。本文、外部ソース、関連リンクを先に確定し、関連先にも意味上必要な修正を行ったなら、そのinsightページも再評価対象に含める。
 
 ### 4. 独立再評価
 
-改善後は、共通source validatorを先に実行する。`category=structure`は評価履歴を保存せず修正する。既存記事の`category=quality`（SOURCE_MISSING / SOURCE_UNVERIFIED）は、それに対応するBlocking、score_cap 49、`pass: いいえ`を持つ評価だけ保存し、改善queueへ載せてよい。評価本文validatorも通し、前回点数・評価結果を渡さない新しい`evaluator`（Sol / low）で変更された全insightページを再評価して履歴を保存する。合格または停止条件まで最大3回とする。1〜4点差だけに反応せず、品質区分、Blocking/Major、観点別傾向で改善を判断する。最終評価後は記事blobを変えず、`python3 .agents/skills/lint/wiki_structure.py index` でindexを生成する。
+改善後は、共通source validatorを先に実行する。`category=structure`は評価履歴を保存せず修正する。既存記事の`category=quality`（SOURCE_MISSING / SOURCE_UNVERIFIED）は、対応codeを事実基盤（ゲート不合格時は再利用性）の必須項目に含み、導出passがfalseとなる評価だけ保存し、改善queueへ載せてよい。評価本文validatorも通し、前回評価結果・評価結果を渡さない新しい`evaluator`（Sol / low）で変更された全insightページを再評価して履歴を保存する。ゲート合格かつ修正必須・調査必須が0件なら終了する。最大3回、または同じ実質的な必須問題が2回続けば停止して未解決を報告する。任意改善を終了条件にせず、必要な問題が解消され良い点を保持できたかで判断する。最終評価後は記事blobを変えず、`python3 .agents/skills/lint/wiki_structure.py index` でindexを生成する。
 
 評価のみの明示指示では、初回評価と外部検証、構造上の所見を報告して終了し、記事・index・関連先を変更しない。
 
@@ -93,8 +93,8 @@ itにはinsight用ルーブリックを適用しない。次の4観点を順に�
 
 insightでは次を報告する。
 
-- 初回／最終のraw_score、score_cap、final_score、品質区分
-- Blocking/Majorと観点別得点の変化（1〜4点差は揺れとして扱う）
+- 初回／最終の公開判断と必須対応の有無
+- 修正必須・調査必須の解消内容、残る任意改善と観点別所見
 - 適用した改善と保持した良い点
 - 外部検証の確認済み／未確認／誤り
 - リンク、統合・分割、indexの所見

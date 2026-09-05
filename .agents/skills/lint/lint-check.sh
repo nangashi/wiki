@@ -399,7 +399,7 @@ validate_evaluation_metadata() {
 validate_evaluation_output() {
   local eval_file="$1"
   local expected_slug="$2"
-  python3 "${script_dir}/evaluation_validator.py" "$eval_file" --slug "$expected_slug" >/dev/null 2>&1
+  python3 "${script_dir}/evaluation_validator.py" "$eval_file" --slug "$expected_slug" --rubric-version "$parsed_version" >/dev/null 2>&1
 }
 
 if [ -z "$current_version" ]; then

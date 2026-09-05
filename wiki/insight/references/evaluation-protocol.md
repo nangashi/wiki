@@ -1,36 +1,16 @@
-# insight記事の評価・改善プロトコル
+# insight評価プロトコル
 
-このファイルは `$ingest`・`$review-page`・`$lint` が共有する内部手順であり、利用者が直接起動するスキルではない。
+**rubric_version: 3**。 `article-quality-rubric.md`、`reusability-criteria.md`、`japanese-style-guide.md`を全文入力にし、記事ごとにfreshなread-only **evaluator（gpt-5.6-sol / low）** が評価する。執筆会話、前回評価、他記事の結果は渡さない。Astraとeditorは独立評価の判定や根拠を代行しない。集計と公開可否の導出は保存層で行う。
 
-## 役割の境界
+## 保存と入力
 
-- Astra: ワークフロー統括、検証済みメタデータの付与、採用・改善方針・終了判定
-- `editor`（Terra）: 指定記事の作成・改善。Astraが必要な原文と差分を確認する
-- `evaluator`（Sol / low）: 独立評価と必要時の外部検証。記事・index・評価履歴を変更しない
-- 再評価は新しい履歴なしのevaluatorを起動し、執筆会話、前回評価、他記事の点数を渡さない
-
-Astraとeditorはルーブリックを執筆・改善の基準として参照してよいが、自分で採点しない。評価モデルは既存履歴との比較のため `gpt-5.6-sol` に固定する。モデルを変える場合は別途評価の比較方法を決め、実際と異なるモデル名を記録しない。
-
-## 評価履歴と識別子
-
-通常評価は次へ保存する。
-
-```text
-evaluations/insight/<slug>/YYYYMMDDTHHMMSSZ-v<rubric_version>-<run-id>.md
-```
-
-- 時刻はUTCのRFC 3339秒精度を使う。frontmatterは `YYYY-MM-DDTHH:MM:SSZ`、ファイル名は区切りを除いた `YYYYMMDDTHHMMSSZ` とする
-- `run-id` はAstraが評価開始前に生成する小文字英数字8〜32文字の一意識別子とする。同一秒の衝突を防ぐ
-- 最新評価はmtimeでなく、有効なfrontmatterの `evaluated_at`、同時刻なら `run_id` の辞書順で決める
-- ディレクトリは最初の結果保存時に作る。記事frontmatterへ点数を保存しない
-
-評価ファイル冒頭のfrontmatterはAstraが付与する。evaluatorへtarget、blob、version、時刻、モデルを自己申告させない。モデルは起動設定・実行情報から確認する。
+評価は`evaluations/insight/<slug>/YYYYMMDDTHHMMSSZ-v<rubric_version>-<run-id>.md`へ保存する。時刻はUTCのRFC 3339秒精度、frontmatterは`YYYY-MM-DDTHH:MM:SSZ`、ファイル名は区切りを除いた形式を使う。run-idは開始前に生成する8〜32文字の小文字英数字で、最新はmtimeでなく有効な`evaluated_at`、同時刻ならrun-idで決める。記事frontmatterに評価を保存しない。
 
 ```yaml
 ---
 target: "wiki/insight/pages/<slug>.md"
 target_blob: "<git hash-objectで得た評価時内容の完全なhash>"
-rubric_version: 2
+rubric_version: 3
 evaluator: "codex"
 evaluator_model: "gpt-5.6-sol"
 evaluated_at: "YYYY-MM-DDTHH:MM:SSZ"
@@ -38,28 +18,7 @@ run_id: "<8〜32文字の小文字英数字>"
 ---
 ```
 
-## 通常評価
-
-1. `article-quality-rubric.md`、`reusability-criteria.md`、`japanese-style-guide.md` と対象記事を全文読む。
-2. Astraが `git hash-object <対象記事>` で `target_blob` を得る。`-w` は使わない。rubric version、UTC時刻、run-id、出力先もこの時点で確定する。
-3. 必要な場合だけ関連ページのタイトルとindexサマリを加える。リンク数・孤立・周辺ページ品質を本文100点へ混ぜない。
-4. Astraが基準全文、記事全文、本文出力schema、ファイルを編集しない制約を含むクリーンな自己完結プロンプトを用意する。同じ入力で再試行できるよう `/tmp/codex-evaluate-insight-<slug>-<run-id>-prompt.md` へ保存してよい。メタデータfrontmatterは出力させない。
-5. Codex標準のサブエージェント機能で新しい `evaluator`（`gpt-5.6-sol` / low、read-only）を起動する。会話履歴を引き継がない起動（対応ツールでは `fork_turns="none"`）を選び、手順4の入力だけを渡す。評価のたびに新しいスレッドを使い、執筆担当や前回評価スレッドを再利用しない。標準機能で履歴分離やread-onlyを設定できない場合だけ、下記の独立CLI実行を使う。どちらも利用できなければ制約を報告し、Astraやeditorで採点を代行しない。
-6. 完了したevaluatorの本文をAstraが変更せず `/tmp/codex-evaluate-insight-<slug>-<run-id>-out.md` に保存し、共通validatorで検証する。ツールのJSONラッパーやコードフェンスを評価本文へ混ぜない。必須見出し、R1〜R4、6観点の0〜5・換算点・配点・根拠、raw_scoreの合計、score_capとfinal_score、品質区分、合否、Blocking/Major/Minor、改善項目schemaをすべて構造・算術検証する。
-7. 空出力、形式不正、算術不整合、実行失敗ならその出力を破棄する。前回出力、前回点数、検証エラーをプロンプトへ加えず、同じクリーンな自己完結プロンプトを使って新しい履歴なしのevaluatorを起動する。Astraが点数を訂正・補完しない。
-8. 正常な本文に、手順2で確定したfrontmatterをAstraが付与して評価履歴へ保存する。保存直前に記事へ`insight_source_validator.py`を実行する。`category=structure`の診断は保存を拒否する。既存記事の`category=quality`は、対応する`SOURCE_MISSING` / `SOURCE_UNVERIFIED` codeを逐語的に含むBlocking、score_cap 49、`pass: いいえ`が評価本文に揃う場合だけ保存し、改善queueへ載せられる。記事hashが変わっていないことも確認する。
-
-評価履歴とmanifestへの書き込みはAstraが既存helperを使って直列に行う。評価担当に保存やmetadata付与を委譲しない。
-
-共通validatorは次であり、`$ingest`・`$review-page`・`$lint`の保存前とclean retry判定で必ず同じものを使う。失敗した本文を手修正したりCURRENTとして扱ったりしない。
-
-```bash
-python3 .agents/skills/lint/evaluation_validator.py <codex-out.md> --slug <slug>
-```
-
-### クライアント互換用の独立CLI実行
-
-標準サブエージェントで必要な分離を設定できない場合に限る。Astraが手順4の自己完結プロンプトにevaluatorの担当指示も含め、run-idごとに異なる `evaluation_prompt`、`evaluation_output`、`evaluation_log` の絶対パスを用意する。リポジトリルートで親のシェルツールから直接実行する。
+通常評価ではAstraが`git hash-object <対象記事>`（`-w`なし）でtarget_blobを得てから、基準全文、記事全文、以下の本文schema、編集禁止を含む自己完結プロンプトを作る。evaluatorにはfrontmatter、pass、decision、件数を出力させない。標準サブエージェントでfresh/read-only分離を設定できないときだけ、次の独立CLIを使う。run-idごとに異なる絶対`evaluation_prompt`、`evaluation_output`、`evaluation_log`を用意し、親のシェルで実行する。どちらも使えなければ制約を報告し、評価を代行しない。
 
 ```bash
 codex exec -C . -s read-only -m gpt-5.6-sol \
@@ -67,72 +26,81 @@ codex exec -C . -s read-only -m gpt-5.6-sol \
   -o "$evaluation_output" - < "$evaluation_prompt" > "$evaluation_log" 2>&1
 ```
 
-`-` はプロンプトを標準入力から読む指定であり、ファイル終端で入力を閉じる。対話待ちのstdinを残さない。親はシェルツールのセッションIDで実行を保持し、完了まで結果を回収する。終了コード0かつ出力ファイルが存在しても、手順6以降のvalidator・hash確認を省略しない。失敗・空出力は同じ入力で最大2回だけ新規実行し、resume/forkや前回点数は使わない。記事評価履歴に保存する本文は `-o` のファイルから読み、ログとは混ぜない。
+`-`は標準入力からプロンプトを読む指定であり、入力を閉じて対話待ちを残さない。親はセッションを保持して完了を回収する。終了コード0や出力ファイルだけではvalidatorとhash確認を省略せず、保存本文は`-o`の出力から読みログと混ぜない。
 
-### Codex本文の出力schema
+## evaluator本文schema
 
 ```markdown
 # Insight記事評価: <slug>
-
 - reusability_gate: 合格 / 不合格
-- raw_score: N / 採点対象外
-- score_cap: なし / 49 / 59 / 採点対象外
-- final_score: N / 採点対象外
-- verdict: 公開品質 / 良好。軽微な改善のみ / 利用可能だが改善対象 / 主要な修正が必要 / 構造的な書き直しが必要 / 採点対象外
-- pass: はい / いいえ
 
 ## 再利用性ゲート
-- R1: ...
-- R2: ...
-- R3: 該当なし / ...
-- R4: ...
+- R1: 理由
+- R2: 理由
+- R3: 理由
+- R4: 理由
 
-## 点数内訳
-| 観点 | 0〜5 | 点数 | 配点 | 根拠 |
-|---|---:|---:|---:|---|
-| 核心と推論力 | ... | ... | 25 | ... |
-| 論理と構造 | ... | ... | 20 | ... |
-| 有用性と適用境界 | ... | ... | 15 | ... |
-| 事実基盤 | ... | ... | 15 | ... |
-| 情報設計 | ... | ... | 10 | ... |
-| 日本語の自然さ | ... | ... | 15 | ... |
+## 観点別評価
+| 観点 | 状態 | 根拠 |
+|---|---|---|
+| 核心と推論力 | 十分 / 要対応 / 対象外 | ... |
+| 論理と構造 | 十分 / 要対応 / 対象外 | ... |
+| 有用性と適用境界 | 十分 / 要対応 / 対象外 | ... |
+| 事実基盤 | 十分 / 要対応 / 対象外 | ... |
+| 情報設計 | 十分 / 要対応 / 対象外 | ... |
+| 日本語の自然さ | 十分 / 要対応 / 対象外 | ... |
 
-## Blocking
-- なし / 問題、適用上限、根拠
-
-## Major
-- なし / 問題と根拠
-
-## Minor
-- なし / 問題と根拠
-
-## 改善項目
-### P1: <短い名称>
-- 対象箇所: 「短い引用」
-- 問題: ...
-- 改善後に満たす条件: ...
-- 改善方法: ...
-- 要外部調査: はい / いいえ
+## 対応項目
+- なし
 
 ## 良い点
-- 改善時に保持すべき具体的な長所
+- 保持すべき具体的な強み
 ```
 
-該当問題がなくても各見出しを残す。採点対象外でもゲート根拠、Blocking、改善項目、良い点を出す。
+対応項目がある場合は`- なし`の代わりに、優先順で連番の各項目を出す。実際に必要な行動だけを一項目ずつ出し、重複した要約一覧は出さない。
 
-ゲート合格時は6観点を0〜5の整数で採点する。ゲート不合格時は6行を残し、0〜5と点数の欄をすべて`採点対象外`にする。問題がなく改善項目が不要な場合は`## 改善項目`直下を`- なし`とする。それ以外はP1から連番にし、5つの必須フィールドをすべて書く。
+```markdown
+### P1: タイトル
+- 種別: 修正必須 / 調査必須 / 任意改善
+- 観点: 6観点のいずれか / 再利用性
+- 対象箇所: 短い原文引用
+- 問題: 具体的な問題と読者への影響
+- 改善後に満たす条件: 受入条件
+- 対応方法: 最小の修正または調査経路
+```
 
-## 外部検証
+`調査必須`にはさらに次を必ず含める。
 
-次のいずれかなら外部検証する。
+```markdown
+- 確認対象: 検証する具体的な主張
+- 必要な理由: 結果が採用・編集判断をどう変えるか
+- 調査先: 既存または候補となる一次資料等
+- 結果ごとの対応: 支持時=>保持、非支持時=>修正・削除、結論不能時=>不要な主張は省略し、不可欠な主張は採用を保留
+```
 
-- `## 外部ソース`が参考・要確認のみ、一次・二次ソースの適格性が不明、またはアクセス不能
-- 数値、実験結果、研究名、メタ分析、固有介入の効果を主要根拠にする
-- 核心を支える強い経験的主張の追跡先が不明
-- 時間で変わりうる事実を含む
-- 通常評価に `要外部調査: はい` がある
+ゲート合格では6観点を評価する。`要対応`の観点には、その観点の`修正必須`または`調査必須`を一つ以上置く。必須項目の観点は必ず`要対応`にする。ゲート不合格では6観点をすべて`対象外`とし、`再利用性`の`修正必須`を置く。`再利用性`の対応項目はゲート不合格時だけに使う。十分な観点には任意改善を置ける。
 
-外部検証も通常評価と同じく、新しい履歴なしのevaluator（Sol / low、read-only）に自己完結プロンプトを渡す。通常評価とは別のrun-idと出力ファイルを使い、記事全体の点数や過去の評価本文は渡さない。対象主張、記事末尾の既存外部ソース、一次資料優先、確認済み／未確認／誤りの分離、URL、次の本文schemaを要求する。
+## 検証と保存
+
+`evaluation_validator.py`で本文schemaを検証してから保存する。v3 metadataに数値評価の旧本文を受け入れない。validatorはP番号、6観点、状態と対応項目の整合、調査必須の追加フィールド、必須項目の存在を確認する。
+
+source診断のcodeが対応する必須項目に独立した識別子として含まれるかは、evaluation_state.pyの保存処理が検証する。
+
+保存層は本文から次を機械的に導出する。
+
+- `pass`: ゲート合格かつ`修正必須`と`調査必須`が0件。
+- `decision`: ゲート不合格なら`対象外`、必須項目があれば`要対応`、それ以外は`公開可`。
+- counts: `revision_count`、`research_count`、`optional_count`。
+
+`SOURCE_MISSING` / `SOURCE_UNVERIFIED`は偽であることを意味しない。source validatorの構造診断は保存を拒否する。既存記事の品質診断は、そのcodeを逐語的に含む`事実基盤`の必須項目を持つ非pass評価だけを保存する。概念不採用時は、無意味な全文診断をせず再利用性の必須項目にcodeを置ける。新規公開は現行version、内容一致hash、導出pass、source validator成功をすべて要する。
+
+空出力、形式不正、保存時hash不一致、実行失敗は保存しない。本文が変わった場合は旧入力のretryにせず、新しいhashと記事全文で評価し直す。形式・実行エラー時のretryは同一入力で行う。親が信頼できる起動設定・実行情報からmodel、時刻、hashを確定し、evaluatorへ自己申告させない。エラーや前回出力をプロンプトに加えず、同じクリーン入力で新しいevaluatorを最大2回再試行する。すべて失敗したらfailedを記録して次へ進み、評価を代行しない。評価履歴とmanifestの書き込みは親がhelperを通じて直列に行い、評価担当へ委譲しない。
+
+## 改善と外部検証
+
+必須の調査を、依存する本文修正より先に行う。独立した最小修正は並行してよい。調査は対象主張、既存ソース、一次資料優先、確認済み・未確認・誤りの分離を入力にしたfreshなevaluatorへ依頼する。根拠未確認を誤りとして扱わず、結果により保持・修正・削除・保留を決める。
+
+外部検証は通常評価と別run-id・出力ファイルに保存し、次を出力させる。
 
 ```markdown
 # 外部検証: <slug>
@@ -144,40 +112,26 @@ codex exec -C . -s read-only -m gpt-5.6-sol \
 - 主張 / 根拠 / 推奨修正 / URL
 ```
 
-通常評価と同様に本文schemaを検証し、不正出力は破棄してクリーンな同一プロンプトで新しい履歴なしのevaluatorを起動する。Astraが次のfrontmatterを付け、元評価へ紐づけて保存する。
+外部検証本文の必須見出しと内容を確認し、不正なら同じ入力で新しい履歴なしのevaluatorへ最大2回再試行する。外部検証履歴は`evaluations/insight/<slug>/external/<evaluation-run-id>-external-<run-id>.md`に保存する。
 
-```text
-evaluations/insight/<slug>/external/<evaluation-run-id>-external-<run-id>.md
+保存時のfrontmatterには`target`、`target_blob`、`evaluation_run_id`、`evaluator`、`evaluator_model`、`verified_at`、`run_id`を付ける。調査不能は未確認であり誤りではない。
+
+Astraが必須対応から1回につき1〜3項目を選び、必要な調査後にeditorへ最小修正を委譲する。本文・外部ソース・関連リンクを先に確定し、変更したinsight記事はすべて最終評価する。最終評価後に記事blobを変更せずindexを生成する。
+
+ゲート合格かつ必須項目がなければ任意改善を残して終了する。最大3回、または同じ実質的な必須項目が2回続けば停止し、未解決事項を報告する。外部検証と記事変更の後は、前回評価を渡さないfreshな独立評価で最終記事を確認する。
+
+## 履歴・一括処理
+
+旧v1/v2は履歴として読めても現行評価にはしない。validatorは明示された`--rubric-version`を優先し、なければmetadata version、raw bodyでは3を使う。新規init/saveは旧versionを拒否する。旧rubricの有効評価が1件でもあれば、`$lint`実行時に全件再評価する。評価欠落やmetadata不正だけの場合は該当記事を再評価する。旧runの未完了状態をv3としてresumeしない。
+
+`evaluation_state.py`はmanifest、retry/failed/pending、resume、保存、正規化だけを担当し、evaluatorを起動しない。run開始時は`evaluations/insight/runs/YYYYMMDDTHHMMSSZ-<run-id>/manifest.json`を状態の正本、`manifest.md`を表示として作る。最大3件の固定バッチで評価し、各結果を保存・検証してからmanifestへ追記する。中断時は新しいバッチを始めず、進行中の保存可能な結果とmanifestを確定する。`normalize`の分布キーは`対象外`、`修正・調査必須`、`修正必須`、`調査必須`、`公開可`、`再評価必要`を排他的に使う。現行version・内容一致の必須または不合格だけをキューに置き、順序は`対象外`、修正あり、調査のみ、slugとする。件数は品質順位ではない。旧版・欠落・内容不一致は再評価必要として別に報告する。
+
+
+通常評価の保存も共通helperを使う。`init`と`next`で対象と評価開始時のhashを記録してから評価を起動する。`save`は開始時と保存時のhash一致を確認する。手動で本文の合否や対応項目を補完しない。
+
+```bash
+python3 .agents/skills/lint/evaluation_validator.py <evaluator-out.md> --slug <slug> --rubric-version 3
+python3 .agents/skills/lint/evaluation_state.py init --manifest <run-dir>/manifest.json --rubric-version 3 --target <slug>:wiki/insight/pages/<slug>.md
+python3 .agents/skills/lint/evaluation_state.py next --manifest <run-dir>/manifest.json
+python3 .agents/skills/lint/evaluation_state.py save --manifest <run-dir>/manifest.json --slug <slug> --body <evaluator-out.md>
 ```
-
-frontmatterには `target`、`target_blob`、`evaluation_run_id`、`evaluator: "codex"`、`evaluator_model: "gpt-5.6-sol"`、`verified_at`、`run_id` を持たせる。調査不能は「未確認」であり「誤り」ではない。
-
-`$ingest` と `$review-page` は改善前に必要な外部検証を行う。`$lint` 一括評価だけは全件ランキングを先に完成させ、改善対象になった記事の検証をキュー処理時まで延期できる。この延期は外部検証の実行方式や基準を変えない。
-
-## 改善ループ
-
-1. Blocking、Major、最低点の観点を優先する。
-2. Astraが改善項目を選び、editorへ1回につき1〜3項目だけ改善を委譲する。小さな修正や核心の難しい判断はAstraが担当してよい。良い点を保持し、点数目的で説明を足し続けない。
-3. 外部検証が必要な主張は検証後に直す。未確認なら削除・留保・出典要求から選ぶ。
-4. 本文・外部ソース・関連リンクを先に確定する。相互リンクのためだけに関連先を更新しない。関連先にも意味上必要な修正があれば、変更した全insightページを評価対象へ加える。
-5. 前回点数・評価本文を渡さない新しい通常評価を、変更された全insightページへ行う。
-6. 1〜4点差だけで修正を繰り返さず、品質区分、Blocking/Major、観点別傾向を比較する。
-
-最終評価の保存後に記事blobを変更しない。変更が必要ならその評価を最新扱いせず再評価する。indexは全変更ページの最終評価後に`wiki_structure.py index`で生成する。index生成や被リンク取得だけでは記事blobを変更せず、再評価も発生しない。
-
-合格条件はraw_score 80以上、6観点すべて3/5以上、Blocking/Major 0件。最大3回、または2回続けて品質区分が変わらず同じMajorが残れば停止し、残課題を報告する。
-
-## `$lint` の一括評価と再開
-
-`lint-check.sh` は有効な評価frontmatterと、キュー再構築に必要なCodex本文schemaの両方を検証し、完全に有効な履歴だけから最新評価を `evaluated_at` と `run_id` で決める。不正な過去履歴は警告するが、より新しい有効評価を無効化しない。有効評価が0件の場合、metadata不正は `reason=metadata`、本文不正は `reason=output` とする。未評価・旧rubric・記事変更後もそれぞれ再評価対象とし、有効な旧rubric評価が1件でもあればinsight全件を現行rubricで評価する。
-
-一括処理は固定上限3件で並行し、3件以下のバッチ単位で行う。状態管理には`.agents/skills/lint/evaluation_state.py`を使う。このhelperはCodexを起動せず、対象・manifest、次バッチ、validator、metadata付与と保存、retry/failed/pending、resume、最新評価の正規化、品質分布、安定sortの改善queueだけを担当する。evaluatorの起動・結果回収はAstraがCodex標準のサブエージェント機能で行う。manifestの更新・結果保存は並列化しない。
-
-1. run開始時に `evaluations/insight/runs/YYYYMMDDTHHMMSSZ-<run-id>/manifest.json` を状態更新の正本として作り、同じ場所の`manifest.md`を人間向け表示として自動生成する。rubric version、対象、開始時刻、状態を記録する。
-2. 各バッチの結果を個別評価履歴へ保存して検証してから、manifestへ成功・失敗・retry回数を追記する。
-3. 失敗はクリーンな同一プロンプトで最大2回再試行する。初回と最大2回の再試行がすべて失敗したらfailedとして次の記事へ進み、Astraが採点しない。
-4. 停止指示や中断を検知したら新規バッチを開始せず、進行中バッチの保存可能な結果とmanifestを確定して停止する。
-
-改善キューはmanifestの一時リストを正本にしない。各 `$lint` 実行で、全記事の最新有効評価から採点対象外、Blocking、Major、final_score 70未満を再集計して復元する。前回manifestは処理経緯・失敗理由・次候補の補助情報として使えるが、記事や評価が変われば再構築結果を優先する。
-
-並び順は採点対象外／Blockingあり、Majorあり、60未満、60〜69、70以上。同順位はfinal_score昇順、slug昇順。Blocking/Majorありと70未満を標準改善対象とし、同じ対話内で `$review-page` 相当の改善・再評価を一件ずつ行う。

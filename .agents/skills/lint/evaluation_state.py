@@ -26,6 +26,18 @@ MAX_BATCH = 3
 MAX_ATTEMPTS = 3  # initial attempt plus two clean retries
 
 
+def current_rubric_version(pages_dir: Path) -> int:
+    """Read the canonical insight rubric beside the page tree."""
+    for parent in (pages_dir, *pages_dir.parents):
+        candidate = parent / "references" / "article-quality-rubric.md"
+        if candidate.is_file():
+            match = re.search(r"rubric_version:\s*([0-9]+)", candidate.read_text(encoding="utf-8"))
+            if not match:
+                raise ValueError(f"rubric_version is missing from {candidate}")
+            return int(match.group(1))
+    raise ValueError("canonical article-quality-rubric.md was not found")
+
+
 def now() -> str:
     return dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
@@ -101,6 +113,8 @@ def parse_metadata(path: Path, expected_slug: str) -> dict | None:
 
 
 def cmd_init(args: argparse.Namespace) -> int:
+    if args.rubric_version != 3:
+        raise SystemExit("new evaluation runs require rubric_version=3")
     targets: list[tuple[str, str]] = []
     for spec in args.target:
         slug, sep, path = spec.partition(":")
@@ -116,7 +130,7 @@ def cmd_init(args: argparse.Namespace) -> int:
         "schema_version": 1, "run_id": args.run_id or secrets.token_hex(6),
         "rubric_version": args.rubric_version, "started_at": now(), "updated_at": now(),
         "items": [{"slug": slug, "target": target, "status": "pending", "attempts": 0,
-                   "evaluation": "", "error": ""} for slug, target in unique.items()],
+                   "target_blob": "", "evaluation": "", "error": ""} for slug, target in unique.items()],
     }
     save_manifest(args.manifest, data)
     print(f"RUN_INITIALIZED run_id={data['run_id']} total={len(data['items'])} manifest={args.manifest}")
@@ -125,9 +139,12 @@ def cmd_init(args: argparse.Namespace) -> int:
 
 def cmd_next(args: argparse.Namespace) -> int:
     data = load(args.manifest)
+    if data.get("rubric_version") != 3:
+        raise SystemExit("obsolete evaluation run cannot be resumed; initialize a v3 run")
     candidates = [i for i in data["items"] if i["status"] in {"pending", "retry"}]
     selected = candidates[: min(args.limit, MAX_BATCH)]
     for item in selected:
+        item["target_blob"] = git_blob(Path(item["target"]))
         item["status"] = "running"
         item["attempts"] += 1
         item["error"] = ""
@@ -160,6 +177,8 @@ def cmd_fail(args: argparse.Namespace) -> int:
 
 def cmd_resume(args: argparse.Namespace) -> int:
     data = load(args.manifest)
+    if data.get("rubric_version") != 3:
+        raise SystemExit("obsolete evaluation run cannot be resumed; initialize a v3 run")
     count = 0
     for item in data["items"]:
         if item["status"] == "running":
@@ -173,6 +192,8 @@ def cmd_resume(args: argparse.Namespace) -> int:
 
 def cmd_save(args: argparse.Namespace) -> int:
     data = load(args.manifest)
+    if data.get("rubric_version") != 3:
+        raise SystemExit("obsolete evaluation run cannot save into v3 history")
     item = item_for(data, args.slug)
     if item["status"] != "running":
         raise SystemExit(f"{args.slug} is not running")
@@ -180,7 +201,7 @@ def cmd_save(args: argparse.Namespace) -> int:
     if raw.startswith("---\n"):
         print("Codex本文にfrontmatterを含めることはできません", file=sys.stderr)
         return 1
-    result = validate_text(raw, args.slug)
+    result = validate_text(raw, args.slug, 3)
     if not result["valid"]:
         print("; ".join(result["errors"]), file=sys.stderr)
         return 1
@@ -194,14 +215,19 @@ def cmd_save(args: argparse.Namespace) -> int:
         print("target article has structurally invalid external sources", file=sys.stderr)
         return 1
     if quality:
-        blocking_text = "\n".join(result.get("blocking_issues", []))
-        source_blocking = all(item.code in blocking_text for item in quality)
-        if result.get("score_cap") != 49 or result.get("pass") or not source_blocking:
+        required = [a for a in result["actions"] if a["type"] in {"修正必須", "調査必須"}]
+        allowed_dimensions = {"事実基盤"} if result.get("reusability_gate") != "不合格" else {"再利用性"}
+        source_action = all(any(a["dimension"] in allowed_dimensions and re.search(rf"(?<![A-Za-z0-9_]){re.escape(item.code)}(?![A-Za-z0-9_])", a.get("問題", "")) for a in required) for item in quality)
+        if result.get("pass") or not source_action:
             for item in quality:
                 print(f"{item.code}: {item.reason}", file=sys.stderr)
-            print("source quality issue requires a matching Blocking, score_cap=49 and pass=いいえ", file=sys.stderr)
+            print("source quality issue requires a matching mandatory 事実基盤 action and pass=いいえ", file=sys.stderr)
             return 1
-    before = git_blob(target)
+    before = item.get("target_blob")
+    if not before:
+        raise SystemExit("evaluation was not claimed with next")
+    if git_blob(target) != before:
+        raise SystemExit("target changed since evaluation was claimed")
     timestamp = args.evaluated_at or now()
     run_id = args.evaluation_run_id or secrets.token_hex(6)
     if not re.fullmatch(r"[a-z0-9]{8,32}", run_id):
@@ -225,7 +251,7 @@ def cmd_save(args: argparse.Namespace) -> int:
         raise SystemExit("target changed before save")
     atomic_write(destination, frontmatter + raw.lstrip())
     # Validate what was persisted, including trusted metadata.
-    if parse_metadata(destination, args.slug) is None or not validate_text(destination.read_text(encoding="utf-8"), args.slug)["valid"]:
+    if parse_metadata(destination, args.slug) is None or not validate_text(destination.read_text(encoding="utf-8"), args.slug, 3)["valid"]:
         destination.unlink()
         raise SystemExit("persisted evaluation failed validation")
     if git_blob(target) != before:
@@ -239,7 +265,8 @@ def cmd_save(args: argparse.Namespace) -> int:
     return 0
 
 
-def latest_evaluations(pages_dir: Path, evaluations_root: Path) -> tuple[list[dict], list[dict]]:
+def latest_evaluations(pages_dir: Path, evaluations_root: Path, rubric_version: int | None = None) -> tuple[list[dict], list[dict]]:
+    current_version = rubric_version if rubric_version is not None else current_rubric_version(pages_dir)
     records: list[dict] = []
     invalid: list[dict] = []
     for page in sorted(pages_dir.glob("*.md"), key=lambda p: p.stem):
@@ -248,7 +275,8 @@ def latest_evaluations(pages_dir: Path, evaluations_root: Path) -> tuple[list[di
         if directory.is_dir():
             for candidate in sorted(directory.glob("*.md")):
                 meta = parse_metadata(candidate, page.stem)
-                result = validate_text(candidate.read_text(encoding="utf-8"), page.stem)
+                version = int(meta["rubric_version"]) if meta else 0
+                result = validate_text(candidate.read_text(encoding="utf-8"), page.stem, version) if meta else {"valid": False}
                 if meta is None or not result["valid"]:
                     invalid.append({"slug": page.stem, "file": candidate.as_posix(),
                                     "reason": "metadata" if meta is None else "output"})
@@ -258,42 +286,33 @@ def latest_evaluations(pages_dir: Path, evaluations_root: Path) -> tuple[list[di
             records.append({"slug": page.stem, "status": "missing"})
             continue
         _, _, candidate, meta, result = max(valid, key=lambda value: (value[0], value[1]))
-        records.append({"slug": page.stem, "status": "current" if meta["target_blob"] == git_blob(page) else "changed",
-                        "file": candidate.as_posix(), "rubric_version": int(meta["rubric_version"]), **result})
+        version = int(meta["rubric_version"])
+        status = "current" if version == current_version and meta["target_blob"] == git_blob(page) else "legacy" if version != current_version else "changed"
+        records.append({"slug": page.stem, "status": status, "file": candidate.as_posix(), "rubric_version": version, **result})
     return records, invalid
 
 
-def queue_rank(record: dict) -> tuple[int, int, str]:
-    score = record.get("final_score")
-    normalized = score if isinstance(score, int) else -1
-    if record.get("reusability_gate") == "不合格" or record.get("blocking_count", 0):
-        group = 0
-    elif record.get("major_count", 0):
-        group = 1
-    elif normalized < 60:
-        group = 2
-    elif normalized < 70:
-        group = 3
-    else:
-        group = 4
-    return group, normalized, record["slug"]
+def queue_rank(record: dict) -> tuple[int, str]:
+    if record.get("reusability_gate") == "不合格": group = 0
+    elif record.get("revision_count", 0): group = 1
+    elif record.get("research_count", 0): group = 2
+    else: group = 3
+    return group, record["slug"]
 
 
 def cmd_normalize(args: argparse.Namespace) -> int:
-    records, invalid = latest_evaluations(args.pages_dir, args.evaluations_root)
-    distribution = {"採点対象外": 0, "0-59": 0, "60-69": 0, "70-79": 0, "80-89": 0, "90-100": 0, "missing_or_changed": 0}
+    records, invalid = latest_evaluations(args.pages_dir, args.evaluations_root, args.rubric_version)
+    distribution = {"対象外": 0, "修正・調査必須": 0, "修正必須": 0, "調査必須": 0, "公開可": 0, "再評価必要": 0}
     for record in records:
-        if record["status"] != "current":
-            distribution["missing_or_changed"] += 1
-        elif record.get("final_score") is None:
-            distribution["採点対象外"] += 1
-        else:
-            score = record["final_score"]
-            band = "0-59" if score < 60 else "60-69" if score < 70 else "70-79" if score < 80 else "80-89" if score < 90 else "90-100"
-            distribution[band] += 1
+        if record["status"] != "current": distribution["再評価必要"] += 1
+        elif record.get("reusability_gate") == "不合格": distribution["対象外"] += 1
+        elif record.get("revision_count") and record.get("research_count"): distribution["修正・調査必須"] += 1
+        elif record.get("revision_count"): distribution["修正必須"] += 1
+        elif record.get("research_count"): distribution["調査必須"] += 1
+        else: distribution["公開可"] += 1
     current = [r for r in records if r["status"] == "current"]
-    queue = sorted([r for r in current if r.get("blocking_count", 0) or r.get("major_count", 0) or r.get("final_score") is None or r.get("final_score", 100) < 70], key=queue_rank)
-    output = {"records": records, "invalid_history": invalid, "distribution": distribution, "improvement_queue": queue}
+    queue = sorted([r for r in current if not r.get("pass")], key=queue_rank)
+    output = {"records": records, "invalid_history": invalid, "distribution": distribution, "reevaluation_required": [r for r in records if r["status"] != "current"], "improvement_queue": queue}
     if args.output:
         atomic_write(args.output, json.dumps(output, ensure_ascii=False, indent=2, sort_keys=True) + "\n")
     print(json.dumps(output, ensure_ascii=False, sort_keys=True))
@@ -317,7 +336,7 @@ def parser() -> argparse.ArgumentParser:
     p.add_argument("--manifest", type=Path, required=True); p.add_argument("--slug", required=True); p.add_argument("--body", type=Path, required=True)
     p.add_argument("--evaluations-root", type=Path, default=Path("evaluations/insight")); p.add_argument("--evaluated-at"); p.add_argument("--evaluation-run-id"); p.set_defaults(func=cmd_save)
     p = sub.add_parser("normalize")
-    p.add_argument("--pages-dir", type=Path, default=Path("wiki/insight/pages")); p.add_argument("--evaluations-root", type=Path, default=Path("evaluations/insight")); p.add_argument("--output", type=Path); p.set_defaults(func=cmd_normalize)
+    p.add_argument("--pages-dir", type=Path, default=Path("wiki/insight/pages")); p.add_argument("--evaluations-root", type=Path, default=Path("evaluations/insight")); p.add_argument("--rubric-version", type=int, choices=[3]); p.add_argument("--output", type=Path); p.set_defaults(func=cmd_normalize)
     return root
 
 
