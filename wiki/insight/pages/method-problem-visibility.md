@@ -1,7 +1,7 @@
 ---
 title: "概念がなければ事象は構造を持たない"
 created: "2026-05-19"
-updated: "2026-06-10"
+updated: "2026-09-06"
 ---
 
 # 概念がなければ事象は構造を持たない
@@ -31,9 +31,9 @@ updated: "2026-06-10"
 
 - [[language-context-dependence]] — 同じ原理の読解領域での適用：専門領域の概念（学習言語）がなければ「何が読めていないか」という事象が構造として見えない
 - [[learning-deepening-operations]] — 具体化（同じに見えるものの差異を見極める操作）が、この構造化を可能にする認知的基盤
-- [[org-productivity-misdiagnosis]] — 「違和感に名前をつける」処方箋は、組織レベルでの同型の構造化プロセス
+- [[proxy-metrics-knowledge-work]] — 見える忙しさを個人の問題と決める前に、行動を生む組織の条件を点検する
 - [[learning-depth-and-breadth-roles]] — 概念を深く学ぶこと（能力側の学習）で隣接する概念も連動して獲得され、構造として見抜ける事象の範囲が広がる
-- [[learning-roi]] — 概念を獲得するための学習の価値と回収の考え方
+- [[knowledge-externalization]] — 概念を状況に接続し、問いと次の行動へつなぐ記録の仕組み
 - [[problem-driven-selection]] — 事象の構造が見え課題が定まった後の次のステップ：「何を解くか」を軸に選択する
 - [[issue-value-matrix]] — 事象の構造が見え課題が定まった後のステップ：イシュー度を見極めてバリューの高い問いを選ぶ
 
