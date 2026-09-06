@@ -13,10 +13,18 @@ def action(t="修正必須",d="核心と推論力",more=""):
 - 問題: SOURCE_MISSING 問題。
 - 改善後に満たす条件: 条件。
 - 対応方法: 対応。{more}'''
-def ev(states=None,actions="- なし",gate="合格"):
+def ev(states=None,actions="- なし",gate="合格",version=6):
  states=states or {x:"十分" for x in D}
  if gate=="不合格": states={x:"対象外" for x in D}
  rows="\n".join(f"| {x} | {s} | 根拠。 |" for x,s in states.items())
+ extra='''## 記事単独読解
+- 概念と関係: a
+- 現実の見方: a
+- 確かさ: a
+- 理解が止まった箇所: a
+## 設計との照合
+- design_alignment: 未導入
+''' if version == 6 else ''
  return f'''# Insight記事評価: sample
 - reusability_gate: {gate}
 ## 再利用性ゲート
@@ -28,7 +36,7 @@ def ev(states=None,actions="- なし",gate="合格"):
 | 観点 | 状態 | 根拠 |
 |---|---|---|
 {rows}
-## 対応項目
+{extra}## 対応項目
 {actions}
 ## 良い点
 - 良い。\n'''
@@ -43,11 +51,11 @@ class TestV3(unittest.TestCase):
  def test_rejected(self): self.assertTrue(validate_text(ev(actions=action("修正必須","再利用性"),gate="不合格"),"sample")["valid"])
  def test_numeric_rejected(self): self.assertFalse(validate_text(ev().replace("- reusability_gate: 合格","- reusability_gate: 合格\n- final_score: 100"),"sample")["valid"])
  def test_future_version_and_empty_applicability_rejected(self):
-  self.assertFalse(validate_text(ev(),"sample",6)["valid"])
+  self.assertFalse(validate_text(ev(),"sample",7)["valid"])
   self.assertFalse(validate_text(ev({x:"対象外" for x in D}),"sample")["valid"])
  def test_qualitative_history_remains_readable(self):
   for version in (3, 4):
-   history=f"---\nrubric_version: {version}\n---\n"+ev()
+   history=f"---\nrubric_version: {version}\n---\n"+ev(version=version)
    self.assertTrue(validate_text(history,"sample")["valid"])
  def test_legacy_version_routes_to_frozen_validator(self):
   legacy=validate_text("# Insight記事評価: sample\n", "sample", 2)
@@ -61,10 +69,13 @@ class StateCliTest(unittest.TestCase):
   return subprocess.run([sys.executable,str(HERE/"evaluation_state.py"),*args],cwd=root,text=True,capture_output=True,check=check)
  def setup(self,source="- S1（一次）: https://example.com — 根拠。"):
   tmp=tempfile.TemporaryDirectory(); root=Path(tmp.name); pages=root/"wiki/insight/pages"; pages.mkdir(parents=True)
+  refs=pages.parent/"references"; refs.mkdir(); (refs/"article-quality-rubric.md").write_text("**rubric_version: 6**\n")
+  (refs/"design-quality-rubric.md").write_text("**design_rubric_version: 1**\n")
+  (pages.parent/"design-migration.json").write_text(json.dumps({"schema_version":1,"legacy_slugs":["sample"]}),encoding="utf-8")
   (pages/"sample.md").write_text(f'''---\ntitle: "t"\n---\n# t\n## 外部ソース\n{source}\n''',encoding="utf-8")
   subprocess.run(["git","init","-q"],cwd=root,check=True); return tmp,root,pages
  def init_next(self,root,pages):
-  manifest=root/"manifest.json"; self.tool(root,"init","--manifest",str(manifest),"--rubric-version","5","--pages-dir",str(pages)); self.tool(root,"next","--manifest",str(manifest),"--limit","1"); return manifest
+  manifest=root/"manifest.json"; self.tool(root,"init","--manifest",str(manifest),"--rubric-version","6","--pages-dir",str(pages)); self.tool(root,"next","--manifest",str(manifest),"--limit","1"); return manifest
  def test_cli_save_records_claimed_hash(self):
   tmp,root,pages=self.setup()
   with tmp:
@@ -90,7 +101,7 @@ class StateCliTest(unittest.TestCase):
    manifest=self.init_next(root,pages); b=root/"b.md"; b.write_text(ev())
    self.assertNotEqual(self.tool(root,"save","--manifest",str(manifest),"--slug","sample","--body",str(b),"--evaluations-root",str(root/"eval"),check=False).returncode,0)
    self.assertNotEqual(self.tool(root,"init","--manifest",str(root/"old.json"),"--rubric-version","4","--pages-dir",str(pages),check=False).returncode,0)
-   self.assertNotEqual(self.tool(root,"init","--manifest",str(root/"future.json"),"--rubric-version","6","--pages-dir",str(pages),check=False).returncode,0)
+   self.assertNotEqual(self.tool(root,"init","--manifest",str(root/"future.json"),"--rubric-version","7","--pages-dir",str(pages),check=False).returncode,0)
    d=json.loads(manifest.read_text()); d["rubric_version"]=2; manifest.write_text(json.dumps(d)); self.assertNotEqual(self.tool(root,"resume","--manifest",str(manifest),check=False).returncode,0)
  def test_mixed_history_and_stale_excluded(self):
   tmp,root,pages=self.setup()
@@ -99,7 +110,7 @@ class StateCliTest(unittest.TestCase):
    # A malformed historical file is reported; a changed page is re-evaluation-required.
    bad=root/"eval/sample/20260102T000000Z-v4-bcdefghi.md"; bad.write_text("bad")
    (pages/"sample.md").write_text((pages/"sample.md").read_text()+"変更\n")
-   out=root/"n.json"; self.tool(root,"normalize","--pages-dir",str(pages),"--evaluations-root",str(root/"eval"),"--rubric-version","5","--output",str(out))
+   out=root/"n.json"; self.tool(root,"normalize","--pages-dir",str(pages),"--evaluations-root",str(root/"eval"),"--rubric-version","6","--output",str(out))
    data=json.loads(out.read_text()); self.assertEqual(data["records"][0]["status"],"changed"); self.assertFalse(data["improvement_queue"]); self.assertTrue(data["invalid_history"]); self.assertTrue(data["reevaluation_required"])
 
 if __name__=="__main__": unittest.main()

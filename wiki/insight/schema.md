@@ -6,7 +6,7 @@
 
 ## ディレクトリ構成
 
-`pages/`は記事、`index.md`は公開済み記事一覧、`references/`は基準、`workflows/`は操作手順、`tools/`は固有検査・評価管理。設定の入口は`wiki.toml`。評価履歴は引き続き`evaluations/insight/`に保存する。
+`designs/`は記事と同じslugの設計（[設計schema](design-schema.md)）、`pages/`は記事、`index.md`は公開済み記事一覧、`references/`は基準、`workflows/`は操作手順、`tools/`は固有検査・評価管理。設定の入口は`wiki.toml`。評価履歴は引き続き`evaluations/insight/`に保存する。
 
 ---
 

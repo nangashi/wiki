@@ -68,8 +68,8 @@ class StateRegressionTest(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.tool = lambda *args, **kwargs: helper.tool(self.root, *args, **kwargs)
         refs = self.root / 'wiki/insight/references'
-        refs.mkdir()
-        (refs / 'article-quality-rubric.md').write_text('**rubric_version: 5**\n')
+        refs.mkdir(exist_ok=True)
+        (refs / 'article-quality-rubric.md').write_text('**rubric_version: 6**\n')
         self.manifest = helper.init_next(self.root, self.pages)
         self.body = self.root / 'body.md'
         self.body.write_text(fixtures.ev())
@@ -102,9 +102,10 @@ class StateRegressionTest(unittest.TestCase):
     def test_resume_and_batch_cap(self):
         self.tool('resume', '--manifest', str(self.manifest))
         self.assertEqual(json.loads(self.manifest.read_text())['items'][0]['status'], 'retry')
+        (self.pages.parent / 'design-migration.json').write_text(json.dumps({'schema_version': 1, 'legacy_slugs': ['sample', 'alpha', 'bravo', 'charlie', 'delta']}))
         for slug in ('alpha', 'bravo', 'charlie', 'delta'):
             (self.pages / f'{slug}.md').write_text((self.pages / 'sample.md').read_text())
-        self.tool('init', '--manifest', str(self.manifest), '--rubric-version', '5', '--pages-dir', str(self.pages))
+        self.tool('init', '--manifest', str(self.manifest), '--rubric-version', '6', '--pages-dir', str(self.pages))
         result = self.tool('next', '--manifest', str(self.manifest))
         self.assertEqual(result.stdout.count('EVALUATION_NEXT slug='), 3)
         self.assertEqual(sum(i['status'] == 'pending' for i in json.loads(self.manifest.read_text())['items']), 2)
@@ -134,13 +135,13 @@ class StateRegressionTest(unittest.TestCase):
         current = next(self.history.glob('sample/*.md'))
         text = current.read_text()
         metadata = text[:text.index('\n---\n', 4) + 5]
-        legacy_meta = metadata.replace('rubric_version: 5', 'rubric_version: 2').replace('2026-01-02', '2026-01-01')
+        legacy_meta = metadata.replace('rubric_version: 6', 'rubric_version: 2').replace('2026-01-02', '2026-01-01')
         old = current.parent / '20260101T000000Z-v2-abcdefgh.md'
         old.write_text(legacy_meta + evaluation())
         (current.parent / '20260103T000000Z-v4-bcdefghi.md').write_text('bad')
         records, invalid = latest_evaluations(self.pages, self.history)
         self.assertEqual(records[0]['status'], 'current')
-        self.assertEqual(records[0]['rubric_version'], 5)
+        self.assertEqual(records[0]['rubric_version'], 6)
         self.assertTrue(invalid)
         # A legacy-only sibling stays readable, but is excluded from v5 decisions.
         (self.pages / 'old.md').write_text((self.pages / 'sample.md').read_text())

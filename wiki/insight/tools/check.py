@@ -13,7 +13,8 @@ import subprocess
 import sys
 from pathlib import Path
 
-from evaluation_state import current_rubric_version, git_blob, latest_evaluations, parse_metadata
+from evaluation_state import (current_rubric_version, git_blob, latest_design_evaluations,
+                              latest_evaluations, parse_metadata)
 from insight_source_validator import validate
 
 
@@ -62,10 +63,19 @@ def check_evaluations(root: Path, pages: Path, evaluations: Path) -> None:
         print(f"EVALUATION_HISTORY_WARNING  collection=insight  slug={item['slug']}  reason={item['reason']}  file={display_path(root, Path(item['file']))}")
 
     current = missing = old_rubric = changed = malformed = output = 0
+    complete = unintroduced = design_required = 0
     for page in sorted(pages.glob("*.md"), key=lambda path: path.stem):
         slug = page.stem
         record = by_slug[slug]
         invalid_reasons = invalid_by_slug.get(slug, set())
+        design_state = record.get("design_state", "reevaluation_required")
+        if design_state == "complete":
+            complete += 1
+        elif design_state == "unintroduced":
+            unintroduced += 1
+        else:
+            design_required += 1
+        print(f"ARTICLE_DESIGN_STATE collection=insight slug={slug} state={design_state}")
         if record["status"] == "current":
             metadata = parse_metadata(Path(record["file"]), slug)
             if metadata is None:
@@ -84,6 +94,9 @@ def check_evaluations(root: Path, pages: Path, evaluations: Path) -> None:
             if metadata is None:
                 raise RuntimeError(f"changed evaluation metadata could not be read: {record['file']}")
             print(f"EVALUATION_REQUIRED  collection=insight  slug={slug}  reason=content  evaluated_blob={metadata['target_blob']}  current_blob={git_blob(page)}  latest={display_path(root, Path(record['file']))}")
+            changed += 1
+        elif record["status"] == "design_changed":
+            print(f"EVALUATION_REQUIRED collection=insight slug={slug} reason=design")
             changed += 1
         elif "output" in invalid_reasons:
             print(f"EVALUATION_REQUIRED  collection=insight  slug={slug}  reason=output  current_rubric={version}")
@@ -105,8 +118,37 @@ def check_evaluations(root: Path, pages: Path, evaluations: Path) -> None:
     else:
         print("REEVALUATE_SCOPE  scope=none  reason=all_current  count=0")
         print("OK: 全insight記事の評価が現行rubric・現行内容と一致")
+    print(f"ARTICLE_DESIGN_STATUS complete={complete} unintroduced={unintroduced} required={design_required}")
     print(f"COUNT: {required}")
     print()
+
+
+def check_design_evaluations(root: Path, evaluations: Path) -> None:
+    designs = root / "wiki" / "insight" / "designs"
+    print("=== CHECK-9b: insight設計評価状態 ===")
+    records, invalid = latest_design_evaluations(designs, evaluations)
+    required = 0
+    for record in records:
+        if record["status"] != "current" or not record.get("pass"):
+            required += 1
+            print(f"DESIGN_EVALUATION_REQUIRED collection=insight slug={record['slug']} "
+                  f"reason={record['status'] if record['status'] != 'current' else 'quality'} "
+                  f"decision={record.get('decision', '未評価')} "
+                  f"revision={record.get('revision_count', 0)} research={record.get('research_count', 0)}")
+        else:
+            print(f"DESIGN_EVALUATION_CURRENT collection=insight slug={record['slug']} "
+                  f"rubric={record['rubric_version']} pass=true")
+    for item in invalid:
+        print(f"DESIGN_EVALUATION_HISTORY_WARNING collection=insight slug={item['slug']} reason={item['reason']}")
+    # Preserve the introduction marker even when the current design is deleted.
+    for marker in sorted((designs.parent / "design-adoptions").glob("*.json")):
+        slug = marker.stem
+        if not (designs / f"{slug}.md").is_file():
+            required += 1
+            print(f"DESIGN_EVALUATION_REQUIRED collection=insight slug={slug} reason=deleted")
+    print(f"DESIGN_EVALUATION_STATUS total={len(records)} required={required} invalid_history={len(invalid)}")
+    print()
+
 
 
 def main() -> int:
@@ -126,6 +168,7 @@ def main() -> int:
         current_rubric_version(pages)
         check_sources(pages)
         check_evaluations(root, pages, root / "evaluations" / "insight")
+        check_design_evaluations(root, root / "evaluations" / "insight")
     except (OSError, ValueError, RuntimeError, subprocess.SubprocessError) as error:
         print(f"ERROR: {error}", file=sys.stderr)
         return 2
