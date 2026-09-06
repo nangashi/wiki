@@ -25,8 +25,7 @@ def approved_insight(root: Path, slug: str) -> bool:
     records, _invalid = latest_evaluations(pages, root / "evaluations" / "insight", version)
     current = next((record for record in records if record["slug"] == slug), None)
     if not (current and current.get("status") == "current" and current.get("rubric_version") == version and current.get("pass") is True): return False
-    # Index admission is always a new publication. Legacy exceptions allow
-    # article review, never admission without the complete design/article pair.
+    # Index admission always requires the complete design/article pair.
     return bool(current.get("design_state") == "complete" and
                 current.get("design_alignment") == "合格")
 

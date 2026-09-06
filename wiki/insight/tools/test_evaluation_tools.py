@@ -23,7 +23,8 @@ def ev(states=None,actions="- なし",gate="合格",version=6):
 - 確かさ: a
 - 理解が止まった箇所: a
 ## 設計との照合
-- design_alignment: 未導入
+- design_alignment: 合格
+- D1: 本文で判断できる。
 ''' if version == 6 else ''
  return f'''# Insight記事評価: sample
 - reusability_gate: {gate}
@@ -71,22 +72,59 @@ class StateCliTest(unittest.TestCase):
   tmp=tempfile.TemporaryDirectory(); root=Path(tmp.name); pages=root/"wiki/insight/pages"; pages.mkdir(parents=True)
   refs=pages.parent/"references"; refs.mkdir(); (refs/"article-quality-rubric.md").write_text("**rubric_version: 6**\n")
   (refs/"design-quality-rubric.md").write_text("**design_rubric_version: 1**\n")
-  (pages.parent/"design-migration.json").write_text(json.dumps({"schema_version":1,"legacy_slugs":["sample"]}),encoding="utf-8")
   (pages/"sample.md").write_text(f'''---\ntitle: "t"\n---\n# t\n## 外部ソース\n{source}\n''',encoding="utf-8")
-  subprocess.run(["git","init","-q"],cwd=root,check=True); return tmp,root,pages
+  subprocess.run(["git","init","-q"],cwd=root,check=True)
+  self.add_design_pair(root, "sample")
+  return tmp,root,pages
+ def add_design_pair(self,root,slug):
+  from evaluation_state import git_blob
+  designs=root/"wiki/insight/designs"; designs.mkdir(exist_ok=True); design=designs/f"{slug}.md"
+  design.write_text("# Design\n## 読者・目的\n説明。\n## 読後の到達点\n- D1: 判断する。\n## 内容と順序\n説明。\n## 主張と根拠・境界\n説明。\n## 採用・省略\n説明。\n",encoding="utf-8")
+  history=root/"evaluations/insight"/slug/"design"/"20260101T000000Z-v1-design01.md"; history.parent.mkdir(parents=True,exist_ok=True)
+  body=f'''# Insight設計評価: {slug}
+- reusability_gate: 合格
+## 再利用性ゲート
+- R1: a
+- R2: b
+- R3: c
+- R4: d
+## 観点別評価
+| 観点 | 状態 | 根拠 |
+|---|---|---|
+| 読者・目的 | 十分 | 根拠。 |
+| 読後の到達点 | 十分 | 根拠。 |
+| 内容と順序 | 十分 | 根拠。 |
+| 主張と根拠・境界 | 十分 | 根拠。 |
+| 採用・省略 | 十分 | 根拠。 |
+## 対応項目
+- なし
+## 良い点
+- 明確。\n'''
+  history.write_text(f'''---
+target: "wiki/insight/designs/{slug}.md"
+target_blob: "{git_blob(design)}"
+rubric_version: 1
+evaluator: "codex"
+evaluator_model: "gpt-5.6-sol"
+evaluated_at: "2026-01-01T00:00:00Z"
+run_id: "design01"
+---
+'''+body,encoding="utf-8")
+  return history
  def init_next(self,root,pages):
-  manifest=root/"manifest.json"; self.tool(root,"init","--manifest",str(manifest),"--rubric-version","6","--pages-dir",str(pages)); self.tool(root,"next","--manifest",str(manifest),"--limit","1"); return manifest
+  history=root/"evaluations/insight/sample/design/20260101T000000Z-v1-design01.md"
+  manifest=root/"manifest.json"; self.tool(root,"init","--manifest",str(manifest),"--rubric-version","6","--pages-dir",str(pages),"--design-evaluation",str(history)); self.tool(root,"next","--manifest",str(manifest),"--limit","1"); return manifest
  def test_cli_save_records_claimed_hash(self):
   tmp,root,pages=self.setup()
   with tmp:
    manifest=self.init_next(root,pages); b=root/"body.md"; b.write_text(ev())
-   self.tool(root,"save","--manifest",str(manifest),"--slug","sample","--body",str(b),"--evaluations-root",str(root/"eval"))
+   history=root/"evaluations/insight/sample/design/20260101T000000Z-v1-design01.md"; self.tool(root,"save","--manifest",str(manifest),"--slug","sample","--body",str(b),"--evaluations-root",str(root/"eval"),"--design-evaluation",str(history))
    data=json.loads(manifest.read_text()); self.assertEqual(data["items"][0]["status"],"success"); self.assertTrue(data["items"][0]["target_blob"])
  def test_source_quality_mandatory_code_and_optional_rejected(self):
   tmp,root,pages=self.setup("外部ソース未確認。")
   with tmp:
-   manifest=self.init_next(root,pages); states={x:"十分" for x in D}; states["事実基盤"]="要対応"; b=root/"b.md"
-   b.write_text(ev(states,action("修正必須","事実基盤"))); self.tool(root,"save","--manifest",str(manifest),"--slug","sample","--body",str(b),"--evaluations-root",str(root/"eval"))
+   manifest=self.init_next(root,pages); states={x:"十分" for x in D}; states["事実基盤"]="要対応"; b=root/"b.md"; history=root/"evaluations/insight/sample/design/20260101T000000Z-v1-design01.md"
+   b.write_text(ev(states,action("修正必須","事実基盤"))); self.tool(root,"save","--manifest",str(manifest),"--slug","sample","--body",str(b),"--evaluations-root",str(root/"eval"),"--design-evaluation",str(history))
    tmp2,root2,pages2=self.setup("外部ソース未確認。")
    with tmp2:
     manifest2=self.init_next(root2,pages2); b2=root2/"b.md"; b2.write_text(ev(actions=action("任意改善","事実基盤")))
@@ -106,11 +144,17 @@ class StateCliTest(unittest.TestCase):
  def test_mixed_history_and_stale_excluded(self):
   tmp,root,pages=self.setup()
   with tmp:
-   manifest=self.init_next(root,pages); b=root/"b.md"; b.write_text(ev()); self.tool(root,"save","--manifest",str(manifest),"--slug","sample","--body",str(b),"--evaluations-root",str(root/"eval"),"--evaluated-at","2026-01-01T00:00:00Z","--evaluation-run-id","abcdefgh")
+   manifest=self.init_next(root,pages); b=root/"b.md"; b.write_text(ev()); history=root/"evaluations/insight/sample/design/20260101T000000Z-v1-design01.md"; self.tool(root,"save","--manifest",str(manifest),"--slug","sample","--body",str(b),"--evaluations-root",str(root/"eval"),"--design-evaluation",str(history),"--evaluated-at","2026-01-01T00:00:00Z","--evaluation-run-id","abcdefgh")
    # A malformed historical file is reported; a changed page is re-evaluation-required.
    bad=root/"eval/sample/20260102T000000Z-v4-bcdefghi.md"; bad.write_text("bad")
    (pages/"sample.md").write_text((pages/"sample.md").read_text()+"変更\n")
    out=root/"n.json"; self.tool(root,"normalize","--pages-dir",str(pages),"--evaluations-root",str(root/"eval"),"--rubric-version","6","--output",str(out))
    data=json.loads(out.read_text()); self.assertEqual(data["records"][0]["status"],"changed"); self.assertFalse(data["improvement_queue"]); self.assertTrue(data["invalid_history"]); self.assertTrue(data["reevaluation_required"])
+ def test_normalize_marks_an_article_without_a_design_as_required(self):
+  tmp,root,pages=self.setup()
+  with tmp:
+   (root/"wiki/insight/designs/sample.md").unlink()
+   out=root/"n.json"; self.tool(root,"normalize","--pages-dir",str(pages),"--evaluations-root",str(root/"empty"),"--output",str(out))
+   data=json.loads(out.read_text()); self.assertEqual(data["records"][0]["design_state"],"required"); self.assertEqual(data["process_distribution"]["required"],1); self.assertEqual(data["design_reevaluation_required"],[{"slug":"sample","status":"missing"}])
 
 if __name__=="__main__": unittest.main()

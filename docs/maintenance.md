@@ -13,7 +13,7 @@
 | 共通構造診断変更 | [接続仕様：コマンドの契約](wiki-contract.md#コマンドの契約) | `tools/wiki/lint_check.py`、`tools/wiki/test_wiki_structure.py` | 共通テスト。診断と実行失敗、指定wikiと越境参照の区別を確認 |
 | スキル・読込経路変更 | [接続仕様：責務と正本](wiki-contract.md#責務と正本)、下記の読込例 | `.agents/skills/<操作>/SKILL.md`、設定が指すworkflow | skill-creatorのvalidator、相対リンクの存在確認、下記の読込例を追跡 |
 | wiki固有の採用・執筆基準変更 | 対象 `wiki.toml` が指すschema・該当workflow・そこから指定された基準 | 対象wiki内の文書。insightの基準変更は次行も確認 | 対象操作から参照先へ到達できるか、他wikiの手順へ影響しないかを確認 |
-| insightの評価・公開処理変更 | [評価プロトコル](../wiki/insight/references/evaluation-protocol.md)、[lint手順](../wiki/insight/workflows/lint.md) | `wiki/insight/tools/evaluation_state.py`、`evaluation_validator.py`、`publication.py`、`check.py` | insightテスト。記事／設計rubric version・両本文schema・両hash・設計評価参照・移行対象・既存履歴・再開条件への影響を確認 |
+| insightの評価・公開処理変更 | [評価プロトコル](../wiki/insight/references/evaluation-protocol.md)、[lint手順](../wiki/insight/workflows/lint.md) | `wiki/insight/tools/evaluation_state.py`、`evaluation_validator.py`、`publication.py`、`check.py` | insightテスト。記事／設計rubric version・両本文schema・両hash・設計評価参照・設計欠落・既存履歴・再開条件への影響を確認 |
 | insightの出典処理変更 | [schema](../wiki/insight/schema.md)、評価プロトコル | `wiki/insight/tools/insight_source_validator.py`、`check.py` | insightテスト。出典形式と主張の支持判断を混同しない |
 | 日本語検査変更 | [日本語基準](../wiki/insight/references/japanese-style-guide.md) | `wiki/insight/tools/textlint-check.sh`、`textlint-report.mjs`、`textlint.config.json` | textlintテスト。必須・要判断・参考の区分と実行失敗を確認 |
 | 委譲・エージェント設定変更 | [委譲手順](delegation.md)、独立評価に関係する場合は対象wikiのプロトコル | `.codex/config.toml`、`.codex/agents/*.toml` | 役割・モデル・推論強度・権限・履歴分離の整合を確認。設定変更だけで記事評価を起動しない |

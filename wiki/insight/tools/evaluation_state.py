@@ -181,6 +181,10 @@ def cmd_init(args: argparse.Namespace) -> int:
             raise SystemExit("--design-evaluation metadata, slug or duplicate is invalid")
         claims[slug] = {"design_blob": meta["target_blob"], "design_evaluation": design_file.as_posix(),
                         "design_evaluation_blob": git_blob(design_file), "design_rubric_version": DESIGN_RUBRIC_VERSION}
+    if args.kind == "article":
+        missing = sorted(set(unique) - set(claims))
+        if missing:
+            raise SystemExit("article evaluation runs require a valid --design-evaluation for every target: " + ", ".join(missing))
     data = {
         "schema_version": 2, "kind": args.kind, "run_id": args.run_id or secrets.token_hex(6),
         "rubric_version": args.rubric_version, "started_at": now(), "updated_at": now(),
@@ -203,16 +207,9 @@ def cmd_next(args: argparse.Namespace) -> int:
         canonical = current_design_rubric_version(Path(item["target"]).parent) if kind == "design" else current_rubric_version(Path(item["target"]).parent)
         if canonical != data["rubric_version"]: raise SystemExit("canonical rubric changed; initialize a new run")
         git_blob(Path(item["target"]))
-        if kind == "article" and not item.get("design_blob"):
-            base = Path(item["target"]).parent.parent
-            migration = base / "design-migration.json"
-            migration_data = load(migration) if migration.is_file() else {}
-            marker = Path(item["target"]).parent.parent / "design-adoptions" / f"{item['slug']}.json"
-            if migration_data.get("schema_version") != 1 or item["slug"] not in migration_data.get("legacy_slugs", []) or (base / "designs" / f"{item['slug']}.md").exists() or marker.exists():
-                raise SystemExit("article claim requires its design evaluation; only unintroduced legacy articles are exempt")
-        if kind == "article" and item.get("design_blob"):
-            if not all(item.get(k) for k in ("design_evaluation", "design_evaluation_blob", "design_rubric_version")):
-                raise SystemExit("incomplete design claim")
+        if kind == "article":
+            if not all(item.get(k) for k in ("design_blob", "design_evaluation", "design_evaluation_blob", "design_rubric_version")):
+                raise SystemExit("article claim requires its design evaluation")
             design_path = Path(item["target"]).parent.parent / "designs" / f"{item['slug']}.md"
             current_design_rubric_version(design_path.parent)
             if not design_path.is_file() or git_blob(design_path) != item["design_blob"] or git_blob(Path(item["design_evaluation"])) != item["design_evaluation_blob"]:
@@ -220,17 +217,9 @@ def cmd_next(args: argparse.Namespace) -> int:
         if kind == "design": design_outcome_ids(Path(item["target"]))
     for item in selected:
         item["target_blob"] = git_blob(Path(item["target"]))
-        # This durable directory is the formal design claim.  A discarded
-        # unclaimed draft has no marker; after claim a legacy slug cannot
-        # regain its migration exception by deleting the design.
         if kind == "design":
             current_design_rubric_version(Path(item["target"]).parent)
             design_outcome_ids(Path(item["target"]))
-            marker = Path(item["target"]).parent.parent / "design-adoptions" / f"{item['slug']}.json"
-            if not marker.exists():
-                atomic_write(marker, json.dumps({"schema_version": 1, "target": item["target"],
-                                                  "target_blob": item["target_blob"], "claimed_at": now()},
-                                                 ensure_ascii=False, sort_keys=True) + "\n")
         item["status"] = "running"
         item["attempts"] += 1
         item["error"] = ""
@@ -270,7 +259,9 @@ def cmd_resume(args: argparse.Namespace) -> int:
         kind = data.get("kind", "article")
         canonical = current_design_rubric_version(Path(item["target"]).parent) if kind == "design" else current_rubric_version(Path(item["target"]).parent)
         if canonical != data["rubric_version"]: raise SystemExit("canonical rubric changed; initialize a new run")
-        if kind == "article" and item.get("design_blob"):
+        if kind == "article":
+            if not all(item.get(k) for k in ("design_blob", "design_evaluation", "design_evaluation_blob", "design_rubric_version")):
+                raise SystemExit("article evaluation resume requires its design evaluation")
             design_path = Path(item["target"]).parent.parent / "designs" / f"{item['slug']}.md"
             current_design_rubric_version(design_path.parent)
             if not design_path.is_file() or git_blob(design_path) != item["design_blob"] or not Path(item["design_evaluation"]).is_file() or git_blob(Path(item["design_evaluation"])) != item["design_evaluation_blob"]:
@@ -336,29 +327,20 @@ def cmd_save(args: argparse.Namespace) -> int:
     design_meta = ""
     if kind == "article":
         if not args.design_evaluation:
-            migration = target.parent.parent / "design-migration.json"
-            if not migration.is_file(): raise SystemExit("design-migration.json is required for an unintroduced article")
-            migration_data = json.loads(migration.read_text(encoding="utf-8"))
-            if migration_data.get("schema_version") != 1 or not isinstance(migration_data.get("legacy_slugs"), list): raise SystemExit("invalid design-migration.json")
-            legacy = migration_data["legacy_slugs"]
-            design_path = target.parent.parent / "designs" / f"{args.slug}.md"
-            marker = target.parent.parent / "design-adoptions" / f"{args.slug}.json"
-            if args.slug not in legacy or design_path.exists() or marker.exists():
-                raise SystemExit("article v6 save requires --design-evaluation once design is introduced")
-        else:
-            design_file = Path(args.design_evaluation); design = parse_metadata(design_file, args.slug, "design")
-            if design is None or not validate_design_text(design_file.read_text(encoding="utf-8"), args.slug, DESIGN_RUBRIC_VERSION).get("valid"):
-                raise SystemExit("article save requires a valid design evaluation")
-            design_target = target.parent.parent / "designs" / f"{args.slug}.md"
-            if not design_target.is_file() or git_blob(design_target) != design["target_blob"]: raise SystemExit("design changed or is missing since its evaluation")
-            current_design_rubric_version(design_target.parent)
-            if not item.get("design_blob") or (item["design_blob"] != design["target_blob"] or item.get("design_evaluation") != design_file.as_posix() or item.get("design_evaluation_blob") != git_blob(design_file)):
-                raise SystemExit("design reference differs from claimed input")
-            design_ids = design_outcome_ids(design_target)
-            alignment_ids = set(re.findall(r"(?m)^- (D[1-9][0-9]*): \S", raw))
-            if design_ids and alignment_ids != design_ids:
-                raise SystemExit("article design alignment must cover every current D ID exactly")
-            design_meta = f'design_target: "{target_path("design", args.slug)}"\n' + f'design_blob: "{design["target_blob"]}"\n' + f'design_evaluation: "{design_file.as_posix()}"\n'
+            raise SystemExit("article v6 save requires --design-evaluation")
+        design_file = Path(args.design_evaluation); design = parse_metadata(design_file, args.slug, "design")
+        if design is None or not validate_design_text(design_file.read_text(encoding="utf-8"), args.slug, DESIGN_RUBRIC_VERSION).get("valid"):
+            raise SystemExit("article save requires a valid design evaluation")
+        design_target = target.parent.parent / "designs" / f"{args.slug}.md"
+        if not design_target.is_file() or git_blob(design_target) != design["target_blob"]: raise SystemExit("design changed or is missing since its evaluation")
+        current_design_rubric_version(design_target.parent)
+        if not item.get("design_blob") or (item["design_blob"] != design["target_blob"] or item.get("design_evaluation") != design_file.as_posix() or item.get("design_evaluation_blob") != git_blob(design_file)):
+            raise SystemExit("design reference differs from claimed input")
+        design_ids = design_outcome_ids(design_target)
+        alignment_ids = set(re.findall(r"(?m)^- (D[1-9][0-9]*): \S", raw))
+        if alignment_ids != design_ids:
+            raise SystemExit("article design alignment must cover every current D ID exactly")
+        design_meta = f'design_target: "{target_path("design", args.slug)}"\n' + f'design_blob: "{design["target_blob"]}"\n' + f'design_evaluation: "{design_file.as_posix()}"\n'
         alignment = result.get("design_alignment")
         if bool(design_meta) != (alignment in {"合格", "不合格"}):
             raise SystemExit("article design metadata and design_alignment disagree")
@@ -421,21 +403,13 @@ def latest_evaluations(pages_dir: Path, evaluations_root: Path, rubric_version: 
                     continue
                 valid.append((meta["evaluated_at"], meta["run_id"], candidate, meta, result))
         if not valid:
-            records.append({"slug": page.stem, "status": "missing"})
+            records.append({"slug": page.stem, "status": "missing", "design_state": "required"})
             continue
         _, _, candidate, meta, result = max(valid, key=lambda value: (value[0], value[1]))
         version = int(meta["rubric_version"])
         status = "current" if version == current_version and meta["target_blob"] == git_blob(page) else "legacy" if version != current_version else "changed"
-        design_state = "reevaluation_required"
+        design_state = "required"
         design = pages_dir.parent / "designs" / f"{page.stem}.md"
-        marker = pages_dir.parent / "design-adoptions" / f"{page.stem}.json"
-        migration = pages_dir.parent / "design-migration.json"
-        legacy = []
-        if migration.is_file():
-            try:
-                data = json.loads(migration.read_text(encoding="utf-8"))
-                if data.get("schema_version") == 1 and isinstance(data.get("legacy_slugs"), list): legacy = data["legacy_slugs"]
-            except json.JSONDecodeError: pass
         if version == CURRENT_RUBRIC_VERSION and "design_blob" in meta:
             current_design_rubric_version(design.parent)
             design_eval = Path(meta["design_evaluation"])
@@ -449,15 +423,13 @@ def latest_evaluations(pages_dir: Path, evaluations_root: Path, rubric_version: 
                 git_blob(design) == meta["design_blob"] and design_meta and
                 design_meta["target_blob"] == meta["design_blob"] and design_result.get("pass") and
                 latest_design.get("status") == "current" and latest_design.get("pass") and same_review
-                ) else "reevaluation_required"
-        elif version == CURRENT_RUBRIC_VERSION and result.get("design_alignment") == "未導入" and page.stem in legacy and not design.is_file() and not marker.exists():
-            design_state = "unintroduced"
-        if status == "current" and design_state == "reevaluation_required":
+                ) else "required"
+        if status == "current" and design_state == "required":
             dependency_current = bool("design_blob" in meta and design.is_file() and
                 git_blob(design) == meta["design_blob"] and designs_by_slug.get(page.stem, {}).get("status") == "current" and
                 designs_by_slug.get(page.stem, {}).get("file") and
                 Path(designs_by_slug[page.stem]["file"]).resolve() == Path(meta["design_evaluation"]).resolve())
-            if not dependency_current: status = "design_changed"
+            if not dependency_current: status = "design_required"
         records.append({"slug": page.stem, "status": status, "design_state": design_state,
                         "file": candidate.as_posix(), "rubric_version": version, **result})
     return records, invalid
@@ -503,11 +475,15 @@ def cmd_normalize(args: argparse.Namespace) -> int:
     current = [r for r in records if r["status"] == "current"]
     queue = sorted([r for r in current if not r.get("pass")], key=queue_rank)
     design_records, design_invalid = latest_design_evaluations(args.pages_dir.parent / "designs", args.evaluations_root)
+    known_designs = {record["slug"] for record in design_records}
+    missing_designs = [{"slug": page.stem, "status": "missing"}
+                       for page in sorted(args.pages_dir.glob("*.md"), key=lambda path: path.stem)
+                       if page.stem not in known_designs]
     output = {"design_records": design_records, "design_invalid_history": design_invalid,
               "design_improvement_queue": sorted([r for r in design_records if r["status"] == "current" and not r.get("pass")], key=queue_rank),
-              "design_reevaluation_required": [r for r in design_records if r["status"] != "current"],
+              "design_reevaluation_required": [r for r in design_records if r["status"] != "current"] + missing_designs,
               "process_distribution": {state: sum(r.get("design_state") == state for r in records)
-                                       for state in ("complete", "unintroduced", "reevaluation_required")},
+                                       for state in ("complete", "required")},
               "records": records, "invalid_history": invalid, "distribution": distribution, "reevaluation_required": [r for r in records if r["status"] != "current"], "improvement_queue": queue}
     if args.output:
         atomic_write(args.output, json.dumps(output, ensure_ascii=False, indent=2, sort_keys=True) + "\n")

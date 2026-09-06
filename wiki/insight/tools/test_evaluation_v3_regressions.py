@@ -64,6 +64,7 @@ class V3RegressionTest(unittest.TestCase):
 class StateRegressionTest(unittest.TestCase):
     def setUp(self):
         helper = fixtures.StateCliTest()
+        self.helper = helper
         self.temp, self.root, self.pages = helper.setup()
         self.addCleanup(self.temp.cleanup)
         self.tool = lambda *args, **kwargs: helper.tool(self.root, *args, **kwargs)
@@ -76,8 +77,10 @@ class StateRegressionTest(unittest.TestCase):
         self.history = self.root / 'evaluations/insight'
 
     def save(self, check=True):
+        design = self.root / 'evaluations/insight/sample/design/20260101T000000Z-v1-design01.md'
         return self.tool('save', '--manifest', str(self.manifest), '--slug', 'sample',
                          '--body', str(self.body), '--evaluations-root', str(self.history),
+                         '--design-evaluation', str(design),
                          '--evaluated-at', '2026-01-02T00:00:00Z', '--evaluation-run-id', 'abcdefgh', check=check)
 
     def test_hash_change_while_running_rejects_save(self):
@@ -102,10 +105,14 @@ class StateRegressionTest(unittest.TestCase):
     def test_resume_and_batch_cap(self):
         self.tool('resume', '--manifest', str(self.manifest))
         self.assertEqual(json.loads(self.manifest.read_text())['items'][0]['status'], 'retry')
-        (self.pages.parent / 'design-migration.json').write_text(json.dumps({'schema_version': 1, 'legacy_slugs': ['sample', 'alpha', 'bravo', 'charlie', 'delta']}))
+        design_evaluations = [self.root / 'evaluations/insight/sample/design/20260101T000000Z-v1-design01.md']
         for slug in ('alpha', 'bravo', 'charlie', 'delta'):
             (self.pages / f'{slug}.md').write_text((self.pages / 'sample.md').read_text())
-        self.tool('init', '--manifest', str(self.manifest), '--rubric-version', '6', '--pages-dir', str(self.pages))
+            design_evaluations.append(self.helper.add_design_pair(self.root, slug))
+        command = ['init', '--manifest', str(self.manifest), '--rubric-version', '6', '--pages-dir', str(self.pages)]
+        for design in design_evaluations:
+            command.extend(('--design-evaluation', str(design)))
+        self.tool(*command)
         result = self.tool('next', '--manifest', str(self.manifest))
         self.assertEqual(result.stdout.count('EVALUATION_NEXT slug='), 3)
         self.assertEqual(sum(i['status'] == 'pending' for i in json.loads(self.manifest.read_text())['items']), 2)
@@ -117,6 +124,18 @@ class StateRegressionTest(unittest.TestCase):
         for operation in ('next', 'resume'):
             self.assertNotEqual(self.tool(operation, '--manifest', str(self.manifest), check=False).returncode, 0)
         self.assertNotEqual(self.save(check=False).returncode, 0)
+
+    def test_article_init_and_resume_refuse_missing_design_claim(self):
+        fresh = self.root / 'without-design.json'
+        rejected = self.tool('init', '--manifest', str(fresh), '--rubric-version', '6',
+                             '--target', 'sample:wiki/insight/pages/sample.md', check=False)
+        self.assertNotEqual(rejected.returncode, 0)
+        self.assertFalse(fresh.exists())
+        data = json.loads(self.manifest.read_text())
+        for key in ('design_blob', 'design_evaluation', 'design_evaluation_blob', 'design_rubric_version'):
+            data['items'][0].pop(key)
+        self.manifest.write_text(json.dumps(data))
+        self.assertNotEqual(self.tool('resume', '--manifest', str(self.manifest), check=False).returncode, 0)
 
     def test_source_codes_cannot_be_hidden_in_wrong_token(self):
         page = self.pages / 'sample.md'
@@ -147,7 +166,9 @@ class StateRegressionTest(unittest.TestCase):
         (self.pages / 'old.md').write_text((self.pages / 'sample.md').read_text())
         (self.history / 'old').mkdir()
         old_only = self.history / 'old/20260101T000000Z-v2-abcdefgh.md'
-        old_only.write_text(legacy_meta.replace('pages/sample.md', 'pages/old.md') + evaluation('old'))
+        old_only_meta = '\n'.join(line for line in legacy_meta.splitlines()
+                                   if not line.startswith(('design_target:', 'design_blob:', 'design_evaluation:')))
+        old_only.write_text(old_only_meta.replace('pages/sample.md', 'pages/old.md') + '\n' + evaluation('old'))
         records, invalid = latest_evaluations(self.pages, self.history)
         self.assertEqual(next(r for r in records if r['slug'] == 'old')['status'], 'legacy')
         out = json.loads(self.tool('normalize', '--pages-dir', str(self.pages), '--evaluations-root', str(self.history)).stdout)

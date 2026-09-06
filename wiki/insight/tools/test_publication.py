@@ -28,7 +28,6 @@ class PublicationTest(unittest.TestCase):
         references.mkdir()
         (references / "design-quality-rubric.md").write_text("**design_rubric_version: 1**\n", encoding="utf-8")
         (references / "article-quality-rubric.md").write_text("**rubric_version: 6**\n", encoding="utf-8")
-        (self.root / "wiki/insight/design-migration.json").write_text(json.dumps({"schema_version": 1, "legacy_slugs": ["current", "changed", "legacy", "source-malformed"]}), encoding="utf-8")
         self.write_page("current")
         self.write_page("changed")
         self.write_page("legacy")
@@ -92,7 +91,7 @@ class PublicationTest(unittest.TestCase):
         text = article_eval.read_text().replace('rubric_version: 6\n',
             f'rubric_version: 6\ndesign_target: "wiki/insight/designs/{slug}.md"\n'
             f'design_blob: "{git_blob(design)}"\ndesign_evaluation: "{history}"\n')
-        article_eval.write_text(text.replace("- design_alignment: 未導入", "- design_alignment: 合格\n- D1: 本文で判断できる。"))
+        article_eval.write_text(text)
         return design, history, article_eval
 
     def test_current_pair_allows_and_design_change_invalidates(self):
@@ -123,15 +122,12 @@ class PublicationTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("slug=current reason=quality", result.stdout)
 
-    def test_claimed_deleted_design_is_not_legacy(self):
+    def test_deleted_design_requires_design_again(self):
         design, history, _ = self.add_design_pair()
         design.unlink()
-        marker = self.root / "wiki/insight/design-adoptions/current.json"
-        marker.parent.mkdir(exist_ok=True)
-        marker.write_text('{}')
         self.assertEqual(self.invoke("current").returncode, 1)
         result = subprocess.run([sys.executable, str(CHECK), "--root", str(self.root)], text=True, capture_output=True)
-        self.assertIn("slug=current reason=deleted", result.stdout)
+        self.assertIn("ARTICLE_DESIGN_STATE collection=insight slug=current state=required", result.stdout)
 
     def test_design_rubric_mismatch_is_error(self):
         self.add_design_pair()
@@ -173,31 +169,24 @@ class PublicationTest(unittest.TestCase):
         self.assertEqual(resumed.returncode, 0, resumed.stderr)
         self.assertEqual(json.loads(manifest.read_text())["items"][0]["error"], "design changed")
 
-    def test_article_save_rejects_unclaimed_design_and_missing_outcome(self):
+    def test_article_init_rejects_missing_design_and_save_rejects_missing_outcome(self):
         _, history, article_eval = self.add_design_pair()
         body = self.root / "body.md"
         body.write_text(article_eval.read_text().split("---\n", 2)[2])
         manifest = self.root / "unclaimed.json"
-        self.state_tool("init", "--rubric-version", "6", "--manifest", str(manifest),
-                        "--target", "current:wiki/insight/pages/current.md")
-        rejected = self.state_tool("next", "--manifest", str(manifest))
+        rejected = self.state_tool("init", "--rubric-version", "6", "--manifest", str(manifest),
+                                   "--target", "current:wiki/insight/pages/current.md")
         self.assertNotEqual(rejected.returncode, 0)
-        self.assertEqual(json.loads(manifest.read_text())["items"][0]["status"], "pending")
-        result = self.state_tool("save", "--manifest", str(manifest), "--slug", "current",
-                                 "--body", str(body), "--design-evaluation", str(history))
-        self.assertNotEqual(result.returncode, 0)
+        self.assertFalse(manifest.exists())
         manifest = self.claim_article(history)
         body.write_text(body.read_text().replace("- D1:", "- D2:"))
         result = self.state_tool("save", "--manifest", str(manifest), "--slug", "current",
                                  "--body", str(body), "--design-evaluation", str(history))
         self.assertNotEqual(result.returncode, 0)
 
-    def test_introduction_survives_without_evaluation_history(self):
+    def test_missing_design_without_evaluation_history_requires_design(self):
         import shutil
         self.add_design_pair()
-        marker = self.root / "wiki/insight/design-adoptions/current.json"
-        marker.parent.mkdir(exist_ok=True)
-        marker.write_text('{}')
         (self.root / "wiki/insight/designs/current.md").unlink()
         shutil.rmtree(self.root / "evaluations")
         manifest = self.root / "fresh.json"
@@ -206,18 +195,18 @@ class PublicationTest(unittest.TestCase):
         result = self.state_tool("next", "--manifest", str(manifest))
         self.assertNotEqual(result.returncode, 0)
         result = subprocess.run([sys.executable, str(CHECK), "--root", str(self.root)], text=True, capture_output=True)
-        self.assertIn("slug=current reason=deleted", result.stdout)
+        self.assertIn("ARTICLE_DESIGN_STATE collection=insight slug=current state=required", result.stdout)
+        self.assertIn("DESIGN_EVALUATION_REQUIRED collection=insight slug=current reason=missing", result.stdout)
 
-    def test_design_claim_is_persistent_before_review(self):
-        _, _, _ = self.add_design_pair()
-        marker = self.root / "wiki/insight/design-adoptions/current.json"
+    def test_design_init_and_next_do_not_write_wiki_json(self):
+        self.add_design_pair()
         manifest = self.root / "design-manifest.json"
         result = self.state_tool("init", "--kind", "design", "--rubric-version", "1", "--manifest", str(manifest),
                                  "--target", "current:wiki/insight/designs/current.md")
         self.assertEqual(result.returncode, 0, result.stderr)
         result = self.state_tool("next", "--manifest", str(manifest))
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(json.loads(marker.read_text())["target"], "wiki/insight/designs/current.md")
+        self.assertEqual(list((self.root / "wiki/insight").rglob("*.json")), [])
 
     def invoke(self, slug: str) -> subprocess.CompletedProcess[str]:
         return subprocess.run([sys.executable, str(PUBLICATION), "--root", str(self.root), "--slug", slug], text=True, capture_output=True)

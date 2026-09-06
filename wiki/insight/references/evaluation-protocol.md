@@ -8,9 +8,9 @@
 
 1. helperで評価対象をclaimしてから、記事全文と次の読解質問だけを渡す。「何の概念で何をどう説明するか」「現実の何の見方が変わるか」「比較や行動がある場合、何を見分け、いつ何をするか」「確認されたことと解釈・提案を区別できるか」「どこで理解が止まるか」。設計・資料本文・作者の意図・過去評価は渡さない。回答は「概念と関係」「現実の見方」「確かさ」「理解が止まった箇所」の四つの箇条書き（各一行）で受け、親が一時ファイルへそのまま保存する。
 2. 保存後に同じ担当へ記事schema、品質・再利用性・日本語基準、設計、必要な根拠資料を渡す。以下の本文schemaで評価し、第一段階の回答を `## 記事単独読解` に変更せず収録する。誤読の訂正は後段に記す。
-3. `## 設計との照合` に到達点D IDごとの本文の実現箇所・不足と `- design_alignment: 合格 / 不合格 / 未導入` を記す。設計に書かれていることを本文の理解に代用しない。不一致は対応する六観点の必須項目へ一度だけ記す。設計自体の不足は設計へ差し戻す。
+3. `## 設計との照合` に到達点D IDごとの本文の実現箇所・不足と `- design_alignment: 合格 / 不合格` を記す。設計に書かれていることを本文の理解に代用しない。不一致は対応する六観点の必須項目へ一度だけ記す。設計自体の不足は設計へ差し戻す。
 
-移行対象の設計なし記事は `未導入` と理由を記し記事単独で評価する。初回診断で設計自体が不合格ならその問題も記録し、記事評価のみを工程全体の完成扱いしない。独立設計評価は下記に従う。
+全記事で設計と設計評価参照を必須とし、不足する場合は通常記事評価のinit・claim・保存を行わない。取り込み・通常レビュー・lintでは先に設計を作成・独立レビューする。評価のみでは不足を報告し作成しない。過去の `未導入` 評価は履歴として読めるが、完成や免除の根拠にしない。初回診断で設計自体が不合格ならその問題も記録し、記事評価のみを工程全体の完成扱いしない。独立設計評価は下記に従う。
 
 ## 保存と入力
 
@@ -20,6 +20,9 @@
 ---
 target: "wiki/insight/pages/<slug>.md"
 target_blob: "<git hash-objectで得た評価時内容の完全なhash>"
+design_target: "wiki/insight/designs/<slug>.md"
+design_blob: "<評価対象設計の完全なhash>"
+design_evaluation: "<設計評価履歴のパス>"
 rubric_version: 6
 evaluator: "codex"
 evaluator_model: "gpt-5.6-sol"
@@ -67,8 +70,8 @@ codex exec -C . -s read-only -m gpt-5.6-sol \
 - 理解が止まった箇所: 第一段階の回答。なければその旨。
 
 ## 設計との照合
-- design_alignment: 合格 / 不合格 / 未導入
-- D1: 本文の対応箇所と達成状況。設計の全D IDを確認する。未導入の場合は理由を記す。
+- design_alignment: 合格 / 不合格
+- D1: 本文の対応箇所と達成状況。設計の全D IDを確認する。
 
 ## 対応項目
 - なし
@@ -151,15 +154,15 @@ source診断のcodeが対応する必須項目に独立した識別子として�
 
 ```bash
 python3 wiki/insight/tools/evaluation_validator.py <evaluator-out.md> --slug <slug> --rubric-version 6
-python3 wiki/insight/tools/evaluation_state.py init --manifest <run-dir>/manifest.json --rubric-version 6 --target <slug>:wiki/insight/pages/<slug>.md
+python3 wiki/insight/tools/evaluation_state.py init --manifest <run-dir>/manifest.json --rubric-version 6 --target <slug>:wiki/insight/pages/<slug>.md --design-evaluation <design-history.md>
 python3 wiki/insight/tools/evaluation_state.py next --manifest <run-dir>/manifest.json
-python3 wiki/insight/tools/evaluation_state.py save --manifest <run-dir>/manifest.json --slug <slug> --body <evaluator-out.md>
+python3 wiki/insight/tools/evaluation_state.py save --manifest <run-dir>/manifest.json --slug <slug> --body <evaluator-out.md> --design-evaluation <design-history.md>
 ```
 
-一括評価では、上記の `init --target` の代わりに対象全体を指定できる。失敗・中断後の再開・分布の再構築も同じhelperを使う。
+一括評価では、上記の `init --target` の代わりに対象全体を指定できる。全対象の記事に対応する設計評価を `--design-evaluation` でそれぞれ指定する。失敗・中断後の再開・分布の再構築も同じhelperを使う。
 
 ```bash
-python3 wiki/insight/tools/evaluation_state.py init --manifest <run-dir>/manifest.json --rubric-version 6 --pages-dir wiki/insight/pages
+python3 wiki/insight/tools/evaluation_state.py init --manifest <run-dir>/manifest.json --rubric-version 6 --pages-dir wiki/insight/pages --design-evaluation <design-history-1.md> --design-evaluation <design-history-2.md>
 python3 wiki/insight/tools/evaluation_state.py fail --manifest <run-dir>/manifest.json --slug <slug> --error <reason>
 python3 wiki/insight/tools/evaluation_state.py resume --manifest <run-dir>/manifest.json
 python3 wiki/insight/tools/evaluation_state.py normalize --output <run-dir>/normalized.json
@@ -200,21 +203,21 @@ python3 wiki/insight/tools/evaluation_state.py normalize --output <run-dir>/norm
 
 設計の履歴は `evaluations/insight/<slug>/design/YYYYMMDDTHHMMSSZ-v1-<run-id>.md`。metadataは記事と同じ七フィールドを使い、targetは `wiki/insight/designs/<slug>.md`、target_blobは設計hash、rubric_versionは設計versionとする。評価者へ自己申告させず親がhelperで保存する。内容が変われば設計を再評価し、同じ本文でも記事の読解・照合を再評価する。
 
-## 設計と記事の完成条件・移行
+## 設計と記事の完成条件
 
-記事v6のmetadataは従来の七フィールドに `design_target`、`design_blob`、`design_evaluation` を加え、照合対象と設計評価を追跡する。不合格設計を参照する記事診断も保存できるが、工程完了には設計の合格を要する。設計未導入はhelperが明示的に扱う。設計・記事のhash、基準version、設計評価参照が現在と一致し、両方の必須項目が0、記事の照合が合格、機械検査が成功した組だけを工程完了とする。設計自身に承認欄は設けない。
+設計必須化は評価開始・完成条件の変更であり、記事・設計の品質判定基準は変えないため、rubric versionは据え置く。既存の設計・記事の組は引き続き内容と評価参照で検証し、設計参照のない旧評価は完成扱いしない。
+
+記事v6のmetadataは従来の七フィールドに `design_target`、`design_blob`、`design_evaluation` を加え、照合対象と設計評価を追跡する。不合格設計を参照する記事診断も保存できるが、工程完了には設計の合格を要する。設計参照を持たない旧runは新しい通常評価として再開・保存できない。設計・記事のhash、基準version、設計評価参照が現在と一致し、両方の必須項目が0、記事の照合が合格、機械検査が成功した組だけを工程完了とする。設計自身に承認欄は設けない。
 
 設計blobが変わった場合、設計評価が不合格へ変わった場合、または設計基準versionが変わった場合は古い組の合格を使わない。claim・保存・再開時も両入力とversionを確認する。設計評価の保存失敗や未実施は記事評価で代替しない。
 
-`design-migration.json` の導入時既存記事は、評価のみ・軽微修正で設計なしを許容する。記事評価済み／設計未導入として別表示し、新方式の完成と混同しない。新規公開と実質的修正は設計必須。一度導入した記事は設計削除で例外へ戻れない。既存index掲載は評価失効だけでは削除しないが、更新完了にはworkflowとcheckでも組の整合を確認する。indexは旧公開本文のスナップショットではない。
-
-全件rubric再評価と全件設計作成は別とする。旧記事は記事単独で新版評価を行い、実質修正が必要な段階で設計を導入する。今回の移行前評価を新版合格へ読み替えない。
+全記事で設計を必須とし、導入記録・移行免除一覧は持たない。設計がなければ通常の書込み操作で作成・独立レビュー・記事との照合を行う。読み取り専用チェックと明示的な評価のみでは不足を報告し、完成扱いしない。既存index掲載は評価失効だけでは削除しないが、更新完了にはworkflowとcheckでも組の整合を確認する。indexは旧公開本文のスナップショットではない。
 
 
-## 設計導入後のhelper呼び出し
+## 設計と記事のhelper呼び出し
 
 ```bash
-# 設計はclaim後に独立レビューする。nextがwiki/insight/design-adoptions/<slug>.jsonを永続保存する。
+# 設計はclaim後に独立レビューする。実行状態はrun manifestに保存する。
 python3 wiki/insight/tools/evaluation_state.py init --kind design --rubric-version 1 --manifest <design-run>/manifest.json --target <slug>:wiki/insight/designs/<slug>.md
 python3 wiki/insight/tools/evaluation_state.py next --manifest <design-run>/manifest.json
 python3 wiki/insight/tools/evaluation_state.py save --manifest <design-run>/manifest.json --slug <slug> --body <design-evaluator-out.md>
@@ -228,5 +231,3 @@ python3 wiki/insight/tools/evaluation_state.py save --manifest <article-run>/man
 複数記事では `--target` と `--design-evaluation` を記事ごとに繰り返せる。設計参照のslugは履歴のパスとmetadataから検証する。最大3件のbatchの全入力を検査してからclaimする。設計変更後にresumeすると旧入力の保存を認めず、変更理由を残す。新しい設計を評価後、新しい参照を持つrunをinitする。親は旧runの未処理と新runへの引き継ぎ先を報告する。
 
 記事単独読解の先保存と、後段評価へ収録した原文の一致は親が確認する。helperによる本文schema検査だけで二段階実行済みとみなさない。機械検査は設計の五見出しとD IDの一意性、記事照合の全D ID対応も検証するが、到達点の妥当性は独立担当が評価する。
-
-導入記録は `wiki/insight/design-adoptions/<slug>.json` を正本とする。評価履歴はリポジトリの設定によりGit管理対象外なので、導入記録を履歴ディレクトリへ置かない。設計やローカル評価履歴を削除しても導入例外へ戻れないよう、この記録を設計とともに管理する。
