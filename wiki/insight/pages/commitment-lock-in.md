@@ -54,6 +54,6 @@ updated: "2026-09-13"
 ## 外部ソース
 
 - S2（一次）: Williamson (2009), "Transaction Cost Economics: The Natural Progression", https://www.nobelprize.org/uploads/2018/06/williamson_lecture.pdf — 資産特殊性、代替用途での価値損失、および多数者競争から少数者間依存への基本的転換を支える。
-- S3（著者公開資料）: Shapiro & Varian (1999), "Information Rules: A Strategic Guide to the Network Economy", https://faculty.haas.berkeley.edu/shapiro/linux.pdf — ハード・OS・アプリ・データ・訓練などの補完的資産の相互依存とスイッチングコストを支える。
+- S3（一次）: Shapiro & Varian (1999), "Information Rules: A Strategic Guide to the Network Economy", https://faculty.haas.berkeley.edu/shapiro/linux.pdf — ハード・OS・アプリ・データ・訓練などの補完的資産の相互依存とスイッチングコストを支える。
 - S4（一次）: Dixit & Pindyck (1994), "Investment under Uncertainty", https://msuweb.montclair.edu/~lebelp/DixitPindyck1994.pdf — 不可逆投資の実行による待機オプションの行使・消滅、および不確実性下での投資決定理論を支える。
 - S6（一次）: Staw (1976), "Knee-deep in the big muddy: A study of escalating commitment to a chosen course of action", https://doi.org/10.1016/0030-5073(76)90005-2 — 先行判断への責任と否定的フィードバックが重なる条件における追加資金配分の観察を支える。

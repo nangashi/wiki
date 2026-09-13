@@ -53,5 +53,5 @@ updated: "2026-09-13"
 
 ## 外部ソース
 
-- S4（一次・提唱者）: Minto, "The Minto Pyramid Principle: Concept", https://www.barbaraminto.com/concept — 関連する事実をまとめて上位の考えへ統合し、伝達時は上から辿るというピラミッド構造の概念を支える。
-- S5（一次・提唱者）: Minto, "The Minto Pyramid Principle: Courses", https://www.barbaraminto.com/course — 読者の問いの特定、および理由グループの妥当性を検査する構造化アプローチを支える。
+- S4（一次）: Minto, "The Minto Pyramid Principle: Concept", https://www.barbaraminto.com/concept — 関連する事実をまとめて上位の考えへ統合し、伝達時は上から辿るというピラミッド構造の概念を支える。
+- S5（一次）: Minto, "The Minto Pyramid Principle: Courses", https://www.barbaraminto.com/course — 読者の問いの特定、および理由グループの妥当性を検査する構造化アプローチを支える。

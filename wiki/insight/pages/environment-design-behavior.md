@@ -43,5 +43,5 @@ updated: "2026-09-13"
 
 ## 外部ソース
 
-- S4（一次・著者解説）: James Clear, "How to Create Good Habits (Choice Architecture)", https://jamesclear.com/choice-architecture — 身の回りの環境において望ましい行動のきっかけを目立たせ、望ましくない行動のきっかけを遠ざけるアプローチを支える。
-- S5（一次・著者解説）: James Clear, "Reset the Room", https://jamesclear.com/reset-the-room — 次の行動の準備を整えて開始の手間を減らす方法、および深刻な依存に対する日常的工夫の限界を支える。
+- S4（一次）: James Clear, "How to Create Good Habits (Choice Architecture)", https://jamesclear.com/choice-architecture — 身の回りの環境において望ましい行動のきっかけを目立たせ、望ましくない行動のきっかけを遠ざけるアプローチを支える。
+- S5（一次）: James Clear, "Reset the Room", https://jamesclear.com/reset-the-room — 次の行動の準備を整えて開始の手間を減らす方法、および深刻な依存に対する日常的工夫の限界を支える。
