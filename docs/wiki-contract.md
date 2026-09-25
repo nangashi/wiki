@@ -8,9 +8,9 @@
 
 | 所有者 | 正本と責務 |
 |---|---|
-| リポジトリ | `AGENTS.md`は入口と共通方針、`.codex/agents/`はモデル・役割・権限 |
+| リポジトリ | `AGENTS.md`は入口と共通方針、`.claude/agents/`はサブエージェントのモデル・役割・権限 |
 | 登録一覧 | `wiki/collections.toml`はwiki IDと設定の所在のみ |
-| 共通スキル | `.agents/skills/`は対象選択・段階別読込・進行・index更新・報告。wiki固有の基準・名前による分岐を持たない |
+| 共通スキル | `.claude/skills/`は対象選択・段階別読込・進行・index更新・報告。wiki固有の基準・名前による分岐を持たない |
 | 共通ツール | `tools/wiki/`は設定読込・記事探索・リンク解決・index生成・構造診断 |
 | 各wiki | `wiki.toml`は目的と参照先、schemaは形式・粒度・出典、workflowsは操作手順、referencesは品質・採用基準、toolsは固有処理 |
 
@@ -86,7 +86,7 @@ python3 tools/wiki/wiki_structure.py backlinks <id>:<slug>
 python3 tools/wiki/lint_check.py --collection <id> --checks
 ```
 
-`index`と構造検査でcollectionを省略すると全登録wikiを選ぶ。構造検査の`--collection`は複数指定できる。`--checks`は選択したwikiの固有検査だけを追加実行する。機械検査コマンドを直接実行してもLLMによる意味的監査・再評価・改善は起動しない。`$lint`は診断を使い、各workflowに定義された処理まで同じ実行内で進める。
+`index`と構造検査でcollectionを省略すると全登録wikiを選ぶ。構造検査の`--collection`は複数指定できる。`--checks`は選択したwikiの固有検査だけを追加実行する。機械検査コマンドを直接実行してもLLMによる意味的監査・再評価・改善は起動しない。`/lint`は診断を使い、各workflowに定義された処理まで同じ実行内で進める。
 
 indexの`--check`は不一致時1、実行エラー時2、それ以外0。構造検査は診断完了時0であり、stdoutの`BROKEN`等も確認する。固有検査の非0は完了扱いにしない。
 

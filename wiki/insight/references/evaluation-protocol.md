@@ -1,13 +1,13 @@
 # insight評価プロトコル
 
-**rubric_version: 6**。 `article-quality-rubric.md`、`reusability-criteria.md`、`japanese-style-guide.md`を全文入力にし、記事ごとにfreshなread-only **evaluator（gpt-5.6-sol / low）** が評価する。執筆会話、前回評価、他記事の結果は渡さない。Astraとeditorは独立評価の判定や根拠を代行しない。集計と公開可否の導出は保存層で行う。
+**rubric_version: 6**。 `article-quality-rubric.md`、`reusability-criteria.md`、`japanese-style-guide.md`を全文入力にし、記事ごとにfreshなread-only **`evaluator` サブエージェント** が評価する。執筆会話、前回評価、他記事の結果は渡さない。メインエージェントと執筆担当は独立評価の判定や根拠を代行しない。集計と公開可否の導出は保存層で行う。
 
 ## 記事単独読解と設計照合
 
 記事レビュー担当は設計レビュー・執筆に参加していないfreshなread-only evaluatorとする。
 
-1. helperで評価対象をclaimしてから、記事全文と次の読解質問だけを渡す。「何の概念で何をどう説明するか」「現実の何の見方が変わるか」「比較や行動がある場合、何を見分け、いつ何をするか」「確認されたことと解釈・提案を区別できるか」「どこで理解が止まるか」。設計・資料本文・作者の意図・過去評価は渡さない。回答は「概念と関係」「現実の見方」「確かさ」「理解が止まった箇所」の四つの箇条書き（各一行）で受け、親が一時ファイルへそのまま保存する。
-2. 保存後に同じ担当へ記事schema、品質・再利用性・日本語基準、設計、必要な根拠資料を渡す。以下の本文schemaで評価し、第一段階の回答を `## 記事単独読解` に変更せず収録する。誤読の訂正は後段に記す。
+1. helperで評価対象をclaimしてから、記事のパスと次の読解質問だけを渡す。「何の概念で何をどう説明するか」「現実の何の見方が変わるか」「比較や行動がある場合、何を見分け、いつ何をするか」「確認されたことと解釈・提案を区別できるか」「どこで理解が止まるか」。設計・資料本文・作者の意図・過去評価は渡さない。回答は「概念と関係」「現実の見方」「確かさ」「理解が止まった箇所」の四つの箇条書き（各一行）で受け、親が一時ファイルへそのまま保存する。
+2. 保存後に同じ担当へSendMessageで記事schema、品質・再利用性・日本語基準、設計、必要な根拠資料のパスを渡し、全文を読ませる。以下の本文schemaで評価し、第一段階の回答を `## 記事単独読解` に変更せず収録する。誤読の訂正は後段に記す。
 3. `## 設計との照合` に到達点D IDごとの本文の実現箇所・不足と `- design_alignment: 合格 / 不合格` を記す。設計に書かれていることを本文の理解に代用しない。不一致は対応する六観点の必須項目へ一度だけ記す。設計自体の不足は設計へ差し戻す。
 
 全記事で設計と設計評価参照を必須とし、不足する場合は通常記事評価のinit・claim・保存を行わない。取り込み・通常レビュー・lintでは先に設計を作成・独立レビューする。評価のみでは不足を報告し作成しない。過去の `未導入` 評価は履歴として読めるが、完成や免除の根拠にしない。初回診断で設計自体が不合格ならその問題も記録し、記事評価のみを工程全体の完成扱いしない。独立設計評価は下記に従う。
@@ -24,22 +24,16 @@ design_target: "wiki/insight/designs/<slug>.md"
 design_blob: "<評価対象設計の完全なhash>"
 design_evaluation: "<設計評価履歴のパス>"
 rubric_version: 6
-evaluator: "codex"
-evaluator_model: "gpt-5.6-sol"
+evaluator: "claude"
+evaluator_model: "opus"
 evaluated_at: "YYYY-MM-DDTHH:MM:SSZ"
 run_id: "<8〜32文字の小文字英数字>"
 ---
 ```
 
-通常評価は下記の「記事単独読解と設計照合」の二段階で行う。Astraが`git hash-object <対象記事>`（`-w`なし）でtarget_blobを得てから、基準全文、記事全文、以下の本文schema、編集禁止を含む自己完結プロンプトを作る。evaluatorにはfrontmatter、pass、decision、件数を出力させない。標準サブエージェントでfresh/read-only分離を設定できないときだけ、次の独立CLIを使う。run-idごとに異なる絶対`evaluation_prompt`、`evaluation_output`、`evaluation_log`を用意し、親のシェルで実行する。どちらも使えなければ制約を報告し、評価を代行しない。
+通常評価は下記の「記事単独読解と設計照合」の二段階で行う。メインエージェントが`git hash-object <対象記事>`（`-w`なし）でtarget_blobを得てから、読ませるファイルのパス、以下の本文schema、編集禁止を含む自己完結プロンプトを作る。evaluatorにはfrontmatter、pass、decision、件数を出力させない。
 
-```bash
-codex exec -C . -s read-only -m gpt-5.6-sol \
-  -c 'model_reasoning_effort="low"' -c agents.enabled=false --ephemeral \
-  -o "$evaluation_output" - < "$evaluation_prompt" > "$evaluation_log" 2>&1
-```
-
-`-`は標準入力からプロンプトを読む指定であり、入力を閉じて対話待ちを残さない。親はセッションを保持して完了を回収する。終了コード0や出力ファイルだけではvalidatorとhash確認を省略せず、保存本文は`-o`の出力から読みログと混ぜない。
+評価担当はAgentツールで `subagent_type: evaluator` を新規に起動する（定義は `.claude/agents/evaluator.md`。読み取り専用ツールだけを持ち、会話履歴を引き継がない）。各段階で読むファイルのパスを明示し、それ以外の設計・資料・評価履歴を参照しないよう指示する。第二段階は第一段階と同じエージェントへSendMessageで渡す。返答本文は親がrun-idごとの一時ファイルへ変更せず保存し、以後の検証・保存はそのファイルから行う。サブエージェントを起動できなければ制約を報告し、評価を代行しない。
 
 ## evaluator本文schema
 
@@ -139,13 +133,13 @@ source診断のcodeが対応する必須項目に独立した識別子として�
 
 保存時のfrontmatterには`target`、`target_blob`、`evaluation_run_id`、`evaluator`、`evaluator_model`、`verified_at`、`run_id`を付ける。調査不能は未確認であり誤りではない。
 
-実質的修正では先に[設計手順](../workflows/design.md)を実行する。設計の問題を本文の追加だけで処理しない。Astraが必須対応から1回につき1〜3項目を選び、必要な調査後にeditorへ最小修正を委譲する。[委譲手順の小作業の直接処理](../../../docs/delegation.md#小作業の直接処理)に該当する修正はAstraが担当する。修正担当は改稿後に[執筆手順の草稿・改稿後の確認](../workflows/ingest.md#草稿改稿後の確認)を行う。本文・外部ソース・関連リンクを先に確定し、変更したinsight記事はすべて最終評価する。最終評価後は記事・設計blobを変更せず、評価履歴・公開判断・残課題を共通スキルへ返す。index生成は共通スキルが担当する。
+実質的修正では先に[設計手順](../workflows/design.md)を実行する。設計の問題を本文の追加だけで処理しない。メインエージェントが必須対応から1回につき1〜3項目を選び、必要な調査後に`editor`へ最小修正を委譲する。[委譲手順の小作業の直接処理](../../../docs/delegation.md#小作業の直接処理)に該当する修正はメインエージェントが担当する。修正担当は改稿後に[執筆手順の草稿・改稿後の確認](../workflows/ingest.md#草稿改稿後の確認)を行う。本文・外部ソース・関連リンクを先に確定し、変更したinsight記事はすべて最終評価する。最終評価後は記事・設計blobを変更せず、評価履歴・公開判断・残課題を共通スキルへ返す。
 
 ゲート合格かつ必須項目がなければ任意改善を残して終了する。設計と本文を往復する一連の改善で最大3巡、または同じ実質的な必須項目が2回続けば停止し、未解決事項を報告する。外部検証と記事変更の後は、前回評価を渡さないfreshな独立評価で最終記事を確認する。
 
 ## 履歴・一括処理
 
-旧v1/v2/v3/v4/v5は履歴として読めても現行評価にはしない。validatorは明示された`--rubric-version`を優先し、なければmetadata version、raw bodyでは6を使う。新規init/saveは旧versionを拒否する。旧rubricの有効評価が1件でもあれば、`$lint`実行時に全件再評価する。評価欠落やmetadata不正だけの場合は該当記事を再評価する。旧runの未完了状態をv6としてresumeしない。
+旧v1/v2/v3/v4/v5は履歴として読めても現行評価にはしない。validatorは明示された`--rubric-version`を優先し、なければmetadata version、raw bodyでは6を使う。新規init/saveは旧versionを拒否する。旧rubricの有効評価が1件でもあれば、`/lint`実行時に全件再評価する。評価欠落やmetadata不正だけの場合は該当記事を再評価する。旧runの未完了状態をv6としてresumeしない。
 
 `evaluation_state.py`はmanifest、retry/failed/pending、resume、保存、正規化だけを担当し、evaluatorを起動しない。run開始時は`evaluations/insight/runs/YYYYMMDDTHHMMSSZ-<run-id>/manifest.json`を状態の正本、`manifest.md`を表示として作る。最大3件の固定バッチで評価し、各結果を保存・検証してからmanifestへ追記する。中断時は新しいバッチを始めず、進行中の保存可能な結果とmanifestを確定する。`normalize`の分布キーは`対象外`、`修正・調査必須`、`修正必須`、`調査必須`、`公開可`、`再評価必要`を排他的に使う。現行version・内容一致の必須または不合格だけをキューに置き、順序は`対象外`、修正あり、調査のみ、slugとする。件数は品質順位ではない。旧版・欠落・内容不一致は再評価必要として別に報告する。
 
@@ -171,7 +165,7 @@ python3 wiki/insight/tools/evaluation_state.py normalize --output <run-dir>/norm
 
 ## 設計レビュー
 
-設計基準versionは `design-quality-rubric.md` の **design_rubric_version: 1**。記事versionと独立に管理する。Astraが設計を作成して固定し、freshなread-only evaluator（Sol / low）へ設計全文、設計schema、設計・再利用性基準、必要資料を渡す。執筆会話・旧評価を渡さない。評価者は記事を執筆しない。
+設計基準versionは `design-quality-rubric.md` の **design_rubric_version: 1**。記事versionと独立に管理する。[設計手順](../workflows/design.md)でCodexが作成しメインエージェントが固定した設計を、freshな`evaluator`サブエージェントへ渡す。設計、設計schema、設計・再利用性基準、必要資料のパスを渡し、設計作成の会話・旧評価を渡さない。評価者は設計・記事を執筆しない。
 
 設計評価本文は次の形式を使う。必須項目、ゲート、観点状態の整合、修正必須／調査必須／任意改善の定義、retryは記事評価と同じ。観点だけ以下の五つにする。ゲート不合格時は五観点を対象外にし、再利用性の必須項目を置く。
 

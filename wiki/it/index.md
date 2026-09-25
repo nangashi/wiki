@@ -1,6 +1,6 @@
 # IT Wiki インデックス
 
-公開済みITページの目次。`.agents/skills/lint/wiki_structure.py index` で概要から生成する。
+公開済みITページの目次。`tools/wiki/wiki_structure.py index` で概要から生成する。
 
 エントリ形式: `- [[slug]] — 概要の最初の段落`。サマリを別途編集せず、必要なら記事の概要を更新する。
 

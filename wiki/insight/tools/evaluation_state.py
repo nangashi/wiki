@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """State and persistence helper for bulk insight evaluations.
 
-The helper never launches Codex.  Astra orchestration owns process creation;
+The helper never launches evaluators.  The main agent owns process creation;
 this module only prepares/claims work, validates results, adds trusted
 metadata, saves history, resumes interrupted runs, and rebuilds the quality
 queue.
@@ -26,6 +26,10 @@ from insight_source_validator import validate as validate_sources
 
 MAX_BATCH = 3
 MAX_ATTEMPTS = 3  # initial attempt plus two clean retries
+# Evaluator recorded on new saves; must match .claude/agents/evaluator.md.
+CURRENT_EVALUATOR = ("claude", "opus")
+# Histories from earlier evaluators stay valid as provenance.
+ACCEPTED_EVALUATORS = {CURRENT_EVALUATOR, ("codex", "gpt-5.6-sol")}
 
 
 def current_rubric_version(pages_dir: Path) -> int:
@@ -142,7 +146,7 @@ def parse_metadata(path: Path, expected_slug: str, kind: str = "article") -> dic
         return None
     if meta["target"] != target_path(kind, expected_slug):
         return None
-    if meta["evaluator"] != "codex" or meta["evaluator_model"] != "gpt-5.6-sol":
+    if (meta["evaluator"], meta["evaluator_model"]) not in ACCEPTED_EVALUATORS:
         return None
     if not re.fullmatch(r"[0-9a-f]{40}(?:[0-9a-f]{24})?", meta["target_blob"]):
         return None
@@ -350,8 +354,8 @@ def cmd_save(args: argparse.Namespace) -> int:
         f'target_blob: "{before}"\n'
         + design_meta +
         f'rubric_version: {data["rubric_version"]}\n'
-        'evaluator: "codex"\n'
-        'evaluator_model: "gpt-5.6-sol"\n'
+        f'evaluator: "{CURRENT_EVALUATOR[0]}"\n'
+        f'evaluator_model: "{CURRENT_EVALUATOR[1]}"\n'
         f'evaluated_at: "{timestamp}"\n'
         f'run_id: "{run_id}"\n'
         "---\n"

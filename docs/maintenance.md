@@ -11,12 +11,12 @@
 | wikiを追加・登録変更 | [接続仕様：登録と設定](wiki-contract.md#登録と設定) | `wiki/collections.toml`、対象の `wiki.toml`、`tools/wiki/config.py` | 下記の共通テスト、collections、index check。必須ファイルを先に作り、追加だけで共通スキルを変更しない |
 | index・リンク処理変更 | [接続仕様：記事・リンク・index](wiki-contract.md#記事リンクindex)、共通CLI | `tools/wiki/wiki_structure.py` | 共通テスト、index check。越境リンク・新規公開拒否・既存公開維持を確認 |
 | 共通構造診断変更 | [接続仕様：コマンドの契約](wiki-contract.md#コマンドの契約) | `tools/wiki/lint_check.py`、`tools/wiki/test_wiki_structure.py` | 共通テスト。診断と実行失敗、指定wikiと越境参照の区別を確認 |
-| スキル・読込経路変更 | [接続仕様：責務と正本](wiki-contract.md#責務と正本)、下記の読込例 | `.agents/skills/<操作>/SKILL.md`、設定が指すworkflow | skill-creatorのvalidator、相対リンクの存在確認、下記の読込例を追跡 |
+| スキル・読込経路変更 | [接続仕様：責務と正本](wiki-contract.md#責務と正本)、下記の読込例 | `.claude/skills/<操作>/SKILL.md`、設定が指すworkflow | skill-creatorのvalidator（`retrospect` の `disable-model-invocation` は自動起動を防ぐClaude Code固有キーのため、その指摘だけは許容）、相対リンクの存在確認、下記の読込例を追跡 |
 | wiki固有の採用・執筆基準変更 | 対象 `wiki.toml` が指すschema・該当workflow・そこから指定された基準 | 対象wiki内の文書。insightの基準変更は次行も確認 | 対象操作から参照先へ到達できるか、他wikiの手順へ影響しないかを確認 |
 | insightの評価・公開処理変更 | [評価プロトコル](../wiki/insight/references/evaluation-protocol.md)、[lint手順](../wiki/insight/workflows/lint.md) | `wiki/insight/tools/evaluation_state.py`、`evaluation_validator.py`、`publication.py`、`check.py` | insightテスト。記事／設計rubric version・両本文schema・両hash・設計評価参照・設計欠落・既存履歴・再開条件への影響を確認 |
 | insightの出典処理変更 | [schema](../wiki/insight/schema.md)、評価プロトコル | `wiki/insight/tools/insight_source_validator.py`、`check.py` | insightテスト。出典形式と主張の支持判断を混同しない |
 | 日本語検査変更 | [日本語基準](../wiki/insight/references/japanese-style-guide.md) | `wiki/insight/tools/textlint-check.sh`、`textlint-report.mjs`、`textlint.config.json` | textlintテスト。必須・要判断・参考の区分と実行失敗を確認 |
-| 委譲・エージェント設定変更 | [委譲手順](delegation.md)、独立評価に関係する場合は対象wikiのプロトコル | `.codex/config.toml`、`.codex/agents/*.toml` | 役割・モデル・推論強度・権限・履歴分離の整合を確認。設定変更だけで記事評価を起動しない |
+| 委譲・エージェント設定変更 | [委譲手順](delegation.md)、独立評価に関係する場合は対象wikiのプロトコル | `.claude/agents/*.md`。insightの設計を書くCodexの起動は [設計手順](../wiki/insight/workflows/design.md) | 役割・モデル・ツール制限・履歴分離の整合を確認。評価者のmodelを変える場合は `evaluation_state.py` の受理値とinsightテストも更新する。設定変更だけで記事評価を起動しない |
 | 配置・責務変更 | [接続仕様](wiki-contract.md) | 移動対象とその参照元 | 現行参照を更新し、関係する検証を実行。過去の評価・suggestions内の旧パスは当時の記録として保持 |
 
 ## 読み込み経路の確認例

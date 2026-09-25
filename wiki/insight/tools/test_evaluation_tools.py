@@ -120,6 +120,18 @@ run_id: "design01"
    manifest=self.init_next(root,pages); b=root/"body.md"; b.write_text(ev())
    history=root/"evaluations/insight/sample/design/20260101T000000Z-v1-design01.md"; self.tool(root,"save","--manifest",str(manifest),"--slug","sample","--body",str(b),"--evaluations-root",str(root/"eval"),"--design-evaluation",str(history))
    data=json.loads(manifest.read_text()); self.assertEqual(data["items"][0]["status"],"success"); self.assertTrue(data["items"][0]["target_blob"])
+   saved=list((root/"eval").rglob("*.md")); self.assertEqual(len(saved),1); text=saved[0].read_text()
+   self.assertIn('evaluator: "claude"\nevaluator_model: "opus"\n',text)
+ def test_evaluator_metadata_accepts_current_and_legacy_only(self):
+  tmp,root,pages=self.setup()
+  with tmp:
+   from evaluation_state import parse_metadata
+   legacy=root/"evaluations/insight/sample/design/20260101T000000Z-v1-design01.md"
+   self.assertIsNotNone(parse_metadata(legacy,"sample","design"))
+   for who,model,ok in (("claude","opus",True),("claude","sonnet",False),("codex","gpt-6-astra",False)):
+    text=legacy.read_text().replace('evaluator: "codex"\nevaluator_model: "gpt-5.6-sol"',f'evaluator: "{who}"\nevaluator_model: "{model}"')
+    legacy.write_text(text); self.assertEqual(parse_metadata(legacy,"sample","design") is not None,ok,(who,model))
+    legacy.write_text(text.replace(f'evaluator: "{who}"\nevaluator_model: "{model}"','evaluator: "codex"\nevaluator_model: "gpt-5.6-sol"'))
  def test_source_quality_mandatory_code_and_optional_rejected(self):
   tmp,root,pages=self.setup("外部ソース未確認。")
   with tmp:
