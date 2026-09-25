@@ -160,7 +160,7 @@ def validate_text(text: str, expected_slug: str | None = None,
             raise ValidationError("設計との照合にはD IDごとの記事根拠が必要です")
         deletions = [line for line in sections["削除候補"].splitlines() if line.strip()]
         if not deletions or (deletions != ["- なし"] and any(
-                not re.fullmatch(r"- 「[^」]+」: \S.*", line) for line in deletions)):
+                not re.fullmatch(r"- 「[^」]+」(?:（[^）]*）)?: \S.*", line) for line in deletions)):
             raise ValidationError("削除候補は『- なし』または『- 「短い原文引用」: 削っても失われない理由』の箇条書きにしてください")
         _fields(sections["再利用性ゲート"], ("R1", "R2", "R3", "R4"), "再利用性ゲート")
         rows = _dimensions(sections["観点別評価"], gate)

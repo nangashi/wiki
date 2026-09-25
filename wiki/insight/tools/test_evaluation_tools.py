@@ -105,6 +105,8 @@ class TestValidator(unittest.TestCase):
   self.assertEqual(validate_text(body,"sample")["deletion_count"],0)
   listed=body.replace("## 削除候補\n- なし","## 削除候補\n- 「長い留保」: 核心と適用境界は前節で足りる。")
   self.assertEqual(validate_text(listed,"sample")["deletion_count"],1)
+  located=body.replace("## 削除候補\n- なし","## 削除候補\n- 「長い留保」（27行）: 核心と適用境界は前節で足りる。")
+  self.assertEqual(validate_text(located,"sample")["deletion_count"],1)
   for bad in (body.replace("## 削除候補\n- なし\n",""),
               body.replace("## 削除候補\n- なし","## 削除候補\n- 長い留保を削る"),
               body.replace("- 適用テスト: a\n",""),
