@@ -6,7 +6,8 @@ Gemini執筆記事の正確性修正を起点に、全insight記事を新基準�
 
 - 記事統合TODO（旧0003）は2026-09-25に完了した。統合元の`inu-no-michi`、`local-optimization-trap`、`parallel-path-trap`は削除済み。
 - 2026-09-25に記事基準をv7、設計基準をv2へ改定した（概要第1段落、削除候補、想定分量、適用テスト）。このため、v6で評価が現行だった7件（`avoidance-generated-reasons`、`focus-on-contribution`、`issue-value-matrix`、`learning-roi`、`org-productivity-misdiagnosis`、`prospect-theory`、`theory-of-constraints`）を含め、全70記事の記事評価と設計評価が再評価対象になった。
-- 同日から`evaluations/insight/<slug>/`をgitで追跡する。19件の設計が、それ以前に失われた評価記録を参照している（CHECK-9c）。各記事の設計を直すときに参照を外し、設計内で根拠を完結させる。
+- 同日、評価の置き場を`wiki/insight/evaluations/<slug>/{article,design}.md`（上書き・git追跡）と`wiki/insight/evidence/<slug>.md`（外部検証の追記）へ移した。旧評価はコミット`8c16c45`の`evaluations/insight/`でだけ参照でき、トリアージの材料には使えるが評価者には渡さない。19件の設計が失われた評価記録を参照している（CHECK-9c）。各記事の設計を直すときに参照を`evidence/`へ直すか、設計内で根拠を完結させる。
+- 評価は記事・設計と同じコミットに入れる。評価の往復回数は評価ファイルの`round`に残る（フェーズ2の記録に使う）。
 - 統合で関連欄だけを付け替えた6記事（`pre-analysis-output-design`、`proxy-metrics-knowledge-work`、`quadrant-ii-principle`、`commitment-lock-in`、`problem-driven-selection`、`productivity-layer-model`）は、本文未変更・独立評価未実施のまま対象に含まれる。
 
 ## 調査結果（2026-09-25）

@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import subprocess
-import json
 import sys
 import tempfile
 import unittest
@@ -12,7 +11,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-from test_evaluation_tools import ev
+from test_evaluation_tools import EVALS, action, design_body, ev, write_design_pair, write_rubrics
 from evaluation_validator import CURRENT_RUBRIC_VERSION as V
 from design_evaluation_validator import CURRENT_RUBRIC_VERSION as DV
 
@@ -26,10 +25,7 @@ class PublicationTest(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.pages = self.root / "wiki/insight/pages"
         self.pages.mkdir(parents=True)
-        references = self.root / "wiki/insight/references"
-        references.mkdir()
-        (references / "design-quality-rubric.md").write_text(f"**design_rubric_version: {DV}**\n", encoding="utf-8")
-        (references / "article-quality-rubric.md").write_text(f"**rubric_version: {V}**\n", encoding="utf-8")
+        write_rubrics(self.root)
         self.write_page("current")
         self.write_page("changed")
         self.write_page("legacy")
@@ -37,7 +33,7 @@ class PublicationTest(unittest.TestCase):
         subprocess.run(["git", "init", "-q"], cwd=self.root, check=True)
         self.write_evaluation("current")
         self.write_evaluation("changed")
-        self.write_evaluation("legacy", rubric_version=3)
+        self.write_evaluation("legacy", rubric_version=V - 1)
         changed = self.pages / "changed.md"
         changed.write_text(changed.read_text(encoding="utf-8") + "更新。\n", encoding="utf-8")
         self.write_evaluation("source-malformed")
@@ -50,188 +46,162 @@ class PublicationTest(unittest.TestCase):
             f"---\ntitle: x\n---\n\n# {slug}\n\n## 概要\n\n公開条件を検証する。\n\n## 外部ソース\n\n{source}\n",
             encoding="utf-8")
 
-    def write_evaluation(self, slug: str, rubric_version: int = V) -> None:
-        page = self.pages / f"{slug}.md"
-        blob = subprocess.run(["git", "hash-object", str(page)], check=True, text=True, capture_output=True).stdout.strip()
-        destination = self.root / "evaluations/insight" / slug / f"20260101T000000Z-v{rubric_version}-abcdefgh.md"
-        destination.parent.mkdir(parents=True)
+    def write_evaluation(self, slug: str, rubric_version: int = V) -> Path:
+        """Write the page's design pair and an article evaluation that references it."""
+        from evaluation_state import git_blob
+        history = write_design_pair(self.root, slug)
+        design = self.root / "wiki/insight/designs" / f"{slug}.md"
+        destination = self.root / EVALS / slug / "article.md"
         destination.write_text(
             "---\n"
             f'target: "wiki/insight/pages/{slug}.md"\n'
-            f'target_blob: "{blob}"\n'
+            f'target_blob: "{git_blob(self.pages / f"{slug}.md")}"\n'
+            f'design_target: "wiki/insight/designs/{slug}.md"\n'
+            f'design_blob: "{git_blob(design)}"\n'
+            f'design_evaluation_blob: "{git_blob(history)}"\n'
             f"rubric_version: {rubric_version}\n"
-            'evaluator: "codex"\n'
-            'evaluator_model: "gpt-5.6-sol"\n'
+            'evaluator: "claude"\n'
+            'evaluator_model: "opus"\n'
             'evaluated_at: "2026-01-01T00:00:00Z"\n'
             'run_id: "abcdefgh"\n'
-            "---\n" + ev(version=rubric_version), encoding="utf-8")
-        # The shared fixture is fixed to slug=sample; make the persisted evaluation valid for this page.
-        destination.write_text(destination.read_text(encoding="utf-8").replace("# Insight記事評価: sample", f"# Insight記事評価: {slug}"), encoding="utf-8")
+            "round: 1\n"
+            "---\n" + ev().replace("# Insight記事評価: sample", f"# Insight記事評価: {slug}"), encoding="utf-8")
+        return destination
 
-    def add_design_pair(self, slug="current"):
-        from evaluation_state import git_blob
-        from design_evaluation_validator import DIMENSIONS
-        designs = self.root / "wiki/insight/designs"
-        designs.mkdir(exist_ok=True)
-        design = designs / f"{slug}.md"
-        design.write_text("# Design\n" + "\n".join(
-            f"## {name}\n" + ("- D1: 判断する。\n- 適用テスト: 新しい状況。→ 判断する。" if name == "読後の到達点" else "説明。")
-            for name in DIMENSIONS) + "\n")
-        history = self.root / "evaluations/insight" / slug / "design" / f"20260101T000000Z-v{DV}-design01.md"
-        history.parent.mkdir(parents=True, exist_ok=True)
-        metadata = (f'---\ntarget: "wiki/insight/designs/{slug}.md"\n'
-                    f'target_blob: "{git_blob(design)}"\nrubric_version: {DV}\n'
-                    'evaluator: "codex"\nevaluator_model: "gpt-5.6-sol"\n'
-                    'evaluated_at: "2026-01-01T00:00:00Z"\nrun_id: "design01"\n---\n')
-        body = (f"# Insight設計評価: {slug}\n- reusability_gate: 合格\n"
-                "## 再利用性ゲート\n- R1: a\n- R2: b\n- R3: c\n- R4: d\n"
-                "## 観点別評価\n| 観点 | 状態 | 根拠 |\n|---|---|---|\n" +
-                "\n".join(f"| {name} | 十分 | 根拠。 |" for name in DIMENSIONS) +
-                "\n## 対応項目\n- なし\n## 良い点\n- 明確。\n")
-        history.write_text(metadata + body)
-        article_eval = self.root / "evaluations/insight" / slug / f"20260101T000000Z-v{V}-abcdefgh.md"
-        text = article_eval.read_text().replace(f'rubric_version: {V}\n',
-            f'rubric_version: {V}\ndesign_target: "wiki/insight/designs/{slug}.md"\n'
-            f'design_blob: "{git_blob(design)}"\ndesign_evaluation: "{history}"\n')
-        article_eval.write_text(text)
-        return design, history, article_eval
+    def pair(self, slug="current"):
+        design = self.root / "wiki/insight/designs" / f"{slug}.md"
+        return design, self.root / EVALS / slug / "design.md", self.root / EVALS / slug / "article.md"
+
+    def invoke(self, slug: str) -> subprocess.CompletedProcess[str]:
+        return subprocess.run([sys.executable, str(PUBLICATION), "--root", str(self.root), "--slug", slug], text=True, capture_output=True)
+
+    def check(self) -> subprocess.CompletedProcess[str]:
+        return subprocess.run([sys.executable, str(CHECK), "--root", str(self.root)], text=True, capture_output=True)
 
     def test_current_pair_allows_and_design_change_invalidates(self):
-        design, history, article_eval = self.add_design_pair()
+        design, _, _ = self.pair()
         self.assertEqual(self.invoke("current").returncode, 0)
         design.write_text(design.read_text() + "新しい条件。\n")
         self.assertEqual(self.invoke("current").returncode, 1)
         from evaluation_state import latest_evaluations
-        records, _ = latest_evaluations(self.pages, self.root / "evaluations/insight")
+        records, _ = latest_evaluations(self.pages, self.root / EVALS)
         current = next(r for r in records if r["slug"] == "current")
         self.assertNotEqual(current["design_state"], "complete")
         self.assertNotEqual(current["status"], "current")
 
     def test_failed_alignment_cannot_publish(self):
-        _, _, article_eval = self.add_design_pair()
-        article_eval.write_text(article_eval.read_text().replace("design_alignment: 合格", "design_alignment: 不合格"))
+        _, _, article_eval = self.pair()
+        article_eval.write_text(article_eval.read_text().replace("design_alignment: 合格", "design_alignment: 不合格")
+                                .replace("## 対応項目\n- なし", "## 対応項目\n" + action(d="情報設計"))
+                                .replace("| 情報設計 | 十分 |", "| 情報設計 | 要対応 |"))
         self.assertEqual(self.invoke("current").returncode, 1)
 
-    def test_newer_failed_design_invalidates_old_pair(self):
-        from test_evaluation_tools import action
-        _, history, _ = self.add_design_pair()
-        failed = history.with_name(f"20260102T000000Z-v{DV}-design02.md")
+    def test_replaced_design_evaluation_invalidates_old_pair(self):
+        _, history, _ = self.pair()
         text = history.read_text().replace("2026-01-01T00:00:00Z", "2026-01-02T00:00:00Z").replace('run_id: "design01"', 'run_id: "design02"')
-        text = text.replace("| 読者・目的 | 十分 |", "| 読者・目的 | 要対応 |")
-        failed.write_text(text.replace("## 対応項目\n- なし", "## 対応項目\n" + action(d="読者・目的")))
+        history.write_text(text.split("---\n", 2)[0] + "---\n" + text.split("---\n", 2)[1] + "---\n" +
+                           design_body("current", "要対応", action(d="読者・目的")))
         self.assertEqual(self.invoke("current").returncode, 1)
-        result = subprocess.run([sys.executable, str(CHECK), "--root", str(self.root)], text=True, capture_output=True)
+        result = self.check()
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("slug=current reason=quality", result.stdout)
 
     def test_deleted_design_requires_design_again(self):
-        design, history, _ = self.add_design_pair()
+        design, _, _ = self.pair()
         design.unlink()
         self.assertEqual(self.invoke("current").returncode, 1)
-        result = subprocess.run([sys.executable, str(CHECK), "--root", str(self.root)], text=True, capture_output=True)
-        self.assertIn("ARTICLE_DESIGN_STATE collection=insight slug=current state=required", result.stdout)
+        self.assertIn("ARTICLE_DESIGN_STATE collection=insight slug=current state=required", self.check().stdout)
 
     def test_design_rubric_mismatch_is_error(self):
-        self.add_design_pair()
         (self.root / "wiki/insight/references/design-quality-rubric.md").write_text(f"**design_rubric_version: {DV + 1}**\n")
         self.assertEqual(self.invoke("current").returncode, 2)
 
-    def test_unsupported_design_history_does_not_authorize_publication(self):
-        _, history, article_eval = self.add_design_pair()
-        future = history.with_name(f"20260102T000000Z-v{DV + 1}-design02.md")
-        future.write_text(history.read_text().replace(f"rubric_version: {DV}", f"rubric_version: {DV + 1}")
-                          .replace("2026-01-01T00:00:00Z", "2026-01-02T00:00:00Z")
-                          .replace('run_id: "design01"', 'run_id: "design02"'))
-        article_eval.write_text(article_eval.read_text().replace(str(history), str(future)))
-        self.assertEqual(self.invoke("current").returncode, 1)
-
-    def test_legacy_design_history_is_readable_but_not_current(self):
+    def test_legacy_design_evaluation_is_not_current(self):
         from evaluation_state import latest_design_evaluations
-        _, history, _ = self.add_design_pair()
-        legacy = history.with_name(f"20260101T000000Z-v{DV - 1}-design01.md")
-        history.rename(legacy)
-        legacy.write_text(legacy.read_text().replace(f"rubric_version: {DV}", f"rubric_version: {DV - 1}"))
-        records, invalid = latest_design_evaluations(self.root / "wiki/insight/designs", self.root / "evaluations/insight")
+        _, history, _ = self.pair()
+        history.write_text(history.read_text().replace(f"rubric_version: {DV}", f"rubric_version: {DV - 1}"))
+        records, invalid = latest_design_evaluations(self.root / "wiki/insight/designs", self.root / EVALS)
         self.assertFalse(invalid)
-        self.assertEqual(records[0]["status"], "legacy")
+        self.assertEqual(next(r for r in records if r["slug"] == "current")["status"], "legacy")
         self.assertEqual(self.invoke("current").returncode, 1)
         rejected = self.state_tool("init", "--rubric-version", str(V), "--manifest", str(self.root / "legacy.json"),
-                                   "--target", "current:wiki/insight/pages/current.md", "--design-evaluation", str(legacy))
+                                   "--target", "current:wiki/insight/pages/current.md")
         self.assertNotEqual(rejected.returncode, 0)
-        self.assertIn("design rubric_version", rejected.stderr)
+        self.assertIn(f"design rubric_version={DV}", rejected.stderr)
 
     def test_article_init_requires_design_application_test(self):
-        design, history, _ = self.add_design_pair()
+        design, _, _ = self.pair()
         design.write_text(design.read_text().replace("- 適用テスト: 新しい状況。→ 判断する。\n", ""))
+        write_design_pair(self.root, "current")
         rejected = self.state_tool("init", "--rubric-version", str(V), "--manifest", str(self.root / "no-test.json"),
-                                   "--target", "current:wiki/insight/pages/current.md", "--design-evaluation", str(history))
+                                   "--target", "current:wiki/insight/pages/current.md")
         self.assertNotEqual(rejected.returncode, 0)
         self.assertIn("適用テスト", rejected.stderr)
 
     def state_tool(self, *args):
-        if args and args[0] == "save" and "--stage1" not in args:
-            body = Path(args[args.index("--body") + 1]).read_text(encoding="utf-8")
-            section = body.split("## 記事単独読解", 1)[1].split("\n## ", 1)[0] if "## 記事単独読解" in body else ""
-            stage1 = self.root / "stage1.md"
-            stage1.write_text(section, encoding="utf-8")
-            args = (*args, "--stage1", str(stage1))
+        if args and args[0] == "save":
+            if "--stage1" not in args:
+                body = Path(args[args.index("--body") + 1]).read_text(encoding="utf-8")
+                section = body.split("## 記事単独読解", 1)[1].split("\n## ", 1)[0] if "## 記事単独読解" in body else ""
+                stage1 = self.root / "stage1.md"
+                stage1.write_text(section, encoding="utf-8")
+                args = (*args, "--stage1", str(stage1))
+            if "--round" not in args:
+                args = (*args, "--round", "1")
         return subprocess.run([sys.executable, str(HERE / "evaluation_state.py"), *args],
                               cwd=self.root, text=True, capture_output=True)
 
-    def claim_article(self, history):
+    def claim_article(self):
         manifest = self.root / "manifest.json"
         init = self.state_tool("init", "--rubric-version", str(V), "--manifest", str(manifest),
-                              "--target", "current:wiki/insight/pages/current.md", "--design-evaluation", str(history))
+                               "--target", "current:wiki/insight/pages/current.md")
         self.assertEqual(init.returncode, 0, init.stderr)
         result = self.state_tool("next", "--manifest", str(manifest))
         self.assertEqual(result.returncode, 0, result.stderr)
         return manifest
 
     def test_design_change_after_claim_rejects_article_save_and_resume_marks_it(self):
-        design, history, article_eval = self.add_design_pair()
-        manifest = self.claim_article(history)
+        import json
+        design, _, article_eval = self.pair()
+        manifest = self.claim_article()
         body = self.root / "body.md"
         body.write_text(article_eval.read_text().split("---\n", 2)[2])
         design.write_text(design.read_text() + "変更。\n")
-        result = self.state_tool("save", "--manifest", str(manifest), "--slug", "current",
-                                 "--body", str(body), "--design-evaluation", str(history))
+        result = self.state_tool("save", "--manifest", str(manifest), "--slug", "current", "--body", str(body))
         self.assertNotEqual(result.returncode, 0)
         resumed = self.state_tool("resume", "--manifest", str(manifest))
         self.assertEqual(resumed.returncode, 0, resumed.stderr)
         self.assertEqual(json.loads(manifest.read_text())["items"][0]["error"], "design changed")
 
     def test_article_init_rejects_missing_design_and_save_rejects_missing_outcome(self):
-        _, history, article_eval = self.add_design_pair()
+        _, history, article_eval = self.pair()
         body = self.root / "body.md"
         body.write_text(article_eval.read_text().split("---\n", 2)[2])
-        manifest = self.root / "unclaimed.json"
-        rejected = self.state_tool("init", "--rubric-version", str(V), "--manifest", str(manifest),
+        manifest = self.claim_article()
+        body.write_text(body.read_text().replace("- D1:", "- D2:"))
+        result = self.state_tool("save", "--manifest", str(manifest), "--slug", "current", "--body", str(body))
+        self.assertNotEqual(result.returncode, 0)
+        history.unlink()
+        fresh = self.root / "unclaimed.json"
+        rejected = self.state_tool("init", "--rubric-version", str(V), "--manifest", str(fresh),
                                    "--target", "current:wiki/insight/pages/current.md")
         self.assertNotEqual(rejected.returncode, 0)
-        self.assertFalse(manifest.exists())
-        manifest = self.claim_article(history)
-        body.write_text(body.read_text().replace("- D1:", "- D2:"))
-        result = self.state_tool("save", "--manifest", str(manifest), "--slug", "current",
-                                 "--body", str(body), "--design-evaluation", str(history))
-        self.assertNotEqual(result.returncode, 0)
+        self.assertFalse(fresh.exists())
 
-    def test_missing_design_without_evaluation_history_requires_design(self):
+    def test_missing_design_without_evaluations_requires_design(self):
         import shutil
-        self.add_design_pair()
         (self.root / "wiki/insight/designs/current.md").unlink()
-        shutil.rmtree(self.root / "evaluations")
+        shutil.rmtree(self.root / EVALS)
         manifest = self.root / "fresh.json"
-        self.state_tool("init", "--rubric-version", str(V), "--manifest", str(manifest),
-                        "--target", "current:wiki/insight/pages/current.md")
-        result = self.state_tool("next", "--manifest", str(manifest))
+        result = self.state_tool("init", "--rubric-version", str(V), "--manifest", str(manifest),
+                                 "--target", "current:wiki/insight/pages/current.md")
         self.assertNotEqual(result.returncode, 0)
-        result = subprocess.run([sys.executable, str(CHECK), "--root", str(self.root)], text=True, capture_output=True)
+        result = self.check()
         self.assertIn("ARTICLE_DESIGN_STATE collection=insight slug=current state=required", result.stdout)
         self.assertIn("DESIGN_EVALUATION_REQUIRED collection=insight slug=current reason=missing", result.stdout)
 
     def test_design_init_and_next_do_not_write_wiki_json(self):
-        self.add_design_pair()
-        manifest = self.root / "design-manifest.json"
+        manifest = self.root / ".cache/insight-runs/d/manifest.json"
         result = self.state_tool("init", "--kind", "design", "--rubric-version", str(DV), "--manifest", str(manifest),
                                  "--target", "current:wiki/insight/designs/current.md")
         self.assertEqual(result.returncode, 0, result.stderr)
@@ -239,20 +209,12 @@ class PublicationTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(list((self.root / "wiki/insight").rglob("*.json")), [])
 
-    def invoke(self, slug: str) -> subprocess.CompletedProcess[str]:
-        return subprocess.run([sys.executable, str(PUBLICATION), "--root", str(self.root), "--slug", slug], text=True, capture_output=True)
-
-    def test_legacy_article_without_design_cannot_be_newly_published(self) -> None:
-        result = self.invoke("current")
-        self.assertEqual(result.returncode, 1, result.stderr)
-        self.assertIn("INSIGHT_PUBLICATION DENY", result.stdout)
-
-    def test_v3_history_is_legacy_and_cannot_allow_publication(self) -> None:
+    def test_legacy_article_evaluation_cannot_be_newly_published(self) -> None:
         from evaluation_state import latest_evaluations
-        records, invalid = latest_evaluations(self.pages, self.root / "evaluations/insight")
+        records, invalid = latest_evaluations(self.pages, self.root / EVALS)
         legacy = next(record for record in records if record["slug"] == "legacy")
         self.assertEqual(legacy["status"], "legacy")
-        self.assertEqual(legacy["rubric_version"], 3)
+        self.assertEqual(legacy["rubric_version"], V - 1)
         self.assertFalse(invalid)
         result = self.invoke("legacy")
         self.assertEqual(result.returncode, 1, result.stderr)
@@ -283,7 +245,7 @@ class PublicationTest(unittest.TestCase):
 
     def test_check_missing_rubric_is_error(self) -> None:
         (self.root / "wiki/insight/references/article-quality-rubric.md").unlink()
-        result = subprocess.run([sys.executable, str(CHECK), "--root", str(self.root)], text=True, capture_output=True)
+        result = self.check()
         self.assertEqual(result.returncode, 2)
         self.assertIn("ERROR:", result.stderr)
 

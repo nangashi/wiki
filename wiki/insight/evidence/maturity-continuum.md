@@ -1,0 +1,24 @@
+# 外部検証記録: maturity-continuum
+
+独立評価者による外部検証を検証ごとに追記する。過去の節は書き換えない。
+
+## 2026-09-06T16:31:16Z run=d64ef414e44f
+
+- target: wiki/insight/designs/maturity-continuum.md
+- target_blob: 5a865ef0abc0fbadf28ace7aed766847c845d17c
+- evaluator: codex / gpt-5.6-sol
+- 移行元: evaluations/insight/maturity-continuum/external/95c08259f2e2-external-d64ef414e44f.md（2026-09-25に旧形式から変換）
+
+### 確認済み
+
+- 主張: 「自立」は「自分で判断・遂行」に対応する。根拠: Coveyは自立を、自己責任・自己信頼・選択、自分で考えて独力で望むものを得る状態と定義する。URL: https://www.simonandschuster.co.in/books/The-7-Habits-of-Highly-Effective-People/Stephen-R-Covey/9781476740058
+- 主張: 「相互依存」は「責任を持つ人同士の協力」に対応する。根拠: Coveyは、自己信頼と能力を備えた人々が努力・才能を組み合わせ、単独以上の成果を得る状態と説明する。また、相互依存は自立した人だけが選べるとしている。URL: https://www.simonandschuster.co.in/books/The-7-Habits-of-Highly-Effective-People/Stephen-R-Covey/9781476740058
+- 主張: 三段階は「依存→自立→相互依存」の成熟の連続体である。根拠: 著者の公式出版社ページとFranklinCovey公式がこの順序を明記し、習慣1–3を個人的成熟、習慣4–6を協力とシナジーに対応させている。URL: https://www.simonandschuster.com/books/Daily-Reflections-for-Highly-Effective-People/Stephen-R-Covey/9780671887179 ; https://www.franklincovey.com/courses/the-7-habits/
+
+### 未確認
+
+- 主張: 「依存」を無条件に「他者に委ねる」と同義にできる。根拠: Coveyの定義は、他者を必要とし、判断や結果の責任を他者に置く状態である。一方、「委ねる」は自己判断による適切な委任も意味し得る。範囲と推奨対応: 比較軸を保持するなら「他者に判断・遂行を依存する」または「結果や判断を他者任せにする」へ限定する。「他者に委ねる」のままなら記事独自の簡略化と明示する。URL: https://www.simonandschuster.co.in/books/The-7-Habits-of-Highly-Effective-People/Stephen-R-Covey/9781476740058
+
+### 誤り
+
+- 該当なし。

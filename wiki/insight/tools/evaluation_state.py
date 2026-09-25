@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
-"""State and persistence helper for bulk insight evaluations.
+"""State and persistence helper for insight evaluations.
 
 The helper never launches evaluators.  The main agent owns process creation;
 this module only prepares/claims work, validates results, adds trusted
-metadata, saves history, resumes interrupted runs, and rebuilds the quality
-queue.
+metadata, saves the final evaluation, appends external verification evidence,
+resumes interrupted runs, and rebuilds the quality queue.
+
+Each slug keeps exactly one current article evaluation and one current design
+evaluation (``wiki/insight/evaluations/<slug>/{article,design}.md``); every
+save overwrites them and git keeps the history.  Run manifests and
+intermediate outputs live under the git-ignored ``.cache/insight-runs/``.
 """
 
 from __future__ import annotations
@@ -20,7 +25,7 @@ import sys
 from pathlib import Path
 
 from evaluation_validator import CURRENT_RUBRIC_VERSION, validate_text
-from design_evaluation_validator import CURRENT_RUBRIC_VERSION as DESIGN_RUBRIC_VERSION, READABLE_VERSIONS as DESIGN_READABLE_VERSIONS
+from design_evaluation_validator import CURRENT_RUBRIC_VERSION as DESIGN_RUBRIC_VERSION
 from design_evaluation_validator import validate_text as validate_design_text
 from insight_source_validator import validate as validate_sources
 
@@ -28,8 +33,11 @@ MAX_BATCH = 3
 MAX_ATTEMPTS = 3  # initial attempt plus two clean retries
 # Evaluator recorded on new saves; must match .claude/agents/evaluator.md.
 CURRENT_EVALUATOR = ("claude", "opus")
-# Histories from earlier evaluators stay valid as provenance.
-ACCEPTED_EVALUATORS = {CURRENT_EVALUATOR, ("codex", "gpt-5.6-sol")}
+ACCEPTED_EVALUATORS = {CURRENT_EVALUATOR}
+EVALUATIONS_ROOT = Path("wiki/insight/evaluations")
+EVIDENCE_ROOT = Path("wiki/insight/evidence")
+BLOB = r"[0-9a-f]{40}(?:[0-9a-f]{24})?"
+EVIDENCE_SECTIONS = ("確認済み", "未確認", "誤り")
 
 
 def current_rubric_version(pages_dir: Path) -> int:
@@ -41,8 +49,8 @@ def current_rubric_version(pages_dir: Path) -> int:
             if not match:
                 raise ValueError(f"rubric_version is missing from {candidate}")
             version = int(match.group(1))
-            if version > CURRENT_RUBRIC_VERSION:
-                raise ValueError(f"unsupported future rubric_version: {version}")
+            if version != CURRENT_RUBRIC_VERSION:
+                raise ValueError(f"unsupported rubric_version: {version}")
             return version
     raise ValueError("canonical article-quality-rubric.md was not found")
 
@@ -91,6 +99,14 @@ def target_path(kind: str, slug: str) -> str:
     return f"wiki/insight/{'designs' if kind == 'design' else 'pages'}/{slug}.md"
 
 
+def evaluation_path(root: Path, slug: str, kind: str = "article") -> Path:
+    return root / slug / ("design.md" if kind == "design" else "article.md")
+
+
+def design_file_for(target: Path, slug: str) -> Path:
+    return target.parent.parent / "designs" / f"{slug}.md"
+
+
 def now() -> str:
     return dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
@@ -109,6 +125,7 @@ def atomic_write(path: Path, text: str) -> None:
 def render_manifest(data: dict) -> str:
     lines = [
         f"# Insight evaluation run: {data['run_id']}", "",
+        f"- kind: {data.get('kind', 'article')}",
         f"- rubric_version: {data['rubric_version']}",
         f"- started_at: {data['started_at']}",
         f"- updated_at: {data['updated_at']}",
@@ -134,41 +151,67 @@ def git_blob(path: Path) -> str:
     return result.stdout.strip()
 
 
-def parse_metadata(path: Path, expected_slug: str, kind: str = "article") -> dict | None:
-    text = path.read_text(encoding="utf-8")
+def read_frontmatter(text: str) -> dict | None:
     match = re.match(r"\A---\n(.*?)\n---\n", text, re.S)
     if not match:
         return None
-    if len(match.group(1).splitlines()) not in ({7} if kind == "design" else {7, 10}):
+    lines = match.group(1).splitlines()
+    pairs = [re.fullmatch(r'([a-z_]+): (?:"([^"]*)"|([0-9]+))', line) for line in lines]
+    if not all(pairs):
         return None
-    pairs = re.findall(r'(?m)^([a-z_]+): (?:(?:"([^"]*)")|([0-9]+))$', match.group(1))
-    meta = {key: quoted if quoted != "" else bare for key, quoted, bare in pairs}
-    required = {"target", "target_blob", "rubric_version", "evaluator", "evaluator_model", "evaluated_at", "run_id"}
-    if kind == "article" and len(match.group(1).splitlines()) == 10:
-        required |= {"design_target", "design_blob", "design_evaluation"}
-    if set(meta) != required:
+    meta = {m[1]: m[2] if m[2] is not None else m[3] for m in pairs}
+    return meta if len(meta) == len(lines) else None
+
+
+def frontmatter_version(path: Path) -> int | None:
+    meta = read_frontmatter(path.read_text(encoding="utf-8"))
+    value = (meta or {}).get("rubric_version", "")
+    return int(value) if value.isdigit() else None
+
+
+def parse_metadata(path: Path, expected_slug: str, kind: str = "article") -> dict | None:
+    """Strictly parse a current-version evaluation file's trusted metadata."""
+    if path.name != ("design.md" if kind == "design" else "article.md"):
         return None
-    filename = re.fullmatch(r"([0-9]{8}T[0-9]{6}Z)-v([0-9]+)-([a-z0-9]{8,32})\.md", path.name)
-    if not filename:
+    return parse_metadata_text(path.read_text(encoding="utf-8"), expected_slug, kind)
+
+
+def parse_metadata_text(text: str, expected_slug: str, kind: str = "article") -> dict | None:
+    meta = read_frontmatter(text)
+    if meta is None:
         return None
-    stamp = meta["evaluated_at"].replace("-", "").replace(":", "")
-    if filename.groups() != (stamp, meta["rubric_version"], meta["run_id"]):
+    required = {"target", "target_blob", "rubric_version", "evaluator", "evaluator_model", "evaluated_at", "run_id", "round"}
+    if kind == "article":
+        required |= {"design_target", "design_blob", "design_evaluation_blob"}
+    if set(meta) != required or meta["rubric_version"] != str(kind_version(kind)):
         return None
     if meta["target"] != target_path(kind, expected_slug):
         return None
     if (meta["evaluator"], meta["evaluator_model"]) not in ACCEPTED_EVALUATORS:
         return None
-    if not re.fullmatch(r"[0-9a-f]{40}(?:[0-9a-f]{24})?", meta["target_blob"]):
+    blobs = ["target_blob"] + (["design_blob", "design_evaluation_blob"] if kind == "article" else [])
+    if not all(re.fullmatch(BLOB, meta[key]) for key in blobs):
         return None
-    if kind == "design" and int(meta["rubric_version"]) not in DESIGN_READABLE_VERSIONS:
+    if kind == "article" and meta["design_target"] != target_path("design", expected_slug):
         return None
-    if kind == "article" and "design_blob" in meta:
-        if meta["design_target"] != target_path("design", expected_slug) or not re.fullmatch(r"[0-9a-f]{40}(?:[0-9a-f]{24})?", meta["design_blob"]): return None
+    if not re.fullmatch(r"[a-z0-9]{8,32}", meta["run_id"]) or not re.fullmatch(r"[1-9][0-9]*", meta["round"]):
+        return None
     try:
         dt.datetime.strptime(meta["evaluated_at"], "%Y-%m-%dT%H:%M:%SZ")
     except ValueError:
         return None
     return meta
+
+
+def current_design_evaluation(evaluations_root: Path, slug: str) -> tuple[Path, dict] | None:
+    """Return the slug's design evaluation if it has current metadata and a valid body."""
+    path = evaluation_path(evaluations_root, slug, "design")
+    if not path.is_file():
+        return None
+    meta = parse_metadata(path, slug, "design")
+    if meta is None or not validate_design_text(path.read_text(encoding="utf-8"), slug, DESIGN_RUBRIC_VERSION)["valid"]:
+        return None
+    return path, meta
 
 
 def cmd_init(args: argparse.Namespace) -> int:
@@ -187,25 +230,22 @@ def cmd_init(args: argparse.Namespace) -> int:
     if not unique:
         raise SystemExit("at least one --target or --pages-dir is required")
     claims = {}
-    for design_file in (args.design_evaluation or []):
-        if args.kind != "article": raise SystemExit("design evaluation references apply to article runs")
-        slug = design_file.parent.parent.name
-        meta = parse_metadata(design_file, slug, "design")
-        if meta is None or slug not in unique or slug in claims:
-            raise SystemExit("--design-evaluation metadata, slug or duplicate is invalid")
-        if int(meta["rubric_version"]) != DESIGN_RUBRIC_VERSION:
-            raise SystemExit(f"--design-evaluation must use design rubric_version={DESIGN_RUBRIC_VERSION}; re-review the design")
-        claims[slug] = {"design_blob": meta["target_blob"], "design_evaluation": design_file.as_posix(),
-                        "design_evaluation_blob": git_blob(design_file), "design_rubric_version": DESIGN_RUBRIC_VERSION}
     if args.kind == "article":
-        missing = sorted(set(unique) - set(claims))
-        if missing:
-            raise SystemExit("article evaluation runs require a valid --design-evaluation for every target: " + ", ".join(missing))
+        missing = []
         for slug, target in unique.items():
-            try: design_application_test(Path(target).parent.parent / "designs" / f"{slug}.md")
+            found = current_design_evaluation(args.evaluations_root, slug)
+            if found is None:
+                missing.append(slug); continue
+            path, meta = found
+            try: design_application_test(design_file_for(Path(target), slug))
             except (OSError, ValueError) as error: raise SystemExit(f"{slug}: {error}")
+            claims[slug] = {"design_blob": meta["target_blob"], "design_evaluation": path.as_posix(),
+                            "design_evaluation_blob": git_blob(path), "design_rubric_version": DESIGN_RUBRIC_VERSION}
+        if missing:
+            raise SystemExit(f"article evaluation runs require a current design rubric_version={DESIGN_RUBRIC_VERSION} "
+                             f"evaluation at {args.evaluations_root}/<slug>/design.md: " + ", ".join(missing))
     data = {
-        "schema_version": 2, "kind": args.kind, "run_id": args.run_id or secrets.token_hex(6),
+        "schema_version": 3, "kind": args.kind, "run_id": args.run_id or secrets.token_hex(6),
         "rubric_version": args.rubric_version, "started_at": now(), "updated_at": now(),
         "items": [{"slug": slug, "target": target, "status": "pending", "attempts": 0,
                    "target_blob": "", "evaluation": "", "error": "", **claims.get(slug, {})} for slug, target in unique.items()],
@@ -215,30 +255,36 @@ def cmd_init(args: argparse.Namespace) -> int:
     return 0
 
 
+def design_claim_changed(item: dict) -> bool:
+    if not all(item.get(k) for k in ("design_blob", "design_evaluation", "design_evaluation_blob", "design_rubric_version")):
+        raise SystemExit("article claim requires its design evaluation")
+    design_path = design_file_for(Path(item["target"]), item["slug"])
+    current_design_rubric_version(design_path.parent)
+    evaluation = Path(item["design_evaluation"])
+    return (not design_path.is_file() or git_blob(design_path) != item["design_blob"]
+            or not evaluation.is_file() or git_blob(evaluation) != item["design_evaluation_blob"])
+
+
+def canonical_version(kind: str, target: Path) -> int:
+    return current_design_rubric_version(target.parent) if kind == "design" else current_rubric_version(target.parent)
+
+
 def cmd_next(args: argparse.Namespace) -> int:
     data = load(args.manifest)
     kind = data.get("kind", "article")
     if data.get("rubric_version") != kind_version(kind):
-        raise SystemExit(f"obsolete evaluation run cannot be resumed; initialize a v{CURRENT_RUBRIC_VERSION} run")
+        raise SystemExit(f"obsolete evaluation run cannot be resumed; initialize a v{kind_version(kind)} run")
     candidates = [i for i in data["items"] if i["status"] in {"pending", "retry"}]
     selected = candidates[: min(args.limit, MAX_BATCH)]
     for item in selected:
-        canonical = current_design_rubric_version(Path(item["target"]).parent) if kind == "design" else current_rubric_version(Path(item["target"]).parent)
-        if canonical != data["rubric_version"]: raise SystemExit("canonical rubric changed; initialize a new run")
+        if canonical_version(kind, Path(item["target"])) != data["rubric_version"]:
+            raise SystemExit("canonical rubric changed; initialize a new run")
         git_blob(Path(item["target"]))
-        if kind == "article":
-            if not all(item.get(k) for k in ("design_blob", "design_evaluation", "design_evaluation_blob", "design_rubric_version")):
-                raise SystemExit("article claim requires its design evaluation")
-            design_path = Path(item["target"]).parent.parent / "designs" / f"{item['slug']}.md"
-            current_design_rubric_version(design_path.parent)
-            if not design_path.is_file() or git_blob(design_path) != item["design_blob"] or git_blob(Path(item["design_evaluation"])) != item["design_evaluation_blob"]:
-                raise SystemExit("design changed before article evaluation claim")
+        if kind == "article" and design_claim_changed(item):
+            raise SystemExit("design changed before article evaluation claim")
         if kind == "design": design_outcome_ids(Path(item["target"]))
     for item in selected:
         item["target_blob"] = git_blob(Path(item["target"]))
-        if kind == "design":
-            current_design_rubric_version(Path(item["target"]).parent)
-            design_outcome_ids(Path(item["target"]))
         item["status"] = "running"
         item["attempts"] += 1
         item["error"] = ""
@@ -271,20 +317,15 @@ def cmd_fail(args: argparse.Namespace) -> int:
 
 def cmd_resume(args: argparse.Namespace) -> int:
     data = load(args.manifest)
-    if data.get("rubric_version") != kind_version(data.get("kind", "article")):
-        raise SystemExit(f"obsolete evaluation run cannot be resumed; initialize a v{CURRENT_RUBRIC_VERSION} run")
+    kind = data.get("kind", "article")
+    if data.get("rubric_version") != kind_version(kind):
+        raise SystemExit(f"obsolete evaluation run cannot be resumed; initialize a v{kind_version(kind)} run")
     count = 0
     for item in data["items"]:
-        kind = data.get("kind", "article")
-        canonical = current_design_rubric_version(Path(item["target"]).parent) if kind == "design" else current_rubric_version(Path(item["target"]).parent)
-        if canonical != data["rubric_version"]: raise SystemExit("canonical rubric changed; initialize a new run")
-        if kind == "article":
-            if not all(item.get(k) for k in ("design_blob", "design_evaluation", "design_evaluation_blob", "design_rubric_version")):
-                raise SystemExit("article evaluation resume requires its design evaluation")
-            design_path = Path(item["target"]).parent.parent / "designs" / f"{item['slug']}.md"
-            current_design_rubric_version(design_path.parent)
-            if not design_path.is_file() or git_blob(design_path) != item["design_blob"] or not Path(item["design_evaluation"]).is_file() or git_blob(Path(item["design_evaluation"])) != item["design_evaluation_blob"]:
-                item["status"] = "pending"; item["target_blob"] = ""; item["error"] = "design changed"; count += 1; continue
+        if canonical_version(kind, Path(item["target"])) != data["rubric_version"]:
+            raise SystemExit("canonical rubric changed; initialize a new run")
+        if kind == "article" and design_claim_changed(item):
+            item["status"] = "pending"; item["target_blob"] = ""; item["error"] = "design changed"; count += 1; continue
         if item["status"] == "running":
             item["status"] = "retry" if item["attempts"] < MAX_ATTEMPTS else "failed"
             item["error"] = item.get("error") or "interrupted"
@@ -310,15 +351,18 @@ def cmd_save(args: argparse.Namespace) -> int:
     data = load(args.manifest)
     kind = data.get("kind", "article")
     if data.get("rubric_version") != kind_version(kind):
-        raise SystemExit(f"obsolete evaluation run cannot save into v{CURRENT_RUBRIC_VERSION} history")
+        raise SystemExit(f"obsolete evaluation run cannot save into v{kind_version(kind)} evaluations")
     item = item_for(data, args.slug)
     if item["status"] != "running":
         raise SystemExit(f"{args.slug} is not running")
+    if args.round < 1:
+        raise SystemExit("--round must be 1 or greater")
     raw = args.body.read_text(encoding="utf-8")
     if raw.startswith("---\n"):
-        print("Codex本文にfrontmatterを含めることはできません", file=sys.stderr)
+        print("評価本文にfrontmatterを含めることはできません", file=sys.stderr)
         return 1
-    result = (validate_design_text if kind == "design" else validate_text)(raw, args.slug, kind_version(kind))
+    validator = validate_design_text if kind == "design" else validate_text
+    result = validator(raw, args.slug, kind_version(kind))
     if not result["valid"]:
         print("; ".join(result["errors"]), file=sys.stderr)
         return 1
@@ -330,23 +374,23 @@ def cmd_save(args: argparse.Namespace) -> int:
             print(mismatch, file=sys.stderr)
             return 1
     target = Path(item["target"])
-    canonical = current_design_rubric_version(target.parent) if kind == "design" else current_rubric_version(target.parent)
-    if canonical != data["rubric_version"]: raise SystemExit("canonical rubric changed since claim")
+    if canonical_version(kind, target) != data["rubric_version"]:
+        raise SystemExit("canonical rubric changed since claim")
     source_diagnostics = validate_sources(target) if kind == "article" else []
-    structural = [item for item in source_diagnostics if item.category == "structure"]
-    quality = [item for item in source_diagnostics if item.category == "quality"]
+    structural = [d for d in source_diagnostics if d.category == "structure"]
+    quality = [d for d in source_diagnostics if d.category == "quality"]
     if structural:
-        for item in structural:
-            print(f"{item.code}: {item.reason}", file=sys.stderr)
+        for diagnostic in structural:
+            print(f"{diagnostic.code}: {diagnostic.reason}", file=sys.stderr)
         print("target article has structurally invalid external sources", file=sys.stderr)
         return 1
     if quality:
         required = [a for a in result["actions"] if a["type"] in {"修正必須", "調査必須"}]
         allowed_dimensions = {"事実基盤"} if result.get("reusability_gate") != "不合格" else {"再利用性"}
-        source_action = all(any(a["dimension"] in allowed_dimensions and re.search(rf"(?<![A-Za-z0-9_]){re.escape(item.code)}(?![A-Za-z0-9_])", a.get("問題", "")) for a in required) for item in quality)
+        source_action = all(any(a["dimension"] in allowed_dimensions and re.search(rf"(?<![A-Za-z0-9_]){re.escape(d.code)}(?![A-Za-z0-9_])", a.get("問題", "")) for a in required) for d in quality)
         if result.get("pass") or not source_action:
-            for item in quality:
-                print(f"{item.code}: {item.reason}", file=sys.stderr)
+            for diagnostic in quality:
+                print(f"{diagnostic.code}: {diagnostic.reason}", file=sys.stderr)
             print("source quality issue requires a matching mandatory 事実基盤 action and pass=いいえ", file=sys.stderr)
             return 1
     before = item.get("target_blob")
@@ -358,30 +402,23 @@ def cmd_save(args: argparse.Namespace) -> int:
     run_id = args.evaluation_run_id or secrets.token_hex(6)
     if not re.fullmatch(r"[a-z0-9]{8,32}", run_id):
         raise SystemExit("evaluation run_id must be 8-32 lowercase alphanumerics")
-    filename_stamp = timestamp.replace("-", "").replace(":", "")
-    destination = args.evaluations_root / args.slug / ("design" if kind == "design" else "") / f"{filename_stamp}-v{data['rubric_version']}-{run_id}.md"
-    if destination.exists():
-        raise SystemExit(f"evaluation already exists: {destination}")
+    destination = evaluation_path(args.evaluations_root, args.slug, kind)
     design_meta = ""
     if kind == "article":
-        if not args.design_evaluation:
-            raise SystemExit("article save requires --design-evaluation")
-        design_file = Path(args.design_evaluation); design = parse_metadata(design_file, args.slug, "design")
-        if design is None or int(design["rubric_version"]) != DESIGN_RUBRIC_VERSION or not validate_design_text(design_file.read_text(encoding="utf-8"), args.slug, DESIGN_RUBRIC_VERSION).get("valid"):
-            raise SystemExit("article save requires a valid design evaluation")
-        design_target = target.parent.parent / "designs" / f"{args.slug}.md"
-        if not design_target.is_file() or git_blob(design_target) != design["target_blob"]: raise SystemExit("design changed or is missing since its evaluation")
-        current_design_rubric_version(design_target.parent)
-        if not item.get("design_blob") or (item["design_blob"] != design["target_blob"] or item.get("design_evaluation") != design_file.as_posix() or item.get("design_evaluation_blob") != git_blob(design_file)):
-            raise SystemExit("design reference differs from claimed input")
+        if design_claim_changed(item):
+            raise SystemExit("design or its evaluation changed since claim")
+        design_target = design_file_for(target, args.slug)
         design_ids = design_outcome_ids(design_target)
         alignment_ids = set(re.findall(r"(?m)^- (D[1-9][0-9]*): \S", raw))
         if alignment_ids != design_ids:
             raise SystemExit("article design alignment must cover every current D ID exactly")
-        design_meta = f'design_target: "{target_path("design", args.slug)}"\n' + f'design_blob: "{design["target_blob"]}"\n' + f'design_evaluation: "{design_file.as_posix()}"\n'
-        alignment = result.get("design_alignment")
-        if bool(design_meta) != (alignment in {"合格", "不合格"}):
-            raise SystemExit("article design metadata and design_alignment disagree")
+        if result.get("design_alignment") not in {"合格", "不合格"}:
+            raise SystemExit("article evaluation requires design_alignment 合格 or 不合格")
+        design_meta = (f'design_target: "{target_path("design", args.slug)}"\n'
+                       f'design_blob: "{item["design_blob"]}"\n'
+                       f'design_evaluation_blob: "{item["design_evaluation_blob"]}"\n')
+    else:
+        design_outcome_ids(target)
     frontmatter = (
         "---\n"
         f'target: "{item["target"]}"\n'
@@ -392,105 +429,135 @@ def cmd_save(args: argparse.Namespace) -> int:
         f'evaluator_model: "{CURRENT_EVALUATOR[1]}"\n'
         f'evaluated_at: "{timestamp}"\n'
         f'run_id: "{run_id}"\n'
+        f'round: {args.round}\n'
         "---\n"
     )
-    if kind == "design":
-        current_design_rubric_version(target.parent)
-        design_outcome_ids(target)
-    if kind == "article" and design_meta and (not design_target.is_file() or git_blob(design_target) != design["target_blob"] or git_blob(design_file) != item["design_evaluation_blob"]):
-        raise SystemExit("design changed before save")
-    if git_blob(target) != before:
-        raise SystemExit("target changed before save")
-    atomic_write(destination, frontmatter + raw.lstrip())
-    # Validate what was persisted, including trusted metadata.
-    validator = validate_design_text if kind == "design" else validate_text
-    if parse_metadata(destination, args.slug, kind) is None or not validator(destination.read_text(encoding="utf-8"), args.slug, kind_version(kind))["valid"]:
-        destination.unlink()
-        raise SystemExit("persisted evaluation failed validation")
-    if git_blob(target) != before:
-        destination.unlink()
-        raise SystemExit("target changed during save")
-    if kind == "article" and design_meta and (not design_target.is_file() or git_blob(design_target) != design["target_blob"] or git_blob(design_file) != item["design_evaluation_blob"]):
-        destination.unlink()
-        raise SystemExit("design changed during save")
+    # Validate the persisted form in a sibling temp file before replacing the current evaluation.
+    staged = destination.with_suffix(".md.staged")
+    atomic_write(staged, frontmatter + raw.lstrip())
+    try:
+        persisted = staged.read_text(encoding="utf-8")
+        if parse_metadata_text(persisted, args.slug, kind) is None or not validator(persisted, args.slug, kind_version(kind))["valid"]:
+            raise SystemExit("persisted evaluation failed validation")
+        if git_blob(target) != before:
+            raise SystemExit("target changed before save")
+        if kind == "article" and design_claim_changed(item):
+            raise SystemExit("design changed before save")
+        staged.replace(destination)
+    finally:
+        if staged.exists():
+            staged.unlink()
     item["status"] = "success"
     item["evaluation"] = destination.as_posix()
     item["error"] = ""
     save_manifest(args.manifest, data)
-    print(f"EVALUATION_SAVED slug={args.slug} file={destination} blob={before}")
+    print(f"EVALUATION_SAVED slug={args.slug} file={destination} blob={before} round={args.round}")
     return 0
 
 
-def latest_evaluations(pages_dir: Path, evaluations_root: Path, rubric_version: int | None = None) -> tuple[list[dict], list[dict]]:
-    current_version = rubric_version if rubric_version is not None else current_rubric_version(pages_dir)
-    records: list[dict] = []
-    invalid: list[dict] = []
-    design_records, _ = latest_design_evaluations(pages_dir.parent / "designs", evaluations_root)
-    designs_by_slug = {r["slug"]: r for r in design_records}
-    for page in sorted(pages_dir.glob("*.md"), key=lambda p: p.stem):
-        valid: list[tuple[str, str, Path, dict, dict]] = []
-        directory = evaluations_root / page.stem
-        if directory.is_dir():
-            for candidate in sorted(directory.glob("*.md")):
-                meta = parse_metadata(candidate, page.stem, "article")
-                version = int(meta["rubric_version"]) if meta else 0
-                result = validate_text(candidate.read_text(encoding="utf-8"), page.stem, version) if meta else {"valid": False}
-                if meta is None or not result["valid"]:
-                    invalid.append({"slug": page.stem, "file": candidate.as_posix(),
-                                    "reason": "metadata" if meta is None else "output"})
-                    continue
-                valid.append((meta["evaluated_at"], meta["run_id"], candidate, meta, result))
-        if not valid:
-            records.append({"slug": page.stem, "status": "missing", "design_state": "required"})
-            continue
-        _, _, candidate, meta, result = max(valid, key=lambda value: (value[0], value[1]))
-        version = int(meta["rubric_version"])
-        status = "current" if version == current_version and meta["target_blob"] == git_blob(page) else "legacy" if version != current_version else "changed"
-        design_state = "required"
-        design = pages_dir.parent / "designs" / f"{page.stem}.md"
-        if version >= 6 and "design_blob" in meta:
-            current_design_rubric_version(design.parent)
-            design_eval = Path(meta["design_evaluation"])
-            design_meta = parse_metadata(design_eval, page.stem, "design") if design_eval.is_file() else None
-            design_result = validate_design_text(design_eval.read_text(encoding="utf-8"), page.stem, int(design_meta["rubric_version"])) if design_meta else {"pass": False}
-            latest_design = designs_by_slug.get(page.stem, {})
-            same_review = bool(latest_design.get("file") and
-                               Path(latest_design["file"]).resolve() == design_eval.resolve())
-            design_state = "complete" if (status == "current" and result.get("pass") and
-                result.get("design_alignment") == "合格" and design.is_file() and
-                git_blob(design) == meta["design_blob"] and design_meta and
-                design_meta["target_blob"] == meta["design_blob"] and design_result.get("pass") and
-                latest_design.get("status") == "current" and latest_design.get("pass") and same_review
-                ) else "required"
-        if status == "current" and design_state == "required":
-            dependency_current = bool("design_blob" in meta and design.is_file() and
-                git_blob(design) == meta["design_blob"] and designs_by_slug.get(page.stem, {}).get("status") == "current" and
-                designs_by_slug.get(page.stem, {}).get("file") and
-                Path(designs_by_slug[page.stem]["file"]).resolve() == Path(meta["design_evaluation"]).resolve())
-            if not dependency_current: status = "design_required"
-        records.append({"slug": page.stem, "status": status, "design_state": design_state,
-                        "file": candidate.as_posix(), "rubric_version": version, **result})
-    return records, invalid
+def _classify(path: Path, slug: str, kind: str, invalid: list[dict]) -> tuple[str, dict, dict] | None:
+    """Return (status, meta, result) for an existing evaluation, or None when invalid/missing."""
+    if not path.is_file():
+        return None
+    version = frontmatter_version(path)
+    if version is None:
+        invalid.append({"slug": slug, "file": path.as_posix(), "reason": "metadata"}); return None
+    if version != kind_version(kind):
+        return "legacy", {"rubric_version": str(version)}, {}
+    meta = parse_metadata(path, slug, kind)
+    if meta is None:
+        invalid.append({"slug": slug, "file": path.as_posix(), "reason": "metadata"}); return None
+    validator = validate_design_text if kind == "design" else validate_text
+    result = validator(path.read_text(encoding="utf-8"), slug, kind_version(kind))
+    if not result["valid"]:
+        invalid.append({"slug": slug, "file": path.as_posix(), "reason": "output"}); return None
+    return "", meta, result
 
 
 def latest_design_evaluations(designs_dir: Path, evaluations_root: Path) -> tuple[list[dict], list[dict]]:
     if designs_dir.is_dir() and any(designs_dir.glob("*.md")):
         current_design_rubric_version(designs_dir)
-    records=[]; invalid=[]
-    for design in sorted(designs_dir.glob("*.md"), key=lambda p:p.stem):
-        valid=[]; directory=evaluations_root/design.stem/"design"
-        if directory.is_dir():
-            for candidate in sorted(directory.glob("*.md")):
-                meta=parse_metadata(candidate, design.stem, "design")
-                result=validate_design_text(candidate.read_text(encoding="utf-8"), design.stem, int(meta["rubric_version"])) if meta else {"valid":False}
-                if not meta or not result["valid"]: invalid.append({"slug":design.stem,"file":candidate.as_posix(),"reason":"metadata" if not meta else "output"}); continue
-                valid.append((meta["evaluated_at"],meta["run_id"],candidate,meta,result))
-        if not valid: records.append({"slug":design.stem,"status":"missing"}); continue
-        _,_,candidate,meta,result=max(valid,key=lambda x:(x[0],x[1]))
-        version=int(meta["rubric_version"])
-        status="legacy" if version!=DESIGN_RUBRIC_VERSION else "current" if meta["target_blob"]==git_blob(design) else "changed"
-        records.append({"slug":design.stem,"status":status,"file":candidate.as_posix(),"rubric_version":version,**result})
-    return records,invalid
+    records: list[dict] = []; invalid: list[dict] = []
+    for design in sorted(designs_dir.glob("*.md"), key=lambda p: p.stem):
+        path = evaluation_path(evaluations_root, design.stem, "design")
+        found = _classify(path, design.stem, "design", invalid)
+        if found is None:
+            records.append({"slug": design.stem, "status": "missing"}); continue
+        status, meta, result = found
+        if status != "legacy":
+            status = "current" if meta["target_blob"] == git_blob(design) else "changed"
+        records.append({"slug": design.stem, "status": status, "file": path.as_posix(),
+                        "rubric_version": int(meta["rubric_version"]), "evaluation_blob": git_blob(path), **result})
+    return records, invalid
+
+
+def latest_evaluations(pages_dir: Path, evaluations_root: Path, rubric_version: int | None = None) -> tuple[list[dict], list[dict]]:
+    current_version = rubric_version if rubric_version is not None else current_rubric_version(pages_dir)
+    if current_version != CURRENT_RUBRIC_VERSION:
+        raise ValueError(f"unsupported rubric_version: {current_version}")
+    records: list[dict] = []
+    invalid: list[dict] = []
+    design_records, _ = latest_design_evaluations(pages_dir.parent / "designs", evaluations_root)
+    designs_by_slug = {r["slug"]: r for r in design_records}
+    for page in sorted(pages_dir.glob("*.md"), key=lambda p: p.stem):
+        path = evaluation_path(evaluations_root, page.stem)
+        found = _classify(path, page.stem, "article", invalid)
+        if found is None:
+            records.append({"slug": page.stem, "status": "missing", "design_state": "required"}); continue
+        status, meta, result = found
+        if status == "legacy":
+            records.append({"slug": page.stem, "status": "legacy", "design_state": "required", "file": path.as_posix(),
+                            "rubric_version": int(meta["rubric_version"])}); continue
+        status = "current" if meta["target_blob"] == git_blob(page) else "changed"
+        design = pages_dir.parent / "designs" / f"{page.stem}.md"
+        latest_design = designs_by_slug.get(page.stem, {})
+        dependency_current = bool(design.is_file() and git_blob(design) == meta["design_blob"] and
+                                  latest_design.get("status") == "current" and
+                                  latest_design.get("evaluation_blob") == meta["design_evaluation_blob"])
+        design_state = "complete" if (status == "current" and dependency_current and result.get("pass") and
+                                      result.get("design_alignment") == "合格" and latest_design.get("pass")) else "required"
+        if status == "current" and not dependency_current:
+            status = "design_required"
+        records.append({"slug": page.stem, "status": status, "design_state": design_state,
+                        "file": path.as_posix(), "rubric_version": int(meta["rubric_version"]), **result})
+    return records, invalid
+
+
+def cmd_evidence(args: argparse.Namespace) -> int:
+    """Append one external verification to the slug's evidence log."""
+    raw = args.body.read_text(encoding="utf-8").strip() + "\n"
+    if not re.fullmatch(r"[a-z0-9][a-z0-9-]*", args.slug):
+        raise SystemExit(f"invalid slug: {args.slug}")
+    headings = list(re.finditer(r"(?m)^## (.+?)[ \t]*$", raw))
+    title = raw.splitlines()[0] if raw.strip() else ""
+    if title != f"# 外部検証: {args.slug}" or tuple(h[1] for h in headings) != EVIDENCE_SECTIONS:
+        print("外部検証本文は『# 外部検証: <slug>』と確認済み・未確認・誤りの三見出しを順に持つ必要があります", file=sys.stderr)
+        return 1
+    sections = {h[1]: raw[h.end():headings[i+1].start() if i+1 < len(headings) else len(raw)].strip()
+                for i, h in enumerate(headings)}
+    if not all(sections.values()):
+        print("外部検証の各見出しは空にできません（該当なしは『- なし』）", file=sys.stderr)
+        return 1
+    target = Path(args.target)
+    if target.as_posix() not in {target_path("article", args.slug), target_path("design", args.slug)} or not target.is_file():
+        raise SystemExit("--target must be the slug's existing page or design")
+    verified_at = args.verified_at or now()
+    run_id = args.run_id or secrets.token_hex(6)
+    if not re.fullmatch(r"[a-z0-9]{8,32}", run_id):
+        raise SystemExit("run_id must be 8-32 lowercase alphanumerics")
+    destination = args.evidence_root / f"{args.slug}.md"
+    existing = destination.read_text(encoding="utf-8") if destination.is_file() else (
+        f"# 外部検証記録: {args.slug}\n\n独立評価者による外部検証を検証ごとに追記する。過去の節は書き換えない。\n")
+    if f"run={run_id}\n" in existing:
+        raise SystemExit(f"evidence run already recorded: {run_id}")
+    block = [f"\n## {verified_at} run={run_id}\n",
+             f"- target: {target.as_posix()}", f"- target_blob: {git_blob(target)}",
+             f"- evaluator: {CURRENT_EVALUATOR[0]} / {CURRENT_EVALUATOR[1]}", ""]
+    for name in EVIDENCE_SECTIONS:
+        block += [f"### {name}", "", sections[name], ""]
+    atomic_write(destination, existing.rstrip("\n") + "\n" + "\n".join(block).rstrip("\n") + "\n")
+    print(f"EVIDENCE_APPENDED slug={args.slug} file={destination} run_id={run_id}")
+    return 0
 
 
 def queue_rank(record: dict) -> tuple[int, str]:
@@ -535,19 +602,24 @@ def parser() -> argparse.ArgumentParser:
     sub = root.add_subparsers(dest="command", required=True)
     p = sub.add_parser("init")
     p.add_argument("--manifest", type=Path, required=True); p.add_argument("--rubric-version", type=int, required=True)
-    p.add_argument("--kind", choices=("article", "design"), default="article"); p.add_argument("--run-id"); p.add_argument("--target", action="append", default=[]); p.add_argument("--pages-dir"); p.add_argument("--designs-dir"); p.add_argument("--design-evaluation", type=Path, action="append")
+    p.add_argument("--kind", choices=("article", "design"), default="article"); p.add_argument("--run-id"); p.add_argument("--target", action="append", default=[]); p.add_argument("--pages-dir"); p.add_argument("--designs-dir")
+    p.add_argument("--evaluations-root", type=Path, default=EVALUATIONS_ROOT)
     p.set_defaults(func=cmd_init)
     p = sub.add_parser("next")
-    p.add_argument("--manifest", type=Path, required=True); p.add_argument("--evaluations-root", type=Path, default=Path("evaluations/insight")); p.add_argument("--limit", type=int, default=MAX_BATCH, choices=range(1, MAX_BATCH + 1)); p.set_defaults(func=cmd_next)
+    p.add_argument("--manifest", type=Path, required=True); p.add_argument("--limit", type=int, default=MAX_BATCH, choices=range(1, MAX_BATCH + 1)); p.set_defaults(func=cmd_next)
     p = sub.add_parser("fail")
     p.add_argument("--manifest", type=Path, required=True); p.add_argument("--slug", required=True); p.add_argument("--error", required=True); p.set_defaults(func=cmd_fail)
     p = sub.add_parser("resume")
     p.add_argument("--manifest", type=Path, required=True); p.set_defaults(func=cmd_resume)
     p = sub.add_parser("save")
     p.add_argument("--manifest", type=Path, required=True); p.add_argument("--slug", required=True); p.add_argument("--body", type=Path, required=True)
-    p.add_argument("--evaluations-root", type=Path, default=Path("evaluations/insight")); p.add_argument("--design-evaluation", type=Path); p.add_argument("--stage1", type=Path); p.add_argument("--evaluated-at"); p.add_argument("--evaluation-run-id"); p.set_defaults(func=cmd_save)
+    p.add_argument("--round", type=int, required=True, help="1 for the initial evaluation, +1 for each re-evaluation in the same improvement loop")
+    p.add_argument("--evaluations-root", type=Path, default=EVALUATIONS_ROOT); p.add_argument("--stage1", type=Path); p.add_argument("--evaluated-at"); p.add_argument("--evaluation-run-id"); p.set_defaults(func=cmd_save)
+    p = sub.add_parser("evidence")
+    p.add_argument("--slug", required=True); p.add_argument("--body", type=Path, required=True); p.add_argument("--target", required=True)
+    p.add_argument("--evidence-root", type=Path, default=EVIDENCE_ROOT); p.add_argument("--verified-at"); p.add_argument("--run-id"); p.set_defaults(func=cmd_evidence)
     p = sub.add_parser("normalize")
-    p.add_argument("--pages-dir", type=Path, default=Path("wiki/insight/pages")); p.add_argument("--evaluations-root", type=Path, default=Path("evaluations/insight")); p.add_argument("--rubric-version", type=int, choices=[CURRENT_RUBRIC_VERSION]); p.add_argument("--output", type=Path); p.set_defaults(func=cmd_normalize)
+    p.add_argument("--pages-dir", type=Path, default=Path("wiki/insight/pages")); p.add_argument("--evaluations-root", type=Path, default=EVALUATIONS_ROOT); p.add_argument("--rubric-version", type=int, choices=[CURRENT_RUBRIC_VERSION]); p.add_argument("--output", type=Path); p.set_defaults(func=cmd_normalize)
     return root
 
 

@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Validate qualitative evaluations and read explicitly versioned legacy history."""
+"""Validate a current-version insight article evaluation body.
+
+Older versions are not validated: the state helper reports them as legacy from
+their metadata alone, and git keeps their history.
+"""
 from __future__ import annotations
 
 import argparse
@@ -12,11 +16,8 @@ DIMENSIONS = ("核心と推論力", "論理と構造", "有用性と適用境界
 CURRENT_RUBRIC_VERSION = 7
 ACTION_TYPES = ("修正必須", "調査必須", "任意改善")
 REQUIRED_TYPES = ACTION_TYPES[:2]
-SECTIONS_V6 = ("再利用性ゲート", "観点別評価", "記事単独読解", "設計との照合", "対応項目", "良い点")
-# v7 adds a deletion-candidate list and an application test to the stand-alone reading.
 SECTIONS = ("再利用性ゲート", "観点別評価", "記事単独読解", "設計との照合", "削除候補", "対応項目", "良い点")
-READING_V6 = ("概念と関係", "現実の見方", "確かさ", "理解が止まった箇所")
-READING = READING_V6 + ("適用テスト",)
+READING = ("概念と関係", "現実の見方", "確かさ", "理解が止まった箇所", "適用テスト")
 ACTION_FIELDS = ("種別", "観点", "対象箇所", "問題", "改善後に満たす条件", "対応方法")
 RESEARCH_FIELDS = ("確認対象", "必要な理由", "調査先", "結果ごとの対応")
 
@@ -123,18 +124,11 @@ def validate_text(text: str, expected_slug: str | None = None,
     slug = expected_slug or ""
     try:
         version = _version(text, rubric_version)
-        if version in {1, 2}:
-            from evaluation_validator_legacy import validate_text as legacy
-            return legacy(text, expected_slug)
-        # v3--v5 remain readable history. v6 adds the independently saved
-        # article reading and the later design comparison; v7 adds deletions.
-        if version not in {3, 4, 5, 6, CURRENT_RUBRIC_VERSION}:
+        if version != CURRENT_RUBRIC_VERSION:
             raise ValidationError(f"unsupported rubric_version: {version}")
         body = _body(text).strip() + "\n"
         headings = list(re.finditer(r"(?m)^## (.+?)[ \t]*$", body))
-        expected_sections = (SECTIONS if version >= 7 else SECTIONS_V6 if version == 6
-                             else ("再利用性ゲート", "観点別評価", "対応項目", "良い点"))
-        if tuple(h[1] for h in headings) != expected_sections:
+        if tuple(h[1] for h in headings) != SECTIONS:
             raise ValidationError("必須見出しの順序または数が不正です")
         head = body[:headings[0].start()].strip().splitlines()
         title = re.fullmatch(r"# Insight記事評価: ([a-z0-9][a-z0-9-]*)", head[0]) if head else None
@@ -148,28 +142,26 @@ def validate_text(text: str, expected_slug: str | None = None,
             raise ValidationError("reusability_gateは合格/不合格のみです")
         sections = {h[1]: body[h.end():headings[i+1].start() if i+1 < len(headings) else len(body)]
                     for i, h in enumerate(headings)}
-        if version >= 6:
-            names = READING if version >= 7 else READING_V6
-            reading = [line for line in sections["記事単独読解"].splitlines() if line.strip()]
-            reading_names = [m[1] for m in (re.fullmatch(r"- ([^:]+): \S.*", line) for line in reading) if m and m[1] in names]
-            if len(reading) != len(names) or sorted(reading_names) != sorted(names):
-                raise ValidationError(f"記事単独読解には{len(names)}つの指定項目が必要です")
-            alignment = [line for line in sections["設計との照合"].splitlines() if line.strip()]
-            status = next((line.rsplit(": ", 1)[1] for line in alignment if re.fullmatch(r"- design_alignment: (?:合格|不合格|未導入)", line)), None)
-            if status is None or sum(line.startswith("- design_alignment:") for line in alignment) != 1:
-                raise ValidationError("設計との照合には一意のdesign_alignmentが必要です")
-            ids = [line.split(":", 1)[0] for line in alignment if line.startswith("- D")]
-            if len(ids) != len(set(ids)):
-                raise ValidationError("設計照合のD IDを重複させないでください")
-            if any(not (re.fullmatch(r"- design_alignment: (?:合格|不合格|未導入)", line) or re.fullmatch(r"- D[1-9][0-9]*: \S.*", line)) for line in alignment):
-                raise ValidationError("設計との照合に未定義の項目があります")
-            if status != "未導入" and not any(re.fullmatch(r"- D[1-9][0-9]*: \S.*", line) for line in alignment):
-                raise ValidationError("設計導入後の照合にはD IDごとの記事根拠が必要です")
-        if version >= 7:
-            deletions = [line for line in sections["削除候補"].splitlines() if line.strip()]
-            if not deletions or (deletions != ["- なし"] and any(
-                    not re.fullmatch(r"- 「[^」]+」: \S.*", line) for line in deletions)):
-                raise ValidationError("削除候補は『- なし』または『- 「短い原文引用」: 削っても失われない理由』の箇条書きにしてください")
+        names = READING
+        reading = [line for line in sections["記事単独読解"].splitlines() if line.strip()]
+        reading_names = [m[1] for m in (re.fullmatch(r"- ([^:]+): \S.*", line) for line in reading) if m and m[1] in names]
+        if len(reading) != len(names) or sorted(reading_names) != sorted(names):
+            raise ValidationError(f"記事単独読解には{len(names)}つの指定項目が必要です")
+        alignment = [line for line in sections["設計との照合"].splitlines() if line.strip()]
+        status = next((line.rsplit(": ", 1)[1] for line in alignment if re.fullmatch(r"- design_alignment: (?:合格|不合格)", line)), None)
+        if status is None or sum(line.startswith("- design_alignment:") for line in alignment) != 1:
+            raise ValidationError("設計との照合には一意のdesign_alignmentが必要です")
+        ids = [line.split(":", 1)[0] for line in alignment if line.startswith("- D")]
+        if len(ids) != len(set(ids)):
+            raise ValidationError("設計照合のD IDを重複させないでください")
+        if any(not (re.fullmatch(r"- design_alignment: (?:合格|不合格)", line) or re.fullmatch(r"- D[1-9][0-9]*: \S.*", line)) for line in alignment):
+            raise ValidationError("設計との照合に未定義の項目があります")
+        if not any(re.fullmatch(r"- D[1-9][0-9]*: \S.*", line) for line in alignment):
+            raise ValidationError("設計との照合にはD IDごとの記事根拠が必要です")
+        deletions = [line for line in sections["削除候補"].splitlines() if line.strip()]
+        if not deletions or (deletions != ["- なし"] and any(
+                not re.fullmatch(r"- 「[^」]+」: \S.*", line) for line in deletions)):
+            raise ValidationError("削除候補は『- なし』または『- 「短い原文引用」: 削っても失われない理由』の箇条書きにしてください")
         _fields(sections["再利用性ゲート"], ("R1", "R2", "R3", "R4"), "再利用性ゲート")
         rows = _dimensions(sections["観点別評価"], gate)
         actions = _actions(sections["対応項目"])
@@ -194,15 +186,15 @@ def validate_text(text: str, expected_slug: str | None = None,
         revision = sum(a["type"] == "修正必須" for a in actions)
         research = sum(a["type"] == "調査必須" for a in actions)
         optional = sum(a["type"] == "任意改善" for a in actions)
-        if version >= 6 and status == "不合格" and not any(a["type"] in REQUIRED_TYPES for a in actions):
+        if status == "不合格" and not any(a["type"] in REQUIRED_TYPES for a in actions):
             raise ValidationError("設計照合不合格には必須対応項目が必要です")
         passed = gate == "合格" and not revision and not research
         return {"valid": True, "errors": [], "slug": slug, "reusability_gate": gate,
                 "pass": passed, "decision": "対象外" if gate == "不合格" else "公開可" if passed else "要対応",
                 "revision_count": revision, "research_count": research, "optional_count": optional,
                 "actions": actions, "dimensions": rows,
-                **({"design_alignment": status} if version >= 6 else {}),
-                **({"deletion_count": 0 if deletions == ["- なし"] else len(deletions)} if version >= 7 else {})}
+                "design_alignment": status,
+                "deletion_count": 0 if deletions == ["- なし"] else len(deletions)}
     except ValidationError as exc:
         return {"valid": False, "errors": [str(exc)], "slug": slug, "pass": False}
 
@@ -218,7 +210,7 @@ def main() -> int:
     if args.json:
         print(json.dumps(result, ensure_ascii=False, sort_keys=True))
     elif result["valid"]:
-        decision = result.get("decision", result.get("verdict", "legacy"))
+        decision = result["decision"]
         print(f"EVALUATION_VALID slug={result['slug']} decision={decision}")
     else:
         for error in result["errors"]:

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression checks for publication decisions, legacy history and retries."""
+"""Regression checks for publication decisions, legacy evaluations and retries."""
 from __future__ import annotations
 
 import json
@@ -11,13 +11,11 @@ from pathlib import Path
 import test_evaluation_tools as fixtures
 from evaluation_state import latest_evaluations
 from evaluation_validator import CURRENT_RUBRIC_VERSION as V, validate_text
-from design_evaluation_validator import CURRENT_RUBRIC_VERSION as DV
-from test_evaluation_legacy import evaluation
 
 HERE = Path(__file__).resolve().parent
 
 
-class V3RegressionTest(unittest.TestCase):
+class ValidatorRegressionTest(unittest.TestCase):
     def test_partial_exemption_empty_gate_and_ambiguous_actions_rejected(self):
         base = fixtures.ev()
         variants = [
@@ -53,14 +51,6 @@ class V3RegressionTest(unittest.TestCase):
         self.assertFalse(validate_text(fixtures.ev(states))['valid'])
         self.assertFalse(validate_text(fixtures.ev(actions=fixtures.action()))['valid'])
 
-    def test_legacy_requires_version_and_is_not_valid_v3(self):
-        body = evaluation()
-        self.assertTrue(validate_text(body, 'sample', 2)['valid'])
-        self.assertFalse(validate_text(body, 'sample', 3)['valid'])
-        self.assertFalse(validate_text(body, 'sample', 4)['valid'])
-        self.assertFalse(validate_text(body, 'sample', 5)['valid'])
-        self.assertTrue(validate_text('---\nrubric_version: 2\n---\n' + body)['valid'])
-
 
 class StateRegressionTest(unittest.TestCase):
     def setUp(self):
@@ -69,20 +59,15 @@ class StateRegressionTest(unittest.TestCase):
         self.temp, self.root, self.pages = helper.setup()
         self.addCleanup(self.temp.cleanup)
         self.tool = lambda *args, **kwargs: helper.tool(self.root, *args, **kwargs)
-        refs = self.root / 'wiki/insight/references'
-        refs.mkdir(exist_ok=True)
-        (refs / 'article-quality-rubric.md').write_text(f'**rubric_version: {V}**\n')
         self.manifest = helper.init_next(self.root, self.pages)
         self.body = self.root / 'body.md'
         self.body.write_text(fixtures.ev())
-        self.history = self.root / 'evaluations/insight'
+        self.evaluations = self.root / fixtures.EVALS
 
     def save(self, check=True):
-        design = self.root / f'evaluations/insight/sample/design/20260101T000000Z-v{DV}-design01.md'
         return self.tool('save', '--manifest', str(self.manifest), '--slug', 'sample',
-                         '--body', str(self.body), '--evaluations-root', str(self.history),
-                         '--design-evaluation', str(design),
-                         '--evaluated-at', '2026-01-02T00:00:00Z', '--evaluation-run-id', 'abcdefgh', check=check)
+                         '--body', str(self.body), '--evaluated-at', '2026-01-02T00:00:00Z',
+                         '--evaluation-run-id', 'abcdefgh', check=check)
 
     def test_hash_change_while_running_rejects_save(self):
         page = self.pages / 'sample.md'
@@ -90,8 +75,19 @@ class StateRegressionTest(unittest.TestCase):
         result = self.save(check=False)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('target changed since', result.stderr)
-        self.assertFalse(list(self.history.glob('sample/*.md')))
+        self.assertFalse((self.evaluations / 'sample/article.md').exists())
         self.assertEqual(json.loads(self.manifest.read_text())['items'][0]['status'], 'running')
+
+    def test_failed_save_keeps_the_previous_evaluation(self):
+        self.save()
+        article = self.evaluations / 'sample/article.md'
+        before = article.read_text()
+        self.tool('init', '--manifest', str(self.manifest), '--rubric-version', str(V), '--pages-dir', str(self.pages))
+        self.tool('next', '--manifest', str(self.manifest))
+        self.body.write_text(fixtures.ev().replace('- R1: a', '- R1:'))
+        self.assertNotEqual(self.save(check=False).returncode, 0)
+        self.assertEqual(article.read_text(), before)
+        self.assertEqual(sorted(p.name for p in article.parent.iterdir()), ['article.md', 'design.md'])
 
     def test_retry_limit_and_resume_preserve_pending_work(self):
         for expected in ('retry', 'retry', 'failed'):
@@ -106,27 +102,24 @@ class StateRegressionTest(unittest.TestCase):
     def test_resume_and_batch_cap(self):
         self.tool('resume', '--manifest', str(self.manifest))
         self.assertEqual(json.loads(self.manifest.read_text())['items'][0]['status'], 'retry')
-        design_evaluations = [self.root / f'evaluations/insight/sample/design/20260101T000000Z-v{DV}-design01.md']
         for slug in ('alpha', 'bravo', 'charlie', 'delta'):
             (self.pages / f'{slug}.md').write_text((self.pages / 'sample.md').read_text())
-            design_evaluations.append(self.helper.add_design_pair(self.root, slug))
-        command = ['init', '--manifest', str(self.manifest), '--rubric-version', str(V), '--pages-dir', str(self.pages)]
-        for design in design_evaluations:
-            command.extend(('--design-evaluation', str(design)))
-        self.tool(*command)
+            self.helper.add_design_pair(self.root, slug)
+        self.tool('init', '--manifest', str(self.manifest), '--rubric-version', str(V), '--pages-dir', str(self.pages))
         result = self.tool('next', '--manifest', str(self.manifest))
         self.assertEqual(result.stdout.count('EVALUATION_NEXT slug='), 3)
         self.assertEqual(sum(i['status'] == 'pending' for i in json.loads(self.manifest.read_text())['items']), 2)
 
     def test_old_save_next_resume_refused(self):
         data = json.loads(self.manifest.read_text())
-        data['rubric_version'] = 4
+        data['rubric_version'] = V - 1
         self.manifest.write_text(json.dumps(data))
         for operation in ('next', 'resume'):
             self.assertNotEqual(self.tool(operation, '--manifest', str(self.manifest), check=False).returncode, 0)
         self.assertNotEqual(self.save(check=False).returncode, 0)
 
     def test_article_init_and_resume_refuse_missing_design_claim(self):
+        (self.evaluations / 'sample/design.md').unlink()
         fresh = self.root / 'without-design.json'
         rejected = self.tool('init', '--manifest', str(fresh), '--rubric-version', str(V),
                              '--target', 'sample:wiki/insight/pages/sample.md', check=False)
@@ -150,39 +143,36 @@ class StateRegressionTest(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('matching mandatory', result.stderr)
 
-    def test_legacy_and_corrupt_history_do_not_override_current(self):
+    def test_legacy_evaluation_forces_full_reevaluation(self):
         self.save()
-        current = next(self.history.glob('sample/*.md'))
-        text = current.read_text()
-        metadata = text[:text.index('\n---\n', 4) + 5]
-        legacy_meta = metadata.replace(f'rubric_version: {V}', 'rubric_version: 2').replace('2026-01-02', '2026-01-01')
-        old = current.parent / '20260101T000000Z-v2-abcdefgh.md'
-        old.write_text(legacy_meta + evaluation())
-        (current.parent / '20260103T000000Z-v4-bcdefghi.md').write_text('bad')
-        records, invalid = latest_evaluations(self.pages, self.history)
+        records, invalid = latest_evaluations(self.pages, self.evaluations)
         self.assertEqual(records[0]['status'], 'current')
         self.assertEqual(records[0]['rubric_version'], V)
-        self.assertTrue(invalid)
-        # A legacy-only sibling stays readable, but is excluded from v5 decisions.
-        (self.pages / 'old.md').write_text((self.pages / 'sample.md').read_text())
-        (self.history / 'old').mkdir()
-        old_only = self.history / 'old/20260101T000000Z-v2-abcdefgh.md'
-        old_only_meta = '\n'.join(line for line in legacy_meta.splitlines()
-                                   if not line.startswith(('design_target:', 'design_blob:', 'design_evaluation:')))
-        old_only.write_text(old_only_meta.replace('pages/sample.md', 'pages/old.md') + '\n' + evaluation('old'))
-        records, invalid = latest_evaluations(self.pages, self.history)
-        self.assertEqual(next(r for r in records if r['slug'] == 'old')['status'], 'legacy')
-        out = json.loads(self.tool('normalize', '--pages-dir', str(self.pages), '--evaluations-root', str(self.history)).stdout)
+        self.assertFalse(invalid)
+        article = self.evaluations / 'sample/article.md'
+        article.write_text(article.read_text().replace(f'rubric_version: {V}\n', f'rubric_version: {V - 1}\n'))
+        records, invalid = latest_evaluations(self.pages, self.evaluations)
+        self.assertEqual(records[0]['status'], 'legacy')
+        self.assertFalse(invalid)
+        out = json.loads(self.tool('normalize', '--pages-dir', str(self.pages)).stdout)
         self.assertEqual(out['distribution']['再評価必要'], 1)
         self.assertFalse(out['improvement_queue'])
-        cli = subprocess.run([sys.executable, str(HERE / 'evaluation_validator.py'), str(old_only)], text=True, capture_output=True)
-        self.assertEqual(cli.returncode, 0, cli.stderr)
-        # The shell audit must also recognize the old version, not call it malformed.
         audit = subprocess.run([sys.executable, str(HERE / 'check.py'), '--root', str(self.root)],
                                cwd=self.root, text=True, capture_output=True)
         self.assertEqual(audit.returncode, 0, audit.stderr)
         self.assertIn('scope=all', audit.stdout)
         self.assertIn('reason=rubric', audit.stdout)
+
+    def test_orphan_records_are_reported(self):
+        (self.evaluations / 'gone').mkdir()
+        evidence = self.root / 'wiki/insight/evidence'
+        evidence.mkdir(parents=True)
+        (evidence / 'merged.md').write_text('# 外部検証記録: merged\n')
+        audit = subprocess.run([sys.executable, str(HERE / 'check.py'), '--root', str(self.root)],
+                               cwd=self.root, text=True, capture_output=True)
+        self.assertEqual(audit.returncode, 0, audit.stderr)
+        self.assertIn('ORPHAN_RECORD severity=ERROR collection=insight slug=gone kind=evaluations', audit.stdout)
+        self.assertIn('ORPHAN_RECORD severity=ERROR collection=insight slug=merged kind=evidence', audit.stdout)
 
 
 if __name__ == '__main__':

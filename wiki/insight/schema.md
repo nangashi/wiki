@@ -6,7 +6,7 @@
 
 ## ディレクトリ構成
 
-`designs/`は記事と同じslugの設計（[設計schema](design-schema.md)）、`pages/`は記事。全記事で設計を必須とする。`index.md`は公開済み記事一覧、`references/`は基準、`workflows/`は操作手順、`tools/`は固有検査・評価管理。設定の入口は`wiki.toml`。評価履歴は引き続き`evaluations/insight/`に保存する。
+`designs/`は記事と同じslugの設計（[設計schema](design-schema.md)）、`pages/`は記事。全記事で設計を必須とする。`evaluations/<slug>/`は最終の記事評価`article.md`と設計評価`design.md`（上書き。過去分はgit履歴）、`evidence/<slug>.md`は外部検証の蓄積（追記）。`index.md`は公開済み記事一覧、`references/`は基準、`workflows/`は操作手順、`tools/`は固有検査・評価管理。設定の入口は`wiki.toml`。
 
 ---
 
@@ -22,7 +22,7 @@ updated: "YYYY-MM-DD"
 ---
 ```
 
-評価は `evaluations/insight/<slug>/` の評価ファイルにある `rubric_version` と `target_blob` で追跡する。評価結果を記事frontmatterへ保存しない。
+評価は `evaluations/<slug>/article.md` にある `rubric_version` と `target_blob` で追跡する。評価結果を記事frontmatterへ保存しない。
 
 ### 本文構成
 

@@ -122,15 +122,20 @@ def check_evaluations(root: Path, pages: Path, evaluations: Path) -> None:
     print()
 
 
-EVALUATION_REFERENCE = re.compile(r"(?:\.\./)*evaluations/[^\s)\]`」、。，]+?\.md")
+EVALUATION_REFERENCE = re.compile(r"(?:\.\./)*(?:wiki/insight/)?(?:evaluations|evidence)/[^\s)\]`」、。，]+?\.md")
 
 
 def missing_design_references(root: Path, designs: Path) -> list[tuple[str, str]]:
-    """List evaluations/ paths cited by designs that do not exist in this checkout."""
+    """List evaluation/evidence paths cited by designs that do not exist in this checkout."""
     missing = []
     for design in sorted(designs.glob("*.md")):
         for reference in sorted(set(EVALUATION_REFERENCE.findall(design.read_text(encoding="utf-8")))):
-            path = (design.parent / reference) if reference.startswith("../") else (root / reference)
+            if reference.startswith("../"):
+                path = design.parent / reference
+            elif reference.startswith(("wiki/", "evaluations/insight/")):
+                path = root / reference  # repository-relative (including the retired evaluations/insight/ layout)
+            else:
+                path = designs.parent / reference  # insight-wiki-relative: evidence/<slug>.md, evaluations/<slug>/...
             if not path.resolve().is_file():
                 missing.append((design.stem, reference))
     return missing
@@ -144,8 +149,24 @@ def check_design_references(root: Path) -> None:
     if not missing:
         print("OK: 設計が参照する評価記録はすべて存在する")
     else:
-        print("INFO: 参照先の評価記録が存在しない（2026-09-25以前はevaluations/をgit管理しておらず失われた記録がある）。設計の修正時に参照を実在する記録へ直すか、主張と根拠を設計内で完結させる")
+        print("INFO: 参照先の記録が存在しない（旧evaluations/の記録は廃止済み、または失われた）。設計の修正時に参照を wiki/insight/evidence/<slug>.md へ直すか、主張と根拠を設計内で完結させる")
     print(f"COUNT: {len(missing)}")
+    print()
+
+
+def check_orphan_records(root: Path, pages: Path) -> None:
+    print("=== CHECK-9d: insightの評価・外部検証の孤立 ===")
+    slugs = {page.stem for page in pages.glob("*.md")}
+    base = root / "wiki" / "insight"
+    orphans = sorted({(path.name, "evaluations") for path in (base / "evaluations").glob("*") if path.is_dir() and path.name not in slugs} |
+                     {(path.stem, "evidence") for path in (base / "evidence").glob("*.md") if path.stem not in slugs})
+    for slug, kind in orphans:
+        print(f"ORPHAN_RECORD severity=ERROR collection=insight slug={slug} kind={kind}")
+    if orphans:
+        print("INFO: 記事の削除・統合・改名に合わせて記録を削除または移す。統合先へ残す外部検証は統合先のevidenceへ追記する")
+    else:
+        print("OK: すべての評価・外部検証に対応する記事がある")
+    print(f"COUNT: {len(orphans)}")
     print()
 
 
@@ -192,9 +213,11 @@ def main() -> int:
         # Resolve the required rubric before printing report-only findings.
         current_rubric_version(pages)
         check_sources(pages)
-        check_evaluations(root, pages, root / "evaluations" / "insight")
-        check_design_evaluations(root, pages, root / "evaluations" / "insight")
+        evaluations = root / "wiki" / "insight" / "evaluations"
+        check_evaluations(root, pages, evaluations)
+        check_design_evaluations(root, pages, evaluations)
         check_design_references(root)
+        check_orphan_records(root, pages)
     except (OSError, ValueError, RuntimeError, subprocess.SubprocessError) as error:
         print(f"ERROR: {error}", file=sys.stderr)
         return 2

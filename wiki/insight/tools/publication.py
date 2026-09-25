@@ -22,7 +22,7 @@ def approved_insight(root: Path, slug: str) -> bool:
     if not page.is_file() or validate(page):
         return False
     version = current_rubric_version(pages)
-    records, _invalid = latest_evaluations(pages, root / "evaluations" / "insight", version)
+    records, _invalid = latest_evaluations(pages, root / "wiki" / "insight" / "evaluations", version)
     current = next((record for record in records if record["slug"] == slug), None)
     if not (current and current.get("status") == "current" and current.get("rubric_version") == version and current.get("pass") is True): return False
     # Index admission always requires the complete design/article pair.
