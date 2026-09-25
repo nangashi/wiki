@@ -6,5 +6,3 @@ __pycache__/
 node_modules/
 # insightの評価実行状態（manifest・往復途中の評価・stage1）。最終評価は wiki/insight/evaluations/ で追跡する
 .cache/
-# 旧評価置き場（2026-09-25に廃止。ローカルの作業記録だけが残る）
-/evaluations/
