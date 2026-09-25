@@ -279,6 +279,18 @@ def cmd_resume(args: argparse.Namespace) -> int:
     return 0
 
 
+def stage1_mismatch(stage1: str, body: str) -> str:
+    """Return an error unless the body's 記事単独読解 section equals the saved first-stage answer."""
+    parts = re.split(r"^## 記事単独読解[ \t]*$", body, maxsplit=1, flags=re.M)
+    if len(parts) != 2:
+        return "記事単独読解の節がありません"
+    section = re.split(r"^## ", parts[1], maxsplit=1, flags=re.M)[0]
+    lines = lambda text: [line.strip() for line in text.splitlines() if line.strip()]
+    if lines(section) != lines(stage1):
+        return "記事単独読解が第一段階の保存済み回答と一致しません"
+    return ""
+
+
 def cmd_save(args: argparse.Namespace) -> int:
     data = load(args.manifest)
     kind = data.get("kind", "article")
@@ -295,6 +307,13 @@ def cmd_save(args: argparse.Namespace) -> int:
     if not result["valid"]:
         print("; ".join(result["errors"]), file=sys.stderr)
         return 1
+    if kind == "article":
+        if not args.stage1:
+            raise SystemExit("article save requires --stage1 (the saved 記事単独読解 answer)")
+        mismatch = stage1_mismatch(args.stage1.read_text(encoding="utf-8"), raw)
+        if mismatch:
+            print(mismatch, file=sys.stderr)
+            return 1
     target = Path(item["target"])
     canonical = current_design_rubric_version(target.parent) if kind == "design" else current_rubric_version(target.parent)
     if canonical != data["rubric_version"]: raise SystemExit("canonical rubric changed since claim")
@@ -510,7 +529,7 @@ def parser() -> argparse.ArgumentParser:
     p.add_argument("--manifest", type=Path, required=True); p.set_defaults(func=cmd_resume)
     p = sub.add_parser("save")
     p.add_argument("--manifest", type=Path, required=True); p.add_argument("--slug", required=True); p.add_argument("--body", type=Path, required=True)
-    p.add_argument("--evaluations-root", type=Path, default=Path("evaluations/insight")); p.add_argument("--design-evaluation", type=Path); p.add_argument("--evaluated-at"); p.add_argument("--evaluation-run-id"); p.set_defaults(func=cmd_save)
+    p.add_argument("--evaluations-root", type=Path, default=Path("evaluations/insight")); p.add_argument("--design-evaluation", type=Path); p.add_argument("--stage1", type=Path); p.add_argument("--evaluated-at"); p.add_argument("--evaluation-run-id"); p.set_defaults(func=cmd_save)
     p = sub.add_parser("normalize")
     p.add_argument("--pages-dir", type=Path, default=Path("wiki/insight/pages")); p.add_argument("--evaluations-root", type=Path, default=Path("evaluations/insight")); p.add_argument("--rubric-version", type=int, choices=[CURRENT_RUBRIC_VERSION]); p.add_argument("--output", type=Path); p.set_defaults(func=cmd_normalize)
     return root

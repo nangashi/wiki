@@ -95,6 +95,8 @@ run_id: "<8〜32文字の小文字英数字>"
 - 結果ごとの対応: 支持時=>保持、非支持時=>修正・削除、結論不能時=>不要な主張は省略し、不可欠な主張は採用を保留
 ```
 
+対応項目の各フィールドは`- 名前: 内容`の1行で書き、フィールド内に入れ子の箇条書きや改行を入れない。schemaにない行・節（参照資料一覧など）を加えない。`## 設計との照合`には`design_alignment`とD IDごとの行だけを置く。評価者への依頼文にもこの条件を含める。
+
 ゲート合格では6観点を評価する。`要対応`の観点には、その観点の`修正必須`または`調査必須`を一つ以上置く。必須項目の観点は必ず`要対応`にする。ゲート不合格では6観点をすべて`対象外`とし、`再利用性`の`修正必須`を置く。`再利用性`の対応項目はゲート不合格時だけに使う。十分な観点には任意改善を置ける。
 
 ## 検証と保存
@@ -135,7 +137,17 @@ source診断のcodeが対応する必須項目に独立した識別子として�
 
 実質的修正では先に[設計手順](../workflows/design.md)を実行する。設計の問題を本文の追加だけで処理しない。メインエージェントが必須対応から1回につき1〜3項目を選び、必要な調査後に`editor`へ最小修正を委譲する。[委譲手順の小作業の直接処理](../../../docs/delegation.md#小作業の直接処理)に該当する修正はメインエージェントが担当する。修正担当は改稿後に[執筆手順の草稿・改稿後の確認](../workflows/ingest.md#草稿改稿後の確認)を行う。本文・外部ソース・関連リンクを先に確定し、変更したinsight記事はすべて最終評価する。最終評価後は記事・設計blobを変更せず、評価履歴・公開判断・残課題を共通スキルへ返す。
 
-ゲート合格かつ必須項目がなければ任意改善を残して終了する。設計と本文を往復する一連の改善で最大3巡、または同じ実質的な必須項目が2回続けば停止し、未解決事項を報告する。外部検証と記事変更の後は、前回評価を渡さないfreshな独立評価で最終記事を確認する。
+ゲート合格かつ必須項目がなければ任意改善を残して終了する。設計と本文を往復する一連の改善で最大3巡、または同じ実質的な必須項目が2回続けば停止し、未解決事項を報告する。外部検証と記事変更の後は、freshな独立評価で最終記事を確認する。
+
+### 再評価の範囲
+
+初回評価は全面評価とする。必須項目を受けて修正した後の再評価（記事・設計とも）では、評価者は全文を読んだうえで、修正必須・調査必須を次に限る。
+
+- 直前の評価の必須項目が未解消のもの
+- 修正によって前に解消した必須項目が後退したもの
+- 修正によって新たに生じた矛盾・誤帰属・事実誤り
+
+それ以外に新しく気づいた問題は任意改善として記す。これは、新しい評価者が毎回別の必須項目を挙げて改善上限に達し、修正の収束を判定できなくなるのを防ぐためである。代わりに初回で見落とした問題が残りうるため、初回評価を省略・縮小しない。再評価の依頼には、メインエージェントが分類した直前の必須項目（対象箇所と改善後に満たす条件）の一覧だけを渡し、前回評価の本文・判定・良い点は渡さない。記事の再評価でも二段階の手順は変えず、第一段階には必須項目の一覧を渡さない。
 
 ## 履歴・一括処理
 
@@ -150,7 +162,7 @@ source診断のcodeが対応する必須項目に独立した識別子として�
 python3 wiki/insight/tools/evaluation_validator.py <evaluator-out.md> --slug <slug> --rubric-version 6
 python3 wiki/insight/tools/evaluation_state.py init --manifest <run-dir>/manifest.json --rubric-version 6 --target <slug>:wiki/insight/pages/<slug>.md --design-evaluation <design-history.md>
 python3 wiki/insight/tools/evaluation_state.py next --manifest <run-dir>/manifest.json
-python3 wiki/insight/tools/evaluation_state.py save --manifest <run-dir>/manifest.json --slug <slug> --body <evaluator-out.md> --design-evaluation <design-history.md>
+python3 wiki/insight/tools/evaluation_state.py save --manifest <run-dir>/manifest.json --slug <slug> --body <evaluator-out.md> --design-evaluation <design-history.md> --stage1 <stage1-answer.md>
 ```
 
 一括評価では、上記の `init --target` の代わりに対象全体を指定できる。全対象の記事に対応する設計評価を `--design-evaluation` でそれぞれ指定する。失敗・中断後の再開・分布の再構築も同じhelperを使う。
@@ -167,7 +179,7 @@ python3 wiki/insight/tools/evaluation_state.py normalize --output <run-dir>/norm
 
 設計基準versionは `design-quality-rubric.md` の **design_rubric_version: 1**。記事versionと独立に管理する。[設計手順](../workflows/design.md)でCodexが作成しメインエージェントが固定した設計を、freshな`evaluator`サブエージェントへ渡す。設計、設計schema、設計・再利用性基準、必要資料のパスを渡し、設計作成の会話・旧評価を渡さない。評価者は設計・記事を執筆しない。
 
-設計評価本文は次の形式を使う。必須項目、ゲート、観点状態の整合、修正必須／調査必須／任意改善の定義、retryは記事評価と同じ。観点だけ以下の五つにする。ゲート不合格時は五観点を対象外にし、再利用性の必須項目を置く。
+設計評価本文は次の形式を使う。必須項目、ゲート、観点状態の整合、修正必須／調査必須／任意改善の定義、対応項目のフィールド形式、retry、[再評価の範囲](#再評価の範囲)は記事評価と同じ。観点だけ以下の五つにする。ゲート不合格時は五観点を対象外にし、再利用性の必須項目を置く。
 
 ```markdown
 # Insight設計評価: <slug>
@@ -219,9 +231,9 @@ python3 wiki/insight/tools/evaluation_state.py save --manifest <design-run>/mani
 # 記事は設計レビュー参照をinit時に固定し、saveにも同じ参照を渡す。
 python3 wiki/insight/tools/evaluation_state.py init --rubric-version 6 --manifest <article-run>/manifest.json --target <slug>:wiki/insight/pages/<slug>.md --design-evaluation <design-history.md>
 python3 wiki/insight/tools/evaluation_state.py next --manifest <article-run>/manifest.json
-python3 wiki/insight/tools/evaluation_state.py save --manifest <article-run>/manifest.json --slug <slug> --body <article-evaluator-out.md> --design-evaluation <design-history.md>
+python3 wiki/insight/tools/evaluation_state.py save --manifest <article-run>/manifest.json --slug <slug> --body <article-evaluator-out.md> --design-evaluation <design-history.md> --stage1 <stage1-answer.md>
 ```
 
 複数記事では `--target` と `--design-evaluation` を記事ごとに繰り返せる。設計参照のslugは履歴のパスとmetadataから検証する。最大3件のbatchの全入力を検査してからclaimする。設計変更後にresumeすると旧入力の保存を認めず、変更理由を残す。新しい設計を評価後、新しい参照を持つrunをinitする。親は旧runの未処理と新runへの引き継ぎ先を報告する。
 
-記事単独読解の先保存と、後段評価へ収録した原文の一致は親が確認する。helperによる本文schema検査だけで二段階実行済みとみなさない。機械検査は設計の五見出しとD IDの一意性、記事照合の全D ID対応も検証するが、到達点の妥当性は独立担当が評価する。
+記事単独読解は第一段階の回答を一時ファイルへ先に保存し、記事評価の`save`に`--stage1`で渡す。helperは後段評価の`## 記事単独読解`が保存済み回答と一致しなければ保存を拒否する（空行と前後の空白だけを無視する）。一致しない場合は形式不正として同じ入力で新しい評価者へ再試行する。機械検査は設計の五見出しとD IDの一意性、記事照合の全D ID対応も検証するが、到達点の妥当性は独立担当が評価する。

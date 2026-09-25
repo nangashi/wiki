@@ -64,6 +64,13 @@ class WikiToolsTest(unittest.TestCase):
         self.assertIn("保持する概要。 次の行。", index); self.assertNotIn("gone", index)
         self.assertEqual((self.root / "wiki/c/index.md").read_text(encoding="utf-8"), before)
 
+    def test_index_removes_missing_entry_without_leaving_blank_line(self) -> None:
+        self.write("a/index.md", "# A\n\n## A\n\n- [[gone]] — 消える\n- [[kept]] — 古い\n- [[gone]] — 消える\n\n## B\n")
+        result = self.invoke(STRUCTURE, "index", "--collection", "a")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        index = (self.root / "wiki/a/index.md").read_text(encoding="utf-8")
+        self.assertEqual(index, "# A\n\n## A\n\n- [[kept]] — 保持する概要。 次の行。\n\n## B\n")
+
     def test_backlinks_cross_collection_and_fences(self) -> None:
         page = self.root / "wiki/a/pages/source.md"
         page.write_text(page.read_text(encoding="utf-8") + "\n```\n[[b:target]]\n```\n", encoding="utf-8")

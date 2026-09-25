@@ -144,6 +144,12 @@ class PublicationTest(unittest.TestCase):
         self.assertEqual(self.invoke("current").returncode, 1)
 
     def state_tool(self, *args):
+        if args and args[0] == "save" and "--stage1" not in args:
+            body = Path(args[args.index("--body") + 1]).read_text(encoding="utf-8")
+            section = body.split("## 記事単独読解", 1)[1].split("\n## ", 1)[0] if "## 記事単独読解" in body else ""
+            stage1 = self.root / "stage1.md"
+            stage1.write_text(section, encoding="utf-8")
+            args = (*args, "--stage1", str(stage1))
         return subprocess.run([sys.executable, str(HERE / "evaluation_state.py"), *args],
                               cwd=self.root, text=True, capture_output=True)
 

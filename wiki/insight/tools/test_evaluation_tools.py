@@ -65,8 +65,13 @@ class TestV3(unittest.TestCase):
  def test_queue_order(self):
   a=[{"slug":"z","research_count":1},{"slug":"b","reusability_gate":"不合格"},{"slug":"a","revision_count":1}]
   self.assertEqual([x["slug"] for x in sorted(a,key=queue_rank)],["b","a","z"])
+STAGE1="- 概念と関係: a\n- 現実の見方: a\n- 確かさ: a\n- 理解が止まった箇所: a\n"
 class StateCliTest(unittest.TestCase):
  def tool(self,root,*args,check=True):
+  if args and args[0]=="save" and "--stage1" not in args:
+   stage1=Path(root)/"stage1.md"
+   if not stage1.exists(): stage1.write_text(STAGE1,encoding="utf-8")
+   args=(*args,"--stage1",str(stage1))
   return subprocess.run([sys.executable,str(HERE/"evaluation_state.py"),*args],cwd=root,text=True,capture_output=True,check=check)
  def setup(self,source="- S1（一次）: https://example.com — 根拠。"):
   tmp=tempfile.TemporaryDirectory(); root=Path(tmp.name); pages=root/"wiki/insight/pages"; pages.mkdir(parents=True)
@@ -162,6 +167,18 @@ run_id: "design01"
    (pages/"sample.md").write_text((pages/"sample.md").read_text()+"変更\n")
    out=root/"n.json"; self.tool(root,"normalize","--pages-dir",str(pages),"--evaluations-root",str(root/"eval"),"--rubric-version","6","--output",str(out))
    data=json.loads(out.read_text()); self.assertEqual(data["records"][0]["status"],"changed"); self.assertFalse(data["improvement_queue"]); self.assertTrue(data["invalid_history"]); self.assertTrue(data["reevaluation_required"])
+ def test_save_rejects_missing_or_mismatched_stage1(self):
+  tmp,root,pages=self.setup()
+  with tmp:
+   manifest=self.init_next(root,pages); b=root/"b.md"; b.write_text(ev()); history=root/"evaluations/insight/sample/design/20260101T000000Z-v1-design01.md"
+   other=root/"other.md"; other.write_text(STAGE1.replace("確かさ: a","確かさ: b"),encoding="utf-8")
+   base=("save","--manifest",str(manifest),"--slug","sample","--body",str(b),"--evaluations-root",str(root/"eval"),"--design-evaluation",str(history))
+   self.assertNotEqual(self.tool(root,*base,"--stage1",str(other),check=False).returncode,0)
+   missing=subprocess.run([sys.executable,str(HERE/"evaluation_state.py"),*base],cwd=root,text=True,capture_output=True)
+   self.assertNotEqual(missing.returncode,0)
+   self.assertFalse((root/"eval").exists())
+   self.tool(root,*base)
+   self.assertEqual(json.loads(manifest.read_text())["items"][0]["status"],"success")
  def test_normalize_marks_an_article_without_a_design_as_required(self):
   tmp,root,pages=self.setup()
   with tmp:
@@ -169,4 +186,12 @@ run_id: "design01"
    out=root/"n.json"; self.tool(root,"normalize","--pages-dir",str(pages),"--evaluations-root",str(root/"empty"),"--output",str(out))
    data=json.loads(out.read_text()); self.assertEqual(data["records"][0]["design_state"],"required"); self.assertEqual(data["process_distribution"]["required"],1); self.assertEqual(data["design_reevaluation_required"],[{"slug":"sample","status":"missing"}])
 
+class DesignReferenceTest(unittest.TestCase):
+ def test_missing_evaluation_references_are_listed(self):
+  from check import missing_design_references
+  with tempfile.TemporaryDirectory() as t:
+   root=Path(t); designs=root/"wiki/insight/designs"; designs.mkdir(parents=True)
+   kept=root/"evaluations/insight/a/external/x.md"; kept.parent.mkdir(parents=True); kept.write_text("x")
+   (designs/"a.md").write_text("記録 evaluations/insight/a/external/x.md と [記録](../../../evaluations/insight/a/external/x.md)、欠落 evaluations/insight/a/external/gone.md。\n",encoding="utf-8")
+   self.assertEqual(missing_design_references(root,designs),[("a","evaluations/insight/a/external/gone.md")])
 if __name__=="__main__": unittest.main()

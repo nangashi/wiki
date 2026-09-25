@@ -13,6 +13,7 @@ from config import Collection, ConfigError, load
 
 SLUG = r"[a-z0-9][a-z0-9-]*"
 ENTRY = re.compile(rf"^- \[\[({SLUG})\]\].*$", re.M)
+REMOVED = "\x00removed-index-entry\x00"
 LINK = re.compile(rf"\[\[(?:([a-z0-9][a-z0-9-]*):)?({SLUG})\]\]")
 
 
@@ -93,11 +94,12 @@ def render_index(root: Path, collection: Collection, additions: set[str], collec
         slug = match.group(1)
         path = page_path(collection, slug)
         if not path.is_file():
-            return ""
+            return REMOVED
         seen.add(slug)
         return f"- [[{slug}]] — {overview_summary(path)}"
 
-    rendered = ENTRY.sub(replace, original)
+    # 削除した項目は行末の改行ごと取り除き、リストの途中に空行を残さない。
+    rendered = re.sub(rf"^{re.escape(REMOVED)}\n?", "", ENTRY.sub(replace, original), flags=re.M)
     missing = sorted(additions - seen)
     for slug in missing:
         path = page_path(collection, slug)

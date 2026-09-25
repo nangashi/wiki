@@ -9,6 +9,7 @@ metadata, output, and currency decisions.
 from __future__ import annotations
 
 import argparse
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -121,6 +122,33 @@ def check_evaluations(root: Path, pages: Path, evaluations: Path) -> None:
     print()
 
 
+EVALUATION_REFERENCE = re.compile(r"(?:\.\./)*evaluations/[^\s)\]`」、。，]+?\.md")
+
+
+def missing_design_references(root: Path, designs: Path) -> list[tuple[str, str]]:
+    """List evaluations/ paths cited by designs that do not exist in this checkout."""
+    missing = []
+    for design in sorted(designs.glob("*.md")):
+        for reference in sorted(set(EVALUATION_REFERENCE.findall(design.read_text(encoding="utf-8")))):
+            path = (design.parent / reference) if reference.startswith("../") else (root / reference)
+            if not path.resolve().is_file():
+                missing.append((design.stem, reference))
+    return missing
+
+
+def check_design_references(root: Path) -> None:
+    print("=== CHECK-9c: insight設計の評価記録参照 ===")
+    missing = missing_design_references(root, root / "wiki" / "insight" / "designs")
+    for slug, reference in missing:
+        print(f"DESIGN_REFERENCE_MISSING collection=insight slug={slug} path={reference}")
+    if not missing:
+        print("OK: 設計が参照する評価記録はすべて存在する")
+    else:
+        print("INFO: evaluations/ はgit管理外のため、この作業環境にない記録は根拠として追えない。設計の修正時に参照を実在する記録へ直すか、主張と根拠を設計内で完結させる")
+    print(f"COUNT: {len(missing)}")
+    print()
+
+
 def check_design_evaluations(root: Path, pages: Path, evaluations: Path) -> None:
     designs = root / "wiki" / "insight" / "designs"
     print("=== CHECK-9b: insight設計評価状態 ===")
@@ -166,6 +194,7 @@ def main() -> int:
         check_sources(pages)
         check_evaluations(root, pages, root / "evaluations" / "insight")
         check_design_evaluations(root, pages, root / "evaluations" / "insight")
+        check_design_references(root)
     except (OSError, ValueError, RuntimeError, subprocess.SubprocessError) as error:
         print(f"ERROR: {error}", file=sys.stderr)
         return 2
