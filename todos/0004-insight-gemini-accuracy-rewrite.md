@@ -2,12 +2,12 @@
 
 ## 前提
 
-[記事統合TODO](0003-reassess-article-integration.md)の完了後に着手する。0003で統合・補修する次の記事はこのTODOの対象から除く。
+記事統合TODO（旧0003）は2026-09-25に完了した。次の記事はこのTODOの対象から除く。
 
-- 統合元として削除: `inu-no-michi`、`local-optimization-trap`、`parallel-path-trap`
-- 統合先・補修先として改稿済み: `issue-value-matrix`、`theory-of-constraints`、`avoidance-generated-reasons`、`learning-roi`、`org-productivity-misdiagnosis`
+- 統合元として削除済み: `inu-no-michi`、`local-optimization-trap`、`parallel-path-trap`
+- 統合先・補修先として改稿・独立評価済み: `issue-value-matrix`、`theory-of-constraints`、`avoidance-generated-reasons`、`learning-roi`、`org-productivity-misdiagnosis`
 
-着手時に0003の完了を確認する。未完了なら、上記の記事に触れる作業を0003と重複させない。
+統合で、次の6記事は関連欄のリンクだけを付け替え・削除した（本文は未変更）。独立評価は未実施で、このTODOの改稿・評価で扱う: `pre-analysis-output-design`、`proxy-metrics-knowledge-work`、`quadrant-ii-principle`、`commitment-lock-in`、`problem-driven-selection`、`productivity-layer-model`。
 
 ## 調査結果（2026-09-25）
 
