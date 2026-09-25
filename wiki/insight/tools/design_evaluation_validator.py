@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the independent insight design-evaluation body (rubric v1)."""
+"""Validate the independent insight design-evaluation body (rubric v1/v2 share one body)."""
 from __future__ import annotations
 
 import re
@@ -8,7 +8,9 @@ from evaluation_validator import (ACTION_FIELDS, ACTION_TYPES, REQUIRED_TYPES,
                                   _body, _fields)
 
 DIMENSIONS = ("読者・目的", "読後の到達点", "内容と順序", "主張と根拠・境界", "採用・省略")
-CURRENT_RUBRIC_VERSION = 1
+CURRENT_RUBRIC_VERSION = 2
+# v1 histories stay readable; they are never current once the rubric moves on.
+READABLE_VERSIONS = (1, 2)
 SECTIONS = ("再利用性ゲート", "観点別評価", "対応項目", "良い点")
 
 
@@ -43,7 +45,7 @@ def _dimensions(section: str, gate: str) -> dict[str, dict]:
 def validate_text(text: str, expected_slug: str | None = None, rubric_version: int | None = None) -> dict:
     slug = expected_slug or ""
     try:
-        if rubric_version not in (None, 1): raise ValidationError("unsupported design rubric_version")
+        if rubric_version not in (None, *READABLE_VERSIONS): raise ValidationError("unsupported design rubric_version")
         body = _body(text).strip() + "\n"; headings = list(re.finditer(r"(?m)^## (.+?)[ \t]*$", body))
         if tuple(h[1] for h in headings) != SECTIONS: raise ValidationError("設計評価の必須見出しが不正です")
         head = body[:headings[0].start()].strip().splitlines()

@@ -10,7 +10,8 @@ from pathlib import Path
 
 import test_evaluation_tools as fixtures
 from evaluation_state import latest_evaluations
-from evaluation_validator import validate_text
+from evaluation_validator import CURRENT_RUBRIC_VERSION as V, validate_text
+from design_evaluation_validator import CURRENT_RUBRIC_VERSION as DV
 from test_evaluation_legacy import evaluation
 
 HERE = Path(__file__).resolve().parent
@@ -70,14 +71,14 @@ class StateRegressionTest(unittest.TestCase):
         self.tool = lambda *args, **kwargs: helper.tool(self.root, *args, **kwargs)
         refs = self.root / 'wiki/insight/references'
         refs.mkdir(exist_ok=True)
-        (refs / 'article-quality-rubric.md').write_text('**rubric_version: 6**\n')
+        (refs / 'article-quality-rubric.md').write_text(f'**rubric_version: {V}**\n')
         self.manifest = helper.init_next(self.root, self.pages)
         self.body = self.root / 'body.md'
         self.body.write_text(fixtures.ev())
         self.history = self.root / 'evaluations/insight'
 
     def save(self, check=True):
-        design = self.root / 'evaluations/insight/sample/design/20260101T000000Z-v1-design01.md'
+        design = self.root / f'evaluations/insight/sample/design/20260101T000000Z-v{DV}-design01.md'
         return self.tool('save', '--manifest', str(self.manifest), '--slug', 'sample',
                          '--body', str(self.body), '--evaluations-root', str(self.history),
                          '--design-evaluation', str(design),
@@ -105,11 +106,11 @@ class StateRegressionTest(unittest.TestCase):
     def test_resume_and_batch_cap(self):
         self.tool('resume', '--manifest', str(self.manifest))
         self.assertEqual(json.loads(self.manifest.read_text())['items'][0]['status'], 'retry')
-        design_evaluations = [self.root / 'evaluations/insight/sample/design/20260101T000000Z-v1-design01.md']
+        design_evaluations = [self.root / f'evaluations/insight/sample/design/20260101T000000Z-v{DV}-design01.md']
         for slug in ('alpha', 'bravo', 'charlie', 'delta'):
             (self.pages / f'{slug}.md').write_text((self.pages / 'sample.md').read_text())
             design_evaluations.append(self.helper.add_design_pair(self.root, slug))
-        command = ['init', '--manifest', str(self.manifest), '--rubric-version', '6', '--pages-dir', str(self.pages)]
+        command = ['init', '--manifest', str(self.manifest), '--rubric-version', str(V), '--pages-dir', str(self.pages)]
         for design in design_evaluations:
             command.extend(('--design-evaluation', str(design)))
         self.tool(*command)
@@ -127,7 +128,7 @@ class StateRegressionTest(unittest.TestCase):
 
     def test_article_init_and_resume_refuse_missing_design_claim(self):
         fresh = self.root / 'without-design.json'
-        rejected = self.tool('init', '--manifest', str(fresh), '--rubric-version', '6',
+        rejected = self.tool('init', '--manifest', str(fresh), '--rubric-version', str(V),
                              '--target', 'sample:wiki/insight/pages/sample.md', check=False)
         self.assertNotEqual(rejected.returncode, 0)
         self.assertFalse(fresh.exists())
@@ -154,13 +155,13 @@ class StateRegressionTest(unittest.TestCase):
         current = next(self.history.glob('sample/*.md'))
         text = current.read_text()
         metadata = text[:text.index('\n---\n', 4) + 5]
-        legacy_meta = metadata.replace('rubric_version: 6', 'rubric_version: 2').replace('2026-01-02', '2026-01-01')
+        legacy_meta = metadata.replace(f'rubric_version: {V}', 'rubric_version: 2').replace('2026-01-02', '2026-01-01')
         old = current.parent / '20260101T000000Z-v2-abcdefgh.md'
         old.write_text(legacy_meta + evaluation())
         (current.parent / '20260103T000000Z-v4-bcdefghi.md').write_text('bad')
         records, invalid = latest_evaluations(self.pages, self.history)
         self.assertEqual(records[0]['status'], 'current')
-        self.assertEqual(records[0]['rubric_version'], 6)
+        self.assertEqual(records[0]['rubric_version'], V)
         self.assertTrue(invalid)
         # A legacy-only sibling stays readable, but is excluded from v5 decisions.
         (self.pages / 'old.md').write_text((self.pages / 'sample.md').read_text())

@@ -20,7 +20,7 @@ import sys
 from pathlib import Path
 
 from evaluation_validator import CURRENT_RUBRIC_VERSION, validate_text
-from design_evaluation_validator import CURRENT_RUBRIC_VERSION as DESIGN_RUBRIC_VERSION
+from design_evaluation_validator import CURRENT_RUBRIC_VERSION as DESIGN_RUBRIC_VERSION, READABLE_VERSIONS as DESIGN_READABLE_VERSIONS
 from design_evaluation_validator import validate_text as validate_design_text
 from insight_source_validator import validate as validate_sources
 
@@ -71,6 +71,16 @@ def design_outcome_ids(path: Path) -> set[str]:
     ids = re.findall(r"(?m)^- (D[1-9][0-9]*): \S.*$", sections["読後の到達点"])
     if not ids or len(ids) != len(set(ids)): raise ValueError("design requires unique D outcome IDs")
     return set(ids)
+
+
+def design_application_test(path: Path) -> str:
+    """Return the situation half of the design's single application test (given to stage 1)."""
+    lines = re.findall(r"(?m)^- 適用テスト: (.+)$", path.read_text(encoding="utf-8"))
+    if len(lines) != 1 or "→" not in lines[0]:
+        raise ValueError("design requires exactly one '- 適用テスト: 状況 → 期待する推論' line")
+    situation = lines[0].split("→", 1)[0].strip()
+    if not situation: raise ValueError("design application test has an empty situation")
+    return situation
 
 
 def kind_version(kind: str) -> int:
@@ -150,7 +160,7 @@ def parse_metadata(path: Path, expected_slug: str, kind: str = "article") -> dic
         return None
     if not re.fullmatch(r"[0-9a-f]{40}(?:[0-9a-f]{24})?", meta["target_blob"]):
         return None
-    if kind == "design" and meta["rubric_version"] != str(DESIGN_RUBRIC_VERSION):
+    if kind == "design" and int(meta["rubric_version"]) not in DESIGN_READABLE_VERSIONS:
         return None
     if kind == "article" and "design_blob" in meta:
         if meta["design_target"] != target_path("design", expected_slug) or not re.fullmatch(r"[0-9a-f]{40}(?:[0-9a-f]{24})?", meta["design_blob"]): return None
@@ -183,12 +193,17 @@ def cmd_init(args: argparse.Namespace) -> int:
         meta = parse_metadata(design_file, slug, "design")
         if meta is None or slug not in unique or slug in claims:
             raise SystemExit("--design-evaluation metadata, slug or duplicate is invalid")
+        if int(meta["rubric_version"]) != DESIGN_RUBRIC_VERSION:
+            raise SystemExit(f"--design-evaluation must use design rubric_version={DESIGN_RUBRIC_VERSION}; re-review the design")
         claims[slug] = {"design_blob": meta["target_blob"], "design_evaluation": design_file.as_posix(),
                         "design_evaluation_blob": git_blob(design_file), "design_rubric_version": DESIGN_RUBRIC_VERSION}
     if args.kind == "article":
         missing = sorted(set(unique) - set(claims))
         if missing:
             raise SystemExit("article evaluation runs require a valid --design-evaluation for every target: " + ", ".join(missing))
+        for slug, target in unique.items():
+            try: design_application_test(Path(target).parent.parent / "designs" / f"{slug}.md")
+            except (OSError, ValueError) as error: raise SystemExit(f"{slug}: {error}")
     data = {
         "schema_version": 2, "kind": args.kind, "run_id": args.run_id or secrets.token_hex(6),
         "rubric_version": args.rubric_version, "started_at": now(), "updated_at": now(),
@@ -350,9 +365,9 @@ def cmd_save(args: argparse.Namespace) -> int:
     design_meta = ""
     if kind == "article":
         if not args.design_evaluation:
-            raise SystemExit("article v6 save requires --design-evaluation")
+            raise SystemExit("article save requires --design-evaluation")
         design_file = Path(args.design_evaluation); design = parse_metadata(design_file, args.slug, "design")
-        if design is None or not validate_design_text(design_file.read_text(encoding="utf-8"), args.slug, DESIGN_RUBRIC_VERSION).get("valid"):
+        if design is None or int(design["rubric_version"]) != DESIGN_RUBRIC_VERSION or not validate_design_text(design_file.read_text(encoding="utf-8"), args.slug, DESIGN_RUBRIC_VERSION).get("valid"):
             raise SystemExit("article save requires a valid design evaluation")
         design_target = target.parent.parent / "designs" / f"{args.slug}.md"
         if not design_target.is_file() or git_blob(design_target) != design["target_blob"]: raise SystemExit("design changed or is missing since its evaluation")
@@ -433,11 +448,11 @@ def latest_evaluations(pages_dir: Path, evaluations_root: Path, rubric_version: 
         status = "current" if version == current_version and meta["target_blob"] == git_blob(page) else "legacy" if version != current_version else "changed"
         design_state = "required"
         design = pages_dir.parent / "designs" / f"{page.stem}.md"
-        if version == CURRENT_RUBRIC_VERSION and "design_blob" in meta:
+        if version >= 6 and "design_blob" in meta:
             current_design_rubric_version(design.parent)
             design_eval = Path(meta["design_evaluation"])
             design_meta = parse_metadata(design_eval, page.stem, "design") if design_eval.is_file() else None
-            design_result = validate_design_text(design_eval.read_text(encoding="utf-8"), page.stem, DESIGN_RUBRIC_VERSION) if design_meta else {"pass": False}
+            design_result = validate_design_text(design_eval.read_text(encoding="utf-8"), page.stem, int(design_meta["rubric_version"])) if design_meta else {"pass": False}
             latest_design = designs_by_slug.get(page.stem, {})
             same_review = bool(latest_design.get("file") and
                                Path(latest_design["file"]).resolve() == design_eval.resolve())
@@ -467,13 +482,14 @@ def latest_design_evaluations(designs_dir: Path, evaluations_root: Path) -> tupl
         if directory.is_dir():
             for candidate in sorted(directory.glob("*.md")):
                 meta=parse_metadata(candidate, design.stem, "design")
-                result=validate_design_text(candidate.read_text(encoding="utf-8"), design.stem, DESIGN_RUBRIC_VERSION) if meta else {"valid":False}
+                result=validate_design_text(candidate.read_text(encoding="utf-8"), design.stem, int(meta["rubric_version"])) if meta else {"valid":False}
                 if not meta or not result["valid"]: invalid.append({"slug":design.stem,"file":candidate.as_posix(),"reason":"metadata" if not meta else "output"}); continue
                 valid.append((meta["evaluated_at"],meta["run_id"],candidate,meta,result))
         if not valid: records.append({"slug":design.stem,"status":"missing"}); continue
         _,_,candidate,meta,result=max(valid,key=lambda x:(x[0],x[1]))
-        status="current" if meta["target_blob"]==git_blob(design) else "changed"
-        records.append({"slug":design.stem,"status":status,"file":candidate.as_posix(),"rubric_version":1,**result})
+        version=int(meta["rubric_version"])
+        status="legacy" if version!=DESIGN_RUBRIC_VERSION else "current" if meta["target_blob"]==git_blob(design) else "changed"
+        records.append({"slug":design.stem,"status":status,"file":candidate.as_posix(),"rubric_version":version,**result})
     return records,invalid
 
 

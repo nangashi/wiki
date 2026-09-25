@@ -144,7 +144,7 @@ def check_design_references(root: Path) -> None:
     if not missing:
         print("OK: 設計が参照する評価記録はすべて存在する")
     else:
-        print("INFO: evaluations/ はgit管理外のため、この作業環境にない記録は根拠として追えない。設計の修正時に参照を実在する記録へ直すか、主張と根拠を設計内で完結させる")
+        print("INFO: 参照先の評価記録が存在しない（2026-09-25以前はevaluations/をgit管理しておらず失われた記録がある）。設計の修正時に参照を実在する記録へ直すか、主張と根拠を設計内で完結させる")
     print(f"COUNT: {len(missing)}")
     print()
 
