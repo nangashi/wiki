@@ -33,14 +33,52 @@ Gemini執筆のコミット`0b15416`（16件）、`0784ff3`（6件）、`2fffc44
 
 `evaluations/insight/peak-end-rule/`には`design/`しかなく、記事の独立評価は未実施だった。他のGemini記事も記事評価を経ていない前提で扱う。
 
-## フェーズ1: トリアージ（記事を書かない）
+## フェーズ1: トリアージ（完了・2026-09-25承認）
 
-全70記事を概要・設計・再利用性基準で振り分け、以後の作業量を確定する。統合・削除・別コレクションへの移動は、一覧表でユーザー確認を取ってから行う。
+全70記事をR1・R2と既存記事との重なりで振り分け、49件に絞った。旧評価（v6）はゲートを全件合格としていたため、判定の決め手にせず材料として参照した。統合・削除の実作業はフェーズ3で行う。
 
-- [ ] 各記事を「維持／統合（統合先）／不採用（削除・移動先）／軽い修正」に振り分けた一覧を作る。判定理由はR1・R2と既存記事との重なりで書く
-- [ ] 統合候補のクラスタを検討する（例: Cialdini系7件〔`cialdini-persuasion-triggers`と各原理6件〕、習慣系〔`habit-loop`、`identity-based-habit-formation`、`environment-design-behavior`、`plateau-of-latent-potential`〕）
-- [ ] Tips・心得型の疑いがある記事のゲート判定（例: `conclusion-first-communication`、`learning-depth-and-breadth-roles`、`child-activity-redesign`、`child-communication-principles`）
-- [ ] 一覧をユーザーに確認し、承認された統合・不採用を下の対象リストへ反映する
+- [x] 各記事を維持／統合／不採用に振り分ける
+- [x] 統合クラスタとTips・心得型のゲート判定
+- [x] ユーザー確認と対象リストへの反映
+
+### 統合（統合元12件 → 統合先11件）
+
+統合先の設計に統合元の独自内容を取り込み、統合元の記事・設計を削除する。統合元の外部検証記録があれば統合先の`evidence/`へ追記してから削除し、統合元への被リンクを統合先へ付け替える。
+
+| 統合元 | 統合先 | 理由 |
+|---|---|---|
+| liking-principle、authority-principle | cialdini-persuasion-triggers | 独自の機序が薄く、推論が総論の「手掛かりと要求の中身を分ける」とほぼ同じ。authorityの「情報の採用と指示への服従の区別」は総論へ移す。独自の機序を持つ返報性・一貫性・希少性・社会的証明は単独で残す |
+| environment-design-behavior | habit-loop | 手がかりと開始の手間という介入点は、習慣ループの「きっかけ」の操作そのもの |
+| learning-depth-and-breadth-roles | learning-roi | 深さと広さを目的で選ぶ話はバランス論の型。有用な部分は「目的と必要な到達点」節と重なる |
+| learning-deepening-operations | question-generation | 5つの操作は「見えない欠落を露呈させて問いにする」操作に収まる。分類軸の正当化が弱い |
+| shin-dokkai | language-context-dependence | どちらも「会話はできるのに説明文を読めない」の説明。RSTの読解技能を読解が止まる箇所の診断に使う |
+| community-of-knowledge | illusion-of-explanatory-depth | 同じ著者。参照できる知識を自分の理解と取り違えることは、説明深度の錯覚の原因の説明にあたる |
+| attention-residue | interruption-recovery-cost | 同じ中断の前後の局面。両記事とも相手との違いの説明に1節を使っている |
+| pre-analysis-output-design | hypothesis-as-stance | 絵コンテは、仮説から集める情報と答えの形を先に決めることの適用 |
+| time-record-organize-consolidate | quadrant-ii-principle | どちらも重要で緊急でない仕事の時間を守る判断。記録と連続時間の確保はその手段 |
+| knowledge-worker-autonomy | focus-on-contribution | 課題の定義を本人と確かめることは、貢献への集中を管理者側から見たもの |
+| nonviolent-communication | needs-vs-strategies | ニーズと手段の区別がNVCで最も再利用できる核。「依頼と要求の区別」を移す |
+
+### 不採用（9件）
+
+記事・設計を削除し、被リンクを削除または付け替える。
+
+| 記事 | 理由 |
+|---|---|
+| character-ethics-vs-personality-ethics | 規範的な主張で、推論を変える構造がない |
+| maturity-continuum | 価値観の主張。責任の所在の点検はfocus-on-controllableと重なる |
+| stimulus-response-freedom | 経験的な機序ではなく哲学的な枠組み |
+| plateau-of-latent-potential | 核心が比喩。練習の質の点検は一般論にとどまる |
+| identity-based-habit-formation | 外部検証で、自己像が反復より効くという主張は未確認。機序が薄い |
+| problem-driven-selection | Tips。出典は個人の振り返り1件 |
+| productivity-layer-model | 層の間で改善が伝わらない構造はtheory-of-constraintsとproxy-metrics-knowledge-workで扱える。6層は講演資料固有の分類 |
+| child-activity-redesign | 再利用できる構造はneeds-vs-strategiesの適用例。残りは子育て固有のTips |
+| child-communication-principles | 問い・説明・実演を状況で使い分けるバランス論の型 |
+
+### 核心の置き直し（承認済み）
+
+- forgetting-curve: 実験の紹介から、再利用できるモデルである分散学習（間隔効果）へ核心を移し、忘却曲線は背景にする。slug・タイトルの変更は設計時に案を示して確認する。
+- conclusion-first-communication: 手法の紹介から、「聞き手は問いと答えの枠組みがないと個々の情報の役割を判断できない」という理解の機序へ核心を移す。根拠を確保できなければ不採用に切り替える（その時点で確認する）。
 
 ## フェーズ2: パイロット（3件）
 
@@ -48,122 +86,108 @@ Gemini執筆のコミット`0b15416`（16件）、`0784ff3`（6件）、`2fffc44
 
 - [ ] peak-end-rule
 - [ ] framing-effect
-- [ ] forgetting-curve
+- [ ] forgetting-curve（核心の置き直しを含む）
 - [ ] 各記事の評価往復回数、最終字数と想定分量の比、適用テストの結果、事実確認で見つかった誤りを記録する
 - [ ] 記録から基準・手順の調整が必要か判断し、必要なら一度だけ改定する。以後フェーズ4まで基準・手順を変えない（作業を止める不具合を除く）。気づいた点は`todos/`へ記録する
 
 ## フェーズ3: 量産（クラスタ単位）
 
-indexのカテゴリまたは統合クラスタを1バッチとし、バッチごとにコミットする。関連欄では、紛らわしい隣接モデル（例: 利用可能性ヒューリスティックとWYSIATI、アンカリングとフレーミング）との見分けを優先する。
+indexのカテゴリまたは統合クラスタを1バッチとし、バッチごとにコミットする。関連欄では、紛らわしい隣接モデル（例: 利用可能性ヒューリスティックとWYSIATI、アンカリングとフレーミング、commitment-and-consistencyとcommitment-lock-in）との見分けを優先する。
 
 優先順:
 
-1. 統合を含むクラスタ
-2. 下記A（Gemini執筆）の残り。帰属の創作が起こりやすいため、数値・書誌・DOI・S IDへの帰属をevaluatorの事実確認で照合する
-3. 下記C（外部ソースが要確認・参考だけの13件）。一次・二次を確保できなければフェーズ1に戻して不採用を検討する
-4. 下記B（`0b15416`）。`/review-page`で設計整合と事実を確認し、必要な箇所だけ直す。重大な逸脱があれば改稿へ切り替える
-5. v6で評価済みだった7件（上記前提）。新基準で設計を見直し、削除候補を中心に改稿・再評価する
+1. 不採用9件の削除（上表）
+2. 統合を含むクラスタ（下記E）
+3. 下記A（Gemini執筆）の残り。帰属の創作が起こりやすいため、数値・書誌・DOI・S IDへの帰属をevaluatorの事実確認で照合する
+4. 下記C（外部ソースが要確認・参考だけの記事）。一次・二次を確保できなければ不採用を検討し、確認を取る
+5. 下記B（`0b15416`）。`/review-page`で設計整合と事実を確認し、必要な箇所だけ直す。重大な逸脱があれば改稿へ切り替える
+6. 下記D（v6で評価済み）。新基準で設計を見直し、削除候補を中心に改稿・再評価する
 
 方針（旧TODOから継続）:
 
 - `2fffc44`・`0784ff3`の記事は、現行本文を土台にせずdesignから改めて執筆する（Opus／editor）。旧本文と現行本文の主張を引き継がない。
-- 各記事の着手前にdesignを確認し、欠落や誤りがあれば設計手順で先に直す。
+- 各記事の着手前にdesignを確認し、欠落や誤りがあれば設計手順で先に直す。全記事で設計に想定分量と適用テストを加える（設計基準v2）。
 - 後続コミットで手直しされた記事（`fact-interpretation-action`、`focus-on-contribution`、`needs-vs-strategies`、`prospect-theory`は`457eb64`）は、その変更意図をdesignと照合してから扱う。
 
-### A. designから改稿（2fffc44・0784ff3）
+### 0. 不採用の削除（9件）
 
-優先（重大・中の逸脱を確認済み）:
+- [ ] character-ethics-vs-personality-ethics
+- [ ] maturity-continuum
+- [ ] stimulus-response-freedom
+- [ ] plateau-of-latent-potential
+- [ ] identity-based-habit-formation（外部検証記録`evidence/identity-based-habit-formation.md`のうち習慣の自動性に関する確認はhabit-loopの`evidence/`へ追記してから削除する）
+- [ ] problem-driven-selection
+- [ ] productivity-layer-model
+- [ ] child-activity-redesign
+- [ ] child-communication-principles
 
-- [ ] peak-end-rule
-- [ ] framing-effect
-- [ ] forgetting-curve
+### E. 統合先の改稿（11件、統合元は上表）
 
-その他:
+- [ ] cialdini-persuasion-triggers（← liking-principle、authority-principle）
+- [ ] habit-loop（← environment-design-behavior）
+- [ ] learning-roi（← learning-depth-and-breadth-roles）
+- [ ] question-generation（← learning-deepening-operations）
+- [ ] language-context-dependence（← shin-dokkai）
+- [ ] illusion-of-explanatory-depth（← community-of-knowledge）
+- [ ] interruption-recovery-cost（← attention-residue）
+- [ ] hypothesis-as-stance（← pre-analysis-output-design）
+- [ ] quadrant-ii-principle（← time-record-organize-consolidate）
+- [ ] focus-on-contribution（← knowledge-worker-autonomy）
+- [ ] needs-vs-strategies（← nonviolent-communication）
 
-- [ ] habit-loop
+### A. designから改稿（2fffc44・0784ff3の残り、18件）
+
 - [ ] commitment-lock-in
 - [ ] commitment-and-consistency
-- [ ] conclusion-first-communication
+- [ ] conclusion-first-communication（核心の置き直しを含む）
 - [ ] echo-chamber
 - [ ] elaborative-interrogation
-- [ ] environment-design-behavior
 - [ ] exit-criteria-first
 - [ ] fact-interpretation-action
 - [ ] feedback-analysis
-- [ ] focus-on-contribution
 - [ ] focus-on-controllable
-- [ ] hypothesis-as-stance
-- [ ] identity-based-habit-formation
 - [ ] identity-foreclosure
 - [ ] interleaving
 - [ ] knowledge-externalization
-- [ ] knowledge-worker-autonomy
-- [ ] language-context-dependence
-- [ ] learning-deepening-operations
-- [ ] learning-depth-and-breadth-roles
-- [ ] liking-principle
-- [ ] maturity-continuum
 - [ ] method-problem-visibility
 - [ ] motivated-reasoning
 - [ ] motivational-questioning
-- [ ] needs-vs-strategies
-- [ ] nonviolent-communication
-- [ ] plateau-of-latent-potential
-- [ ] pre-analysis-output-design
-- [ ] problem-driven-selection
 - [ ] process-praise
-- [ ] productivity-layer-model
 - [ ] prospect-theory
 - [ ] proxy-metrics-knowledge-work
 
-### B. レビューで修正（0b15416）
+### C. 未改稿の記事（旧0002の残り、8件）
 
-- [ ] anchoring-effect
-- [ ] attention-residue
-- [ ] authority-principle
-- [ ] availability-heuristic
-- [ ] character-ethics-vs-personality-ethics
-- [ ] child-activity-redesign
-- [ ] child-communication-principles
-- [ ] cialdini-persuasion-triggers
-- [ ] community-of-knowledge
-- [ ] fluency-illusion
-- [ ] illusion-of-explanatory-depth
-- [ ] interruption-recovery-cost
-- [ ] planning-fallacy
-- [ ] wysiati
-
-### C. 未改稿の記事（旧0002の残り、Opusで執筆）
-
-旧TODO 0002でGeminiによる改善を予定していた`quadrant-ii-principle.md`以降（ファイル名の昇順）のうち、上記と0003に含まれない記事。
-
-- [ ] quadrant-ii-principle
-- [ ] question-generation
 - [ ] reciprocity-principle
 - [ ] scarcity-principle
-- [ ] shin-dokkai
 - [ ] social-proof
-- [ ] stimulus-response-freedom
 - [ ] survivorship-bias
 - [ ] system1-system2
 - [ ] testing-effect
-- [ ] time-record-organize-consolidate
 - [ ] unlearn
 - [ ] working-memory-capacity
 
-### D. v6評価済みの7件
+### B. レビューで修正（0b15416の残り、5件）
+
+- [ ] anchoring-effect
+- [ ] availability-heuristic
+- [ ] fluency-illusion
+- [ ] planning-fallacy
+- [ ] wysiati
+
+### D. v6評価済み（4件）
+
+focus-on-contributionとlearning-roiはE、prospect-theoryはAで扱う。
 
 - [ ] avoidance-generated-reasons
-- [ ] focus-on-contribution（Aにも掲載。Aで扱えばここも完了とする）
 - [ ] issue-value-matrix
-- [ ] learning-roi
 - [ ] org-productivity-misdiagnosis
-- [ ] prospect-theory（Aにも掲載。Aで扱えばここも完了とする）
 - [ ] theory-of-constraints
 
 ## フェーズ4: 横断の仕上げ
 
-- [ ] `/lint`で被リンク0・1件の記事、見分けリンク、indexの要約、公開ゲートの通過を確認する（`nonviolent-communication`は評価を通るまでindexから外れている）
+- [ ] `/lint`で被リンク0・1件の記事、見分けリンク、indexの要約、公開ゲートの通過、孤立記録（CHECK-9d）を確認する
+- [ ] indexのカテゴリのずれを直す（focus-on-controllable、quadrant-ii-principleが「教育・子育て」にある。統合・削除後の空カテゴリも整理する）
 - [ ] パイロットと量産の記録（評価往復回数、字数）を比べ、`/retrospect`で手順を見直す
 - [ ] このTODOを削除する
 
