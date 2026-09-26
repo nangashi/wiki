@@ -123,7 +123,7 @@ Gemini執筆のコミット`0b15416`（16件）、`0784ff3`（6件）、`2fffc44
 ## 再開の手引き（2026-09-26時点）
 
 - 現在地: フェーズ1・2は完了。パイロット3件（peak-end-rule、framing-effect、spacing-effect）は評価済み・公開可。基準・手順はフェーズ2の改定（`6690067`）で固定し、フェーズ4まで変えない（作業を止める不具合を除く）。
-- 次の作業: フェーズ3の「E. 統合先の改稿」の3件目（learning-roi ← learning-depth-and-breadth-roles）。0. 不採用の削除と、Eのcialdini-persuasion-triggers・habit-loopは2026-09-26に完了した。
+- 次の作業: フェーズ3の「E. 統合先の改稿」の4件目（question-generation ← learning-deepening-operations）。0. 不採用の削除と、Eのcialdini-persuasion-triggers・habit-loop・learning-roiは2026-09-26に完了した。
 - 1記事の回し方: `/review-page`から入り、`workflows/design.md`（設計: Codex、editorへの依頼の注意）→`references/evaluation-protocol.md`（評価・保存）に従う。評価者への依頼文は`references/evaluator-requests.md`の定型を使い、評価者の返答は`tools/extract_agent_report.py`でサブエージェントの記録（`~/.claude/projects/<プロジェクト>/<セッション>/subagents/agent-<id>.jsonl`）から取り出して保存する。作業ファイルは`.cache/insight-runs/<日付>-<slug>/`に置く。
 - このセッションで確立した注意（手順書に反映済みのものを含む）:
   - editorには適用テストの行を除いた設計の写しを渡し、書誌は設計にあるものに限る。
@@ -167,7 +167,7 @@ indexのカテゴリまたは統合クラスタを1バッチとし、バッチ�
 
 - [x] cialdini-persuasion-triggers（← liking-principle、authority-principle）（2026-09-26。設計2巡・記事2巡、本文約3,600字／想定5,000字。統合元の設計が参照していた外部検証は旧記録にも存在しなかったため、設計前に外部検証を2回行った。残った任意改善: 権威の候補表に役職・制服など役割の手掛かりを含めるか、S9の頁を主張ごとに分けるか。`/lint`で扱う）
 - [x] habit-loop（← environment-design-behavior）（2026-09-26。設計2巡・記事2巡、本文約3,300字／想定5,000字。Gemini本文の誤り（Lallyの「平均66日」「254日以上」、S5の題名）を設計前の外部検証で確認し、設計から書き直した。残った任意改善: 転学研究の結果を「意図があるときだけ続いた」まで書く、手順4の並列を整える、適用テストに減らしたい行動の要素を入れるか、減らしたい行動の機会の単位、S8の「reduce your exposure」を接触回避の根拠に並記するか。`/lint`で扱う）
-- [ ] learning-roi（← learning-depth-and-breadth-roles）
+- [x] learning-roi（← learning-depth-and-breadth-roles）（2026-09-26。D群として現行本文を土台に部分改稿。設計1巡・記事2巡、本文約3,300字／想定4,000字。到達点の4段階と探索時の確かめ方を「点検の前提」節へ移し、1巡目の削除候補6件とS2の直後成績の向きを2巡目で直した。knowledge-externalizationの被リンクをlearning-roiへ付け替えた。残った任意改善: S3の書名に副題と版、適用テストの前半が段階の定義の想起で答えられる点、到達点の未達と関門の対応の例示。`/lint`で扱う）
 - [ ] question-generation（← learning-deepening-operations）
 - [ ] language-context-dependence（← shin-dokkai）
 - [ ] illusion-of-explanatory-depth（← community-of-knowledge）
