@@ -123,7 +123,7 @@ Gemini執筆のコミット`0b15416`（16件）、`0784ff3`（6件）、`2fffc44
 ## 再開の手引き（2026-09-26時点）
 
 - 現在地: フェーズ1・2は完了。パイロット3件（peak-end-rule、framing-effect、spacing-effect）は評価済み・公開可。基準・手順はフェーズ2の改定（`6690067`）で固定し、フェーズ4まで変えない（作業を止める不具合を除く）。
-- 次の作業: フェーズ3の「E. 統合先の改稿」。「0. 不採用の削除」は2026-09-26に完了した（被リンクは削除。proxy-metrics-knowledge-workはtheory-of-constraintsへのリンクが既にあったため行を削除。統合元のenvironment-design-behavior・nonviolent-communicationからのリンクもリンク切れになるため外した）。
+- 次の作業: フェーズ3の「E. 統合先の改稿」の2件目（habit-loop ← environment-design-behavior）。0. 不採用の削除は2026-09-26に完了、Eのcialdini-persuasion-triggersも同日に完了した。
 - 1記事の回し方: `/review-page`から入り、`workflows/design.md`（設計: Codex、editorへの依頼の注意）→`references/evaluation-protocol.md`（評価・保存）に従う。評価者への依頼文は`references/evaluator-requests.md`の定型を使い、評価者の返答は`tools/extract_agent_report.py`でサブエージェントの記録（`~/.claude/projects/<プロジェクト>/<セッション>/subagents/agent-<id>.jsonl`）から取り出して保存する。作業ファイルは`.cache/insight-runs/<日付>-<slug>/`に置く。
 - このセッションで確立した注意（手順書に反映済みのものを含む）:
   - editorには適用テストの行を除いた設計の写しを渡し、書誌は設計にあるものに限る。
@@ -165,7 +165,7 @@ indexのカテゴリまたは統合クラスタを1バッチとし、バッチ�
 
 ### E. 統合先の改稿（11件、統合元は上表）
 
-- [ ] cialdini-persuasion-triggers（← liking-principle、authority-principle）
+- [x] cialdini-persuasion-triggers（← liking-principle、authority-principle）（2026-09-26。設計2巡・記事2巡、本文約3,600字／想定5,000字。統合元の設計が参照していた外部検証は旧記録にも存在しなかったため、設計前に外部検証を2回行った。残った任意改善: 権威の候補表に役職・制服など役割の手掛かりを含めるか、S9の頁を主張ごとに分けるか。`/lint`で扱う）
 - [ ] habit-loop（← environment-design-behavior）
 - [ ] learning-roi（← learning-depth-and-breadth-roles）
 - [ ] question-generation（← learning-deepening-operations）
@@ -229,6 +229,7 @@ focus-on-contributionとlearning-roiはE、prospect-theoryはAで扱う。
 ## フェーズ4: 横断の仕上げ
 
 - [ ] Codexへの修正依頼で、外部検証記録の内容をメインエージェントが言い換えて渡すと誤りが入る（spacing-effectの構成修正で2回: 比較対象「一日間隔」を「一日にまとめる」に、分析の出典節を別の節に取り違えた。記録自体は正しかった）。依頼文には記録の記載（原文の引用・頁・節名）をそのまま写し、要約しない手順を`workflows/design.md`の「Codexへの依頼」に加えるか判断する
+- [ ] フェーズ3の運用で気づいた点を手順へ反映するか判断する（2026-09-26、cialdini-persuasion-triggers）: (1) Codexに設計の簡潔さを求めると、修正の2巡目で外部ソースの書誌から題名・本文URLを落とし「外部検証記録を参照」とした。editorは設計の書誌しか使えないため、メインエージェントが1巡目の書誌ブロックを戻した。Codexへの依頼で「書誌は省略・参照化しない」と明示する候補。(2) 第一段階の回答で見出しが「現実の見方が変わる点」に変わり、validatorの見出しと合わなかった。形式不正として同じ入力で再試行して解消した。(3) 統合元の設計が参照していた外部検証記録（CHECK-9c）は、旧形式のコミット`8c16c45`にも存在しなかった。ほかの統合元でも同じなら、統合時に設計前の外部検証が必要になる。
 - [ ] 評価の死角を基準・プロトコルに反映するか判断する: 読み手テスト（適用テスト）は推論の転用を測るが、「各節が何のためにあるかが読みながら分かるか」は測らない。spacing-effectは設計・記事とも合格したが、「二つの時間間隔を分ける」節が用語定義だけで主張を持たず、理由が次の節まで出てこない構成だった（2026-09-26、ユーザー指摘）。候補: 設計基準の「内容と順序」に「各節の見出しが節の主張を示し、前提となる定義は主張を説明するのに必要になった時点で置く」を加える、記事の第一段階の問いに「どの節の役割が分からなかったか」を加える。フェーズ3で同じ型が再発するかを記録してから決める
 - [ ] `/lint`で被リンク0・1件の記事、見分けリンク、indexの要約、公開ゲートの通過、孤立記録（CHECK-9d）を確認する
 - [ ] indexのカテゴリのずれを直す（focus-on-controllable、quadrant-ii-principleが「教育・子育て」にある。統合・削除後の空カテゴリも整理する）
