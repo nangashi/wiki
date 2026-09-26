@@ -45,3 +45,50 @@
 ### 誤り
 
 - B2の例示「RI 1週間で最適な間隔は20〜40%、1年で5〜10%程度」 / Cepeda et al. (2008) の抄録は「数週間の遅延で約20%、1年で約5%」。RI 7日で再生の成績が最も良かった間隔は1日（約14%）で、2日（約29%）ではなかった（p.4）。当てはめた関数での最適はRI 350日に対して7%（p.5）。「1週間で20〜40%」は論文に出てこない。Dunlosky (2013) p.37 の要約は「おおむねRIの10〜20%。1週間なら12〜24時間、5年なら6〜12か月」 / 抄録どおり「最適な間隔は、数週間先のテストでは遅延の約20%、1年先では約5%（関数の当てはめでは7%）に下がる」と書く / https://files.eric.ed.gov/fulltext/ED505660.pdf
+
+## 2026-09-26T01:50:05Z run=247d2d3a1320
+
+- target: wiki/insight/designs/spacing-effect.md
+- target_blob: 661364f3413e50b3c459b473c51ec1ff931fbc4d
+- evaluator: claude / opus
+
+### 確認済み
+
+- 主張1（Bahrick 3研究が再学習の量とISIを交絡させている） / 著者原稿の節 "Experimental Design Issues"（原稿の柱の頁番号でp.9、PDFでは表紙を含めて10枚目）。左段の原文は "One group of studies provided learning to perfect performance and then relearning, with feedback, to the criteria of perfect performance (Bahrick, 1979; Bahrick et al., 1993; Bahrick & Phelps, 1987). These studies confounded number of relearning trials with ISI; that is, there was more relearning at longer ISIs." / https://www.escholarship.org/content/qt3rr6q10c/qt3rr6q10c.pdf
+- 主張1の例示文 / 同じ節の同じ頁（p.9、右段）に、例示文のとおりの原文がある。"The Bahrick studies (Bahrick, 1979; Bahrick et al., 1993; Bahrick & Phelps, 1987), which confound amount of relearning and ISI, show similar patterns to Cepeda et al., Experiments 2a and 2b, which are un-confounded." 直後に "The ideal ISI indicated in all these studies is one month or more, at retention intervals of six months or more." と、但し書き "(The Bahrick studies used far longer retention intervals than the Cepeda et al. study, making this comparison less than perfect.)" が続く / https://www.escholarship.org/content/qt3rr6q10c/qt3rr6q10c.pdf
+- 主張2（"Learning and Relearning Confounds" 節の有無と内容） / 原稿p.3の右段にこの節名が実在する。要点は3つ。(1) 多くの研究（例として挙がるのは Bahrick, 1979 と Bahrick & Phelps, 1987 の2件で、Bahrick et al. 1993 はこの節には出てこない）で、2回目以降の学習セッションに全項目完全正答という基準を課している。(2) "an increase in ISI inevitably increases the amount of training provided during the second or subsequent sessions. (This is because a longer ISI results in more forgetting between training sessions, thus necessitating a greater number of relearning trials to reach criterion.)"。(3) "This makes it impossible to know whether differences in final-test performance reflect distributed practice effects per se. To avoid this confound, the number of relearning trials must be fixed." / https://www.escholarship.org/content/qt3rr6q10c/qt3rr6q10c.pdf
+- 主張3（RIが1か月を超える4研究のうち、交絡がないのは Cepeda et al. 2005 だけか） / 原稿p.13の "Educational Implications of Findings" 節に次の原文があり、4研究の列挙を確認した。"Every study examined here with a retention interval longer than one month (Bahrick, 1979; Bahrick, et al., 1993; Bahrick & Phelps, 1987; Cepeda et al., 2005) demonstrated a benefit from distribution of learning across weeks or months"。この節では交絡の有無に触れていない。交絡の有無は p.9 の "Experimental Design Issues" から判断できる。そこでは Bahrick の3研究を交絡あり、Cepeda et al. 2005 を交絡なしとしている（交絡なしの一覧 "Ausubel, 1966; Cepeda et al., 2005; Childers & Tomasello, 2002; Edwards, 1917; Glenberg & Lehmann, 1980" と、"Cepeda et al., Experiments 2a and 2b, which are un-confounded"）。したがって4研究のうち交絡がないのは Cepeda et al. 2005 だけ、と言える。ただしこれは2つの節を合わせた推論で、原文に「4研究のうち交絡なしは1件」と書いた一文はない / https://www.escholarship.org/content/qt3rr6q10c/qt3rr6q10c.pdf
+- 主張4（"271 comparisons"） / 原稿p.6の右段、節 "Spacing Effects: Massing vs. Spacing" にある。原文は "Studies that failed to include a massed presentation were excluded, leaving 271 comparisons of retention accuracy and 23 effect sizes." / https://www.escholarship.org/content/qt3rr6q10c/qt3rr6q10c.pdf
+- 主張4（"Only 12 of 271 ..."） / 同じ節の続きで、原稿p.7の左段にある。原文は "Only 12 of 271 comparisons of massed and spaced performance showed no effect or a negative effect from spacing, making the spacing effect quite robust."。続く文は "Most of these 12 comparisons used the same task type as studies that did show a spacing benefit – paired associate learning." / https://www.escholarship.org/content/qt3rr6q10c/qt3rr6q10c.pdf
+
+### 未確認
+
+- 上の各引用の、出版版（Psychological Bulletin 132(3), 354–380）での頁 / ここで確認できたのは著者原稿の頁番号だけで、原稿には "This manuscript may differ from the final published version" と注記がある。出版版は取得しておらず、出版版の頁も、原稿と文言が同じかどうかも確かめていない / 記事で頁を示すなら、著者原稿の頁と明記する。出版版の頁が必要なら、出版版を取得して照合する
+
+### 誤り
+
+- なし
+
+## 2026-09-26T02:06:47Z run=c99b2c9d4f06
+
+- target: wiki/insight/pages/spacing-effect.md
+- target_blob: 585ebc166dfed7fc80e46ed25ded5c8585f3a5b7
+- evaluator: claude / opus
+
+### 確認済み
+
+- 主張1（S4の「集中」の定義: 同じ項目を間を置かず、1秒未満の間隔で続けて提示すること） / Cepeda et al. 2006 著者原稿 p.1〜2「Terminology」節に "learning is said to be massed (i.e., item A stays on the screen for twice as long ... or disappearing for less than one second ...)" と "Learning is considered to be massed only only when presentations of a given item in a list are separated by zero items and a time lag of less than one second." がある。p.4「Inclusion Criteria」にも "separated by a lag less than one s, for massed items" とある。注意: リストを間を空けずに2回提示する場合は、同じ項目の提示のあいだに他の項目が挟まるため「spaced」に分類される（p.1〜2） / https://www.escholarship.org/content/qt3rr6q10c/qt3rr6q10c.pdf
+- 主張2（271件の比較は、集中とその研究内で最も短い分散間隔を比べたもの） / 同 p.6「Spacing Effects: Massing vs. Spacing」に "Our analysis of massed vs. spaced learning compared massed learning with the shortest spaced learning interval provided within a given study. Studies that failed to include a massed presentation were excluded, leaving 271 comparisons of retention accuracy and 23 effect sizes." とある。集中の条件は "either a single uninterrupted presentation of the item during learning or a lag shorter than one second"。結果は、保持間隔1分未満で分散が9 percent上回り（p.6、Table 1）、効果なしまたは逆効果は271件中12件（p.7） / https://www.escholarship.org/content/qt3rr6q10c/qt3rr6q10c.pdf
+- 主張3（一夜漬けは同じ項目を続けて提示する意味の集中ではなく、間を空けた反復を含むという記述） / 同 p.10「General Discussion」に "At first blush, this conclusion might seem to suggest that students are wrong to suppose that 'cramming' immediately before an exam is an effective strategy ... However, a few hours of 'cramming' would typically involve repeated noncontiguous study of individual bits of information, rather than literal massing as examined in the studies noted. Furthermore, most advocates of cramming probably have in mind the comparison between studying immediately prior to the exam and studying days or weeks prior to the exam." とある。この記述は、S4自身の結果（保持間隔が1分未満でも1か月超でも分散が有利で、保持間隔による調整が見られない）と、一夜漬けが有効だという学生の思い込みとの食い違いを説明するものである。直後テストでは集中が有利だとする他文献の報告との食い違いを説明するとは明示していない / https://www.escholarship.org/content/qt3rr6q10c/qt3rr6q10c.pdf
+- 主張4（1日以上のISIの分散は1日未満より有利か） / 同 p.13「Educational Implications of Findings」に "Every study examined here with a retention interval longer than one month (Bahrick, 1979; Bahrick et al., 1993; Bahrick & Phelps, 1987; Cepeda et al., 2005) demonstrated a benefit from distribution of learning across weeks or months, as opposed to learning across a one-day interval; learning within a single day impaired learning, compared to a one-day interval between study episodes; learning at one single point in time impaired learning, compared to a several-minute interval ... The average observed benefit from distributed practice (over massed practice) in these studies was 15 percent" とある。p.9「Experimental Design Issues」は、ISIと保持間隔がともに1日以上で交絡のない実験を5論文7件とし、Ausubel、Cepeda et al. Exp.1、Glenberg & Lehmannでは保持間隔6〜10日での最適ISIが7〜10日より1〜3日に近かったと報告する。Cepeda et al. Exp.2a/2bでは、保持間隔6か月以上での理想のISIが1か月以上だった。p.7では、保持間隔1日でISI差を1〜15分から1日に広げると成績が有意に上がり、保持間隔が1日未満ではISI差の効果がほとんどない / https://www.escholarship.org/content/qt3rr6q10c/qt3rr6q10c.pdf
+- 主張5（Dunlosky p.38の「集中」が何を指すか: 部分的に確認） / Dunlosky et al. 2013 p.38「9.2d Criterion tasks」に "the distributed-practice effect is often stronger on delayed tests than immediate ones, with massed practice (cramming) actually benefitting performance on immediate tests (e.g., Rawson & Kintsch, 2005)." とある。p.38では massed が何を指すかを定義していない。節冒頭の p.35「9 Distributed practice」は、集中を "massing learning opportunities back-to-back or in relatively close succession" と書き、一夜漬けを "students mass much of their study prior to tests ... this popular cramming strategy" と書く。p.36 の Bahrick (1979) の例では、zero-spacing（学習セッションを続けて行う条件）を集中として扱っている。したがって、この文献の「集中」は1秒未満で同じ項目を続ける提示に限らず、学習機会を続けて、または近接して置くこと（同じ時期・セッションにまとめる学習）を広く指す / https://www.whz.de/fileadmin/lehre/hochschuldidaktik/docs/dunloskiimprovingstudentlearning.pdf
+
+### 未確認
+
+- 主張5の引用元 Rawson & Kintsch (2005) で、集中が具体的にどんな操作だったか（例: 文章を続けて2回読む） / Dunlosky p.38 には手続きの記述がなく、Rawson & Kintsch (2005) の原文は取得していない / 集中の意味を記事で特定するなら Rawson & Kintsch (2005, Journal of Educational Psychology) の方法の節を確認する
+- 主張3の「直後テストで集中が有利という報告との食い違いを p.10 で説明している」という読み方 / p.10 の説明の対象は一夜漬けの主観的な有効性とS4の結果との対比であり、直後テストで集中が有利という他文献の報告は p.10 では扱っていない。S4は p.6〜7 で、保持間隔が2〜4秒のようにごく短いときだけ集中が有利になる現象（"Peterson Paradox"）に触れている。Dunlosky p.38 との食い違いを説明した記述は原稿中に見当たらない（読んだのは原稿 p.1〜13。p.14 以降の限界の節・表・付録は未読） / 記事では、「S4は一夜漬けを文字どおりの集中と区別している」（p.10）と、「直後テストの逆転を説明しうる」という推論を分けて書く
+- 主張4の Table 7 に載る個別研究の数値 / Table 7 本体（原稿後半）は読んでいない / 個別研究の数値を記事に載せるなら Table 7 を確認する
+
+### 誤り
+
+- なし
