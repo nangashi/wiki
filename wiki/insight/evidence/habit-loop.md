@@ -42,3 +42,15 @@
 
 - なし。  
   ただし記事が携帯例を「通知一般」と断定している場合は、一次資料に合わせて「新しいテキストメッセージで携帯が振動する例」と具体化すると正確になる。
+
+## 2026-09-06T15:45:50Z run=c74e4c664b4f
+
+- target: wiki/insight/designs/identity-based-habit-formation.md
+- target_blob: cb77bc86cd1712f228117de29a7b4bdaa0abbe08
+- evaluator: codex / gpt-5.6-sol
+- 移行元: evidence/identity-based-habit-formation.md（2026-09-26、不採用による削除に伴い、習慣の自動性に関する確認だけを移した。自己像に関する項目は移していない）
+
+### 確認済み
+
+主張: 習慣自動性には、同一文脈での行動反復が関係する。  
+根拠: Lally et al. は96人に同じ文脈で12週間反復させ、自動性が漸近的に増加したと報告。Wood & Neal は文脈特徴と反応の連合学習として理論化している。URL: https://doi.org/10.1002/ejsp.674 / https://doi.org/10.1037/0033-295X.114.4.843

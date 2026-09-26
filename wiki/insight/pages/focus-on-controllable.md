@@ -43,7 +43,6 @@ updated: "2026-09-13"
 
 ## 関連
 
-- [[stimulus-response-freedom]] — 刺激（外部環境）と反応の間に選択の余地を見出す原則。
 - [[focus-on-contribution]] — 手元の作業にとどまらず、他者や組織の成果への働きかけを問う。
 - [[issue-value-matrix]] — 検討すべき問いの中から、自らが解くべき本質的な論点に集中するアプローチ。
 

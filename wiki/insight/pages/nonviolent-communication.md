@@ -47,7 +47,6 @@ NVCにおける「リクエスト」の成否は、提案された言葉遣い�
 
 - [[needs-vs-strategies]] — ニーズ（大切にしたいこと）とストラテジー（具体的手段）の区別の詳細。
 - [[fact-interpretation-action]] — 事実、解釈、行動を切り分ける思考整理フレームワーク（雲雨傘）。
-- [[child-communication-principles]] — 命令ではなく子どもの理由や自律的な選択を引き出す対話原則。
 
 ## 外部ソース
 

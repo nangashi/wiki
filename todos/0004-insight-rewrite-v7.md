@@ -123,7 +123,7 @@ Gemini執筆のコミット`0b15416`（16件）、`0784ff3`（6件）、`2fffc44
 ## 再開の手引き（2026-09-26時点）
 
 - 現在地: フェーズ1・2は完了。パイロット3件（peak-end-rule、framing-effect、spacing-effect）は評価済み・公開可。基準・手順はフェーズ2の改定（`6690067`）で固定し、フェーズ4まで変えない（作業を止める不具合を除く）。
-- 次の作業: フェーズ3の「0. 不採用の削除（9件）」。削除はユーザー承認済みだが、実行前に対象9件と書き換える被リンクの一覧を示してから行う（ユーザーとの約束）。
+- 次の作業: フェーズ3の「E. 統合先の改稿」。「0. 不採用の削除」は2026-09-26に完了した（被リンクは削除。proxy-metrics-knowledge-workはtheory-of-constraintsへのリンクが既にあったため行を削除。統合元のenvironment-design-behavior・nonviolent-communicationからのリンクもリンク切れになるため外した）。
 - 1記事の回し方: `/review-page`から入り、`workflows/design.md`（設計: Codex、editorへの依頼の注意）→`references/evaluation-protocol.md`（評価・保存）に従う。評価者への依頼文は`references/evaluator-requests.md`の定型を使い、評価者の返答は`tools/extract_agent_report.py`でサブエージェントの記録（`~/.claude/projects/<プロジェクト>/<セッション>/subagents/agent-<id>.jsonl`）から取り出して保存する。作業ファイルは`.cache/insight-runs/<日付>-<slug>/`に置く。
 - このセッションで確立した注意（手順書に反映済みのものを含む）:
   - editorには適用テストの行を除いた設計の写しを渡し、書誌は設計にあるものに限る。
@@ -153,15 +153,15 @@ indexのカテゴリまたは統合クラスタを1バッチとし、バッチ�
 
 ### 0. 不採用の削除（9件）
 
-- [ ] character-ethics-vs-personality-ethics
-- [ ] maturity-continuum
-- [ ] stimulus-response-freedom
-- [ ] plateau-of-latent-potential
-- [ ] identity-based-habit-formation（外部検証記録`evidence/identity-based-habit-formation.md`のうち習慣の自動性に関する確認はhabit-loopの`evidence/`へ追記してから削除する）
-- [ ] problem-driven-selection
-- [ ] productivity-layer-model
-- [ ] child-activity-redesign
-- [ ] child-communication-principles
+- [x] character-ethics-vs-personality-ethics
+- [x] maturity-continuum
+- [x] stimulus-response-freedom
+- [x] plateau-of-latent-potential
+- [x] identity-based-habit-formation（外部検証記録`evidence/identity-based-habit-formation.md`のうち習慣の自動性に関する確認はhabit-loopの`evidence/`へ追記してから削除する）
+- [x] problem-driven-selection
+- [x] productivity-layer-model
+- [x] child-activity-redesign
+- [x] child-communication-principles
 
 ### E. 統合先の改稿（11件、統合元は上表）
 
