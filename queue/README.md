@@ -60,7 +60,8 @@ proposal:       proposed ──/lint で人間が承認──→ approved（open
 
 ## ルール
 
-1. **`auto: true` の項目を作れるのは、ユーザー本人またはMuseが監督するセッションのみ。** 夜間の `/dream` は auto 項目を決して作らず、proposal を決して適用しない（`/dream` が作れるのは `auto: false` の proposal だけ）
+1. **`auto: true` の項目を作れるのは、ユーザー本人またはユーザーが承認したセッションのみ。Muse の指摘に由来する項目は、ユーザーの承認前に auto 化しない。** 夜間の `/dream` は auto 項目を決して作らず、proposal を決して適用しない（`/dream` が作れるのは `auto: false` の proposal だけ）
 2. **未処理の proposal（`status: proposed`）は20件が上限。** 上限に達している間、新しい指摘は登録しない（先に既存の proposal を `/lint` で消化する）
 3. **削除・統合・分割は常に proposal。** replace にしない
 4. **replace 項目1件が触れるのは1ページファイルのみ。** 複数ページにまたがる修正は、ページごとに別項目にするか proposal にする
+5. **Muse の監査・調査に由来する項目は必ず proposal から始める。** auto への変換はユーザーの承認後だけ（提案者が自分で auto 化しない）
