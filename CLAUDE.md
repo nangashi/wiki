@@ -22,3 +22,13 @@
 - スキル定義は `.claude/skills/` のみに置く（Claude Code専用）。**`.agents/` ディレクトリを作らないこと** — 二重管理で乖離し、Codexが古いスキル定義を自律的に読み込んで動く事故が起きた
 - Codexは「調査・レビュー担当」であり、このリポジトリのスキルを実行する主体ではない。Codexに渡すプロンプトは、必要な基準・文脈をすべて埋め込んだ自己完結型にすること（`.claude/skills/` を参照させない）
 - `AGENTS.md` は `CLAUDE.md` へのsymlink。Codexにもこの行動方針を継承させるためのもの
+
+## メンテナンス体制
+
+- ページ修正は `queue/` に1件1ファイルで登録する（形式・ステータス・ルールは `queue/README.md` が正本）。`TODO.md` や `suggestions/` は作らない
+  - `kind: replace`（`old` が対象ページにちょうど1回出現する固定文字列置換）と `kind: proposal`（人間の判断が要るもの）に分ける
+  - 削除・統合・分割は常に proposal。replace 1件が触れるのは1ページのみ
+- `/dream` が夜間に `dream/auto` ブランチで実行される: auto replace を最大2件適用、本質サンプル再判定、再審査バックフィル最大2ページ。main には直接書き込まない
+- `dream/auto` は週1回Museがレビューして main にマージする
+- **`auto: true` の項目を作れるのはユーザー本人かMuseが監督するセッションのみ。** `/dream` は auto 項目を作らず、proposal を適用しない
+- proposal の承認・却下は `/lint` のステップ4で行う。未処理 proposal は20件が上限（上限中は `/dream` が新規登録しない）

@@ -19,7 +19,7 @@
 #
 # 補助出力:
 #   SAMPLE: 本質サンプリング監査用にランダムに3ページ選出（insightコレクションのみ）
-#   OPEN_SUGGESTION: suggestion/ 配下で status: open の提案ファイル
+#   QUEUE_ITEM / QUEUE_COUNTS: queue/ 配下のメンテナンス項目（README.md を除く）
 #
 # 使い方:
 #   bash lint-check.sh --collection name:path [--collection name2:path2 ...]
@@ -343,23 +343,33 @@ else
 fi
 echo ""
 
-# ── suggestion/ のスキャン ───────────────────────────────────────────
-echo "=== SUGGESTIONS: suggestion/ ディレクトリの未処理提案 ==="
-csg=0
+# ── queue/ のスキャン ────────────────────────────────────────────────
+echo "=== QUEUE: queue/ のメンテナンス項目 ==="
+q_open_auto=0
+q_proposed=0
 
-if [ -d "suggestion" ]; then
-  while IFS= read -r sf; do
-    status=$(grep -m1 -oE '^status:[[:space:]]*[a-z]+' "$sf" | sed 's/^status:[[:space:]]*//') || true
-    if [[ -z "$status" || "$status" == "open" ]]; then
-      target=$(grep -m1 -oE '^target:[[:space:]]*.*' "$sf" | sed 's/^target:[[:space:]]*//' | sed 's/["\x27]//g') || true
-      echo "OPEN_SUGGESTION  file=${sf}  target=${target:-unknown}"
-      csg=$((csg + 1))
+# frontmatter（先頭の --- から次の --- まで）から指定キーの値を取り出す。前後の引用符は除去
+queue_field() {
+  awk 'NR==1 && /^---[[:space:]]*$/ {f=1; next} f && /^---[[:space:]]*$/ {exit} f {print}' "$1" \
+    | grep -m1 -E "^$2:" \
+    | sed -E "s/^$2:[[:space:]]*//; s/^[\"']//; s/[\"'][[:space:]]*\$//"
+}
+
+if [ -d "queue" ]; then
+  while IFS= read -r qf; do
+    q_id=$(queue_field "$qf" id) || true
+    q_kind=$(queue_field "$qf" kind) || true
+    q_auto=$(queue_field "$qf" auto) || true
+    q_status=$(queue_field "$qf" status) || true
+    echo "QUEUE_ITEM id=${q_id:-$(basename "$qf" .md)} kind=${q_kind:-unknown} auto=${q_auto:-false} status=${q_status:-unknown}"
+    if [[ "$q_status" == "open" && "$q_auto" == "true" && "$q_kind" == "replace" ]]; then
+      q_open_auto=$((q_open_auto + 1))
     fi
-  done < <(find "suggestion" -maxdepth 1 -name "*.md" ! -name ".gitkeep" | sort)
+    [[ "$q_status" == "proposed" ]] && q_proposed=$((q_proposed + 1))
+  done < <(find "queue" -maxdepth 1 -name "*.md" ! -name "README.md" | sort)
 fi
 
-[ "$csg" -eq 0 ] && echo "OK: 未処理suggestionなし"
-echo "COUNT: $csg"
+echo "QUEUE_COUNTS open_auto=${q_open_auto} proposed=${q_proposed}"
 echo ""
 
 # ── 完了 ─────────────────────────────────────────────────────────────
@@ -368,3 +378,4 @@ echo "NOTE: CHECK-4(重複概念)・CHECK-6(矛盾)・CHECK-7(合成機会) はL
 echo "NOTE: CHECK-8 の候補はLLMが内容を確認し、削除前にユーザー確認を取ること"
 echo "NOTE: CHECK-9 の再審査自体はバックフィル運用で行う（lintは検出と件数報告のみ）"
 echo "NOTE: SAMPLE のページは essence-review-criteria.md のC1〜C3でLLMが再判定する"
+echo "NOTE: QUEUE の proposal はステップ4で人間が承認/却下する。auto 項目の適用は /dream が行う"

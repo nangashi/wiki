@@ -146,7 +146,8 @@ bash .claude/skills/lint/lint-check.sh --collection insight:wiki/insight/pages
 - `LOW_VALUE slug=X reason=Y` — ページ X が低価値候補（誤検知の可能性あり）
 - `STALE_REVIEW slug=X reviewed=none|<N>` — ページ X が現行の本質審査基準バージョンで再審査されていない
 - `SAMPLE slug=X` — 本質サンプリング監査の対象として選ばれたページ（毎回ランダムに3件）
-- `OPEN_SUGGESTION file=X target=Y` — `suggestion/` 配下で未処理（status: open または不明）の提案
+- `QUEUE_ITEM id=X kind=Y auto=Z status=W` — `queue/` の項目（形式とライフサイクルは `queue/README.md`）
+- `QUEUE_COUNTS open_auto=N proposed=M` — `/dream` の適用待ち件数と、人間の判断待ち proposal 件数
 
 ### ステップ2: 残りのチェックをLLMで実行する
 
@@ -182,7 +183,7 @@ bash .claude/skills/lint/lint-check.sh --collection insight:wiki/insight/pages
 ```
 ## Lint 結果サマリ
 
-未処理 suggestion: N件
+キュー: proposal（判断待ち）M件 / auto 適用待ち N件 / stale・failed K件
 
 | チェック | ERROR | WARNING | INFO |
 |---------|-------|---------|------|
@@ -255,11 +256,17 @@ bash .claude/skills/lint/lint-check.sh --collection insight:wiki/insight/pages
 
 ---
 
-## [INFO] 未処理 suggestion
+## [INFO] キューの proposal
 
-### suggestion/XXX-yyy.md — 対象: [[スラグ]]
-- 提案内容の要約（1〜2行）
-- **適用しますか？（適用 / 却下）**
+### queue/<id>.md — 対象: [[スラグ]]（出所: <source>）
+- 指摘内容の要約（1〜2行）
+- **承認しますか？（承認 / 却下 / スキップ）**
+
+## [INFO] キューの stale / failed
+
+### queue/<id>.md — 対象: [[スラグ]]
+- 状態: stale（old が一致しない）/ failed（適用後に lint 悪化）
+- **作り直しますか？（作り直す / 却下 / スキップ）**
 
 ```
 
@@ -269,25 +276,33 @@ bash .claude/skills/lint/lint-check.sh --collection insight:wiki/insight/pages
 
 ## ステップ4: 改善を1件ずつ対話処理する
 
-サマリ提示後、検出された改善点を **未処理suggestion → ERROR → WARNING → INFO の順** に1件ずつ処理する。
+サマリ提示後、検出された改善点を **キューの proposal → ERROR → WARNING → INFO の順** に1件ずつ処理する。
 
-### 未処理 suggestion の処理
+### キューの proposal 処理
 
-`OPEN_SUGGESTION` で検出された各ファイルについて:
+キューの形式・ステータス・ルールは `queue/README.md` を正本とする。`QUEUE_ITEM` のうち `status: proposed` の各項目について:
 
 1. **提案内容を提示する**
-   - `Read` で該当 suggestion ファイルを読み、内容を要約して提示する
-   - 対象ページ（`target:`）の現状も必要に応じて確認する
+   - `Read` で `queue/<id>.md` を読み、指摘内容を要約して提示する
+   - 対象ページ（`wiki/insight/pages/<target>.md`）の該当箇所を読み、現状を併せて示す
 
-2. **適用/却下を確認する**
-   - 「この提案を適用しますか？（適用 / 却下 / スキップ）」と聞く
+2. **承認/却下を確認する**
+   - 文言修正の proposal は、具体的な置換案（`old` → `new`）を作って提示し、「承認 / 却下 / スキップ」を聞く
+   - 削除・統合・分割の proposal も、ここで方針（移植する節・削除の可否など）を提示して判断を仰ぐ
 
 3. **結果に応じて処理する**
-   - **適用**: 提案内容に従って対象ページを編集し、suggestion ファイルの frontmatter `status:` を `applied` に書き換える
-   - **却下**: suggestion ファイルの frontmatter `status:` を `rejected` に書き換える（理由があれば追記してもよい）
+   - **承認（文言修正）**: 同じファイルを `kind: replace`, `auto: true`, `status: open` に書き換え、確定した `old` / `new` を frontmatter に追記する。本文に `- <日付> /lint で承認` を追記する。ページ自体はここでは編集しない（適用は `/dream` が行う）
+     - `old` は対象ページに **ちょうど1回** 出現しなければならない。固定文字列で確認する（`old` を `Write` で一時ファイルに書き、`grep -o -F -f <一時ファイル> <ページ> | wc -l` が 1）
+     - 1項目が触れるのは1ページのみ。複数箇所にまたがる修正は、箇所ごとに `old` が一意になる replace 項目に分割する（元の id に `-1`, `-2` … を付けた新ファイルを作り、元ファイルは `status: approved` にして分割先の id を本文に記す）
+   - **承認（削除・統合・分割）**: これらは replace にしない。ユーザーの確認を得たうえでこのセッション内で実行し、項目の `status:` を `applied`、frontmatter に `applied: <日付>` を追記する
+   - **却下**: `status:` を `rejected` に書き換え、本文に却下理由を1行追記する
    - **スキップ**: 何も変更せず次の件へ進む
 
-4. **次の件へ進む**
+4. **stale / failed の項目**も同様に提示し、作り直す（現在のページに合わせて `old`/`new` を作り直し `status: open` に戻す）か、却下（`rejected`）するか聞く
+
+5. **次の件へ進む**
+
+`auto: true` の項目を作れるのは、ユーザーが判断するこのステップか、Museが監督するセッションだけである（`/dream` は作らない）。未処理 proposal は20件が上限で、上限に達していると `/dream` は新しい指摘を登録できないため、ここで消化することを優先する。
 
 ### 再審査待ち（CHECK-9）の処理
 
