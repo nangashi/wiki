@@ -7,8 +7,7 @@ sources:
   - "https://www.worklearning.com/2025/05/27/book-the-knowledge-illusion-by-steven-sloman-and-philip-fernbach/"
   - "https://www.allencheng.com/the-knowledge-illusion-book-summary-steven-sloman-philip-fernbach/"
 created: "2026-05-21"
-updated: "2026-07-17"
-reviewed: 3
+updated: "2026-11-12"
 ---
 
 # 知識のコミュニティ
@@ -21,7 +20,7 @@ reviewed: 3
 
 ### 認知的分業 — 個人はほとんど知らないのに社会は機能する
 
-個人の脳が保持できる情報量には根本的な限界がある（推定0.5〜1GB程度）。トイレやファスナーの仕組みすら、ほとんどの人は正確に説明できない。それでも文明が機能しているのは、**認知的分業**（cognitive division of labor）によって知識をコミュニティ全体で分担しているからだ。電気のことは技師に、身体のことは医師に頼めばよく、個人は「誰が知っているか」さえ把握していれば深い理解を持つ必要がない。
+個人が保持し、必要な場面で正確に利用できる知識には限界がある。トイレやファスナーの仕組みすら、ほとんどの人は正確に説明できない。それでも文明が機能しているのは、**認知的分業**（cognitive division of labor）によって知識をコミュニティ全体で分担しているからだ。電気のことは技師に、身体のことは医師に頼めばよく、個人は「誰が知っているか」さえ把握していれば深い理解を持つ必要がない。
 
 ### 核心メカニズム — 内と外の境界が見えない
 

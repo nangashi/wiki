@@ -12,7 +12,8 @@ sources:
   - "https://happeningday.hatenablog.com/entry/2026/01/23/140655"
   - "https://note.com/repkuririn7/n/n139cc922dba5"
 created: "2026-05-29"
-updated: "2026-08-23"
+updated: "2026-11-12"
+reviewed: 3
 ---
 
 # アンカリング効果

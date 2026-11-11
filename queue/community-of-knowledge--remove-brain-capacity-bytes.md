@@ -3,7 +3,8 @@ id: community-of-knowledge--remove-brain-capacity-bytes
 target: community-of-knowledge
 kind: replace
 auto: true
-status: open
+status: applied
+applied: 2026-11-12
 source: audit-2026-08-23 P1
 old: "個人の脳が保持できる情報量には根本的な限界がある（推定0.5〜1GB程度）。"
 new: "個人が保持し、必要な場面で正確に利用できる知識には限界がある。"

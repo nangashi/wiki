@@ -9,7 +9,8 @@ sources:
   - "https://education.nsw.gov.au/content/dam/main-education/teaching-and-learning/curriculum/multicultural-education/eald/urh/What_are_BICS_and_CALP.pdf"
   - "https://en.wikipedia.org/wiki/Register_(sociolinguistics)"
 created: "2026-05-21"
-updated: "2026-07-18"
+updated: "2026-11-12"
+reviewed: 3
 ---
 
 # 文脈依存度と言語体系

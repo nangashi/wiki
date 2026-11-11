@@ -3,7 +3,8 @@ id: echo-chamber--qualify-backfire-effect
 target: echo-chamber
 kind: replace
 auto: true
-status: open
+status: applied
+applied: 2026-11-12
 source: audit-2026-08-23 P2
 old: "だから「事実を見せれば分かるはず」という介入は効かず、しばしば逆効果になる。"
 new: "だから「事実を見せれば分かるはず」という介入は効かないことがあり、提示方法によっては反発を招きうる。"
