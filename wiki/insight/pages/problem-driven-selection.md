@@ -49,4 +49,3 @@ ADR（Architecture Decision Record）の「コンテキスト」セクション�
 - [[avoidance-generated-reasons]] — 問いが不明確なまま情報収集を続けることで選択が回避されるパターン
 
 - [[issue-value-matrix]] — 「何を解くか」の質（イシュー度）が知的生産バリューを支配するという上位原則
-- [[it:adr]] — 問題軸選定を制度化するArchitecture Decision Recordの構造と活用

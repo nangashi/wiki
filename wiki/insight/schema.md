@@ -1,6 +1,6 @@
 # Insight Wiki スキーマ
 
-このファイルは insight コレクションのルールと共通書き込み手順を定義する。コレクション構成と振り分けは `wiki/collections.md`、insight への採用判定は `wiki/insight/references/reusability-criteria.md`、作成後の本質審査は `wiki/insight/references/essence-review-criteria.md` をそれぞれ正本とする。
+このファイルは insight コレクションのルールと共通書き込み手順を定義する。コレクション定義は `wiki/collections.md`、insight への採用判定は `wiki/insight/references/reusability-criteria.md`、作成後の本質審査は `wiki/insight/references/essence-review-criteria.md` をそれぞれ正本とする。
 
 ---
 
@@ -15,9 +15,6 @@ wiki/
       <slug>.md
     references/      # 審査基準・共通参照ドキュメント（スキルから参照）
       <name>.md
-  it/
-    schema.md        # ITコレクションのルール定義
-    pages/           # ITコレクションのページ
 ```
 
 ---

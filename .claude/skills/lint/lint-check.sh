@@ -5,8 +5,8 @@
 # /lint スキルがこのスクリプトを先に実行し、出力をもとにLLM分析を行う。
 #
 # 担当するチェック:
-#   CHECK-1: リンク切れ（同一コレクション内 [[slug]] とクロスリンク [[col:slug]]）
-#   CHECK-2: 孤立ページ（全コレクション横断）
+#   CHECK-1: リンク切れ（[[slug]]）
+#   CHECK-2: 孤立ページ
 #   CHECK-3: リンク漏れ候補（誤検知あり → LLMが最終判断）
 #   CHECK-5: 粒度メトリクス（数値計測のみ → LLMが最終判断）
 #   CHECK-8: 低価値ページ候補（誤検知あり → LLMが最終判断）
@@ -26,8 +26,7 @@
 #
 # 例:
 #   bash .claude/skills/lint/lint-check.sh \
-#     --collection insight:wiki/insight/pages \
-#     --collection it:wiki/it/pages
+#     --collection insight:wiki/insight/pages
 
 set -uo pipefail
 
