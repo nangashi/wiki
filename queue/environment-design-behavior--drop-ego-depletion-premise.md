@@ -3,8 +3,9 @@ id: environment-design-behavior--drop-ego-depletion-premise
 target: environment-design-behavior
 kind: replace
 auto: true
-status: open
+status: applied
 source: both P1
+applied: 2026-11-12
 old: "意志力は有限なリソースであり、誘惑に「抵抗する」ことを前提とした戦略は長続きしない。"
 new: "誘惑への抵抗を繰り返す戦略は、疲労・注意・動機づけ・状況によって維持しにくくなるため、環境設計を併用する方が安定しやすい。"
 ---

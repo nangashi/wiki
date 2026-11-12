@@ -3,8 +3,9 @@ id: habit-loop--attribute-four-stage-framework-to-clear
 target: habit-loop
 kind: replace
 auto: true
-status: open
+status: applied
 source: audit-2026-08-23 P2
+applied: 2026-11-12
 old: "すべての習慣は「きっかけ→欲求→反応→報酬」の4段階サイクルで動作しており、"
 new: "クリアーはすべての習慣を「きっかけ→欲求→反応→報酬」の4段階サイクルとして整理しており、"
 ---

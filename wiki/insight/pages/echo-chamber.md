@@ -10,6 +10,7 @@ sources:
   - "https://www.soumu.go.jp/johotsusintokei/whitepaper/ja/r05/html/nd123120.html"
 created: "2026-07-17"
 updated: "2026-11-12"
+reviewed: 3
 ---
 
 # エコーチェンバー
