@@ -6,7 +6,8 @@ sources:
   - "https://habitmentors.com/ja/books/atomic-habits/"
   - "https://blog.taskchute.cloud/atomic-habits/"
 created: "2026-05-25"
-updated: "2026-11-12"
+updated: "2026-11-13"
+reviewed: 3
 ---
 
 # 習慣ループ

@@ -3,7 +3,8 @@ id: learning-roi--fix-forgetting-curve-link
 target: learning-roi
 kind: replace
 auto: true
-status: open
+status: applied
+applied: 2026-11-13
 source: audit-2026-08-01 P1
 old: "（実験の詳細と俗説「1日後に74%忘れる」への注意は [[testing-effect]]）"
 new: "（実験の詳細と俗説「1日後に74%忘れる」への注意は [[forgetting-curve]]）"
