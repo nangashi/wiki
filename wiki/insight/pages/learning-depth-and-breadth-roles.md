@@ -5,8 +5,8 @@ sources:
   - "book:RANGE（デイビッド・エプスタイン）"
   - "https://syu-m-5151.hatenablog.com/entry/2026/02/09/180240"
 created: "2026-05-19"
-updated: "2026-07-17"
-reviewed: 0
+updated: "2026-11-14"
+reviewed: 3
 ---
 
 # 学習の深さは能力を作り、広さは地図を作る
