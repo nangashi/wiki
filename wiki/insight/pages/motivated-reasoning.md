@@ -9,8 +9,8 @@ sources:
   - "https://www.semanticscholar.org/paper/7a30bb12359fea060162358ad7ac068b8e653c25"
   - "book:Think Again（Adam Grant）"
 created: "2026-05-21"
-updated: "2026-07-18"
-reviewed: 0
+updated: "2026-11-15"
+reviewed: 3
 ---
 
 # 動機づけられた推論（motivated reasoning）
