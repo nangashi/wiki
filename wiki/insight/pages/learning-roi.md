@@ -3,7 +3,8 @@ title: "学習回収率"
 sources:
   - "https://x.com/0xfene/status/2034056108164452437"
 created: "2026-05-19"
-updated: "2026-11-13"
+updated: "2026-11-16"
+reviewed: 3
 ---
 
 # 学習回収率
